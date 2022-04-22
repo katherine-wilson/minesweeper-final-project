@@ -9,7 +9,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-
+//try again
 
 public class guitview extends Application{
 	 private static final Image IMAGE = new Image("/face.png");
