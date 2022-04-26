@@ -1,9 +1,10 @@
+package view;
 import javafx.animation.Interpolator;
 import javafx.animation.Transition;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.image.ImageView;
 import javafx.util.Duration;
-// doing this to pushe again
+
 public class SpriteAnimation extends Transition {
 
     private final ImageView imageView;
@@ -35,14 +36,19 @@ private int hold;
 
     protected void interpolate(double k) {
     ///	System.out.print(k);
+    	int lastx = 0;
        int random = lastIndex;
         hold++;
-        	 double hero =  Math.sin(10*random)*90;
+        	 double hero =  Math.sin(random)*150;
         	//.k. System.out.print(hero);
         	 
-            int x = (int) hero +offsetX;
+            int x = (int) hero + offsetX;
+            if(x< 0)
+            {
+            	x=x*-1;
+            }
           //= 86;
-            System.out.println(x);
+            //System.out.println(x);
          
         	   
         	  
@@ -50,14 +56,15 @@ private int hold;
            
            
             final int y =  offsetY  + 5;
-           imageView.setViewport(new Rectangle2D(x, y, width, height));
-        if(hold == 25)
-        {
+            if(0==x%50)
+            {
+                     imageView.setViewport(new Rectangle2D(x, y, width, height));
+            }
         	hold=0;
             lastIndex++;
-           
+          
             
-        }
+        
         	
            
     }
