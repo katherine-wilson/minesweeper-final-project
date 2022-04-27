@@ -3,6 +3,8 @@ package view;
 
 
 import java.util.ArrayList;
+import java.util.Observable;
+import java.util.Observer;
 
 import controller.MinesweeperController;
 import javafx.animation.Animation;
@@ -21,15 +23,19 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import model.MinesweeperModel;
+import utilities.Space;
 
 
-public class guitview extends Application{
+public class guitview extends Application  implements Observer{
 	private int buttonmapper =0;
-	MinesweeperController controller;
+	MinesweeperModel model = new MinesweeperModel();
+	MinesweeperController controller = new MinesweeperController(model);
+	Space[][] grid = controller.getGrid();
 	 private ArrayList<ToggleButton> map = new ArrayList<ToggleButton>();
 	 private static final Image IMAGE = new Image("/face.png");
 	 public ArrayList<ToggleButton> setlabel(int x, int y)
@@ -102,7 +108,7 @@ public class guitview extends Application{
 			            @Override
 			            public void handle(MouseEvent event) {
 			                MouseButton button = event.getButton();
-			                 
+			                grid = model.getGrid();
 			                if(button==MouseButton.PRIMARY){
 			                	ToggleButton findme =  (ToggleButton) event.getTarget();
 			                	
@@ -110,31 +116,42 @@ public class guitview extends Application{
 			                
 			                 int ho= hero/16;
 			              // System.out.print("" + ho);
-			                 int y = 0;
-			               if(ho != 0)
-			               {
-			                  y= hero%ho;
-			               }
-			               else
-			               {
-			            	   y = 15;  
-			               }
+			              if(ho == 16)
+			              {
+			            	  ho--;
+			              }
+			                int  y= hero%16;
+			              
+			            	   //y = 15;  
+			              
 			               
-			               //  controller.takeStep(ho, y);
+			             //  controller.takeStep(ho, y);
 			              System.out.print("y" + y + "x" +ho);
-			           map.get(hero).setText("5");
-			       	Font font = Font.font("Times New Roman", 15);
-			       	map.get(hero).setFont(font);
-			           map.get(hero).setStyle("-fx-padding: 7px;");
-			           map.get(hero).setDisable(true);
-			           
+			              
+
+			           try {
+							controller.takeStep(ho, y);
+							Space m = grid[ho][y];
+						int minetext =  m.adjacentMines();
+							 map.get(hero).setText("" + minetext);
+					       	Font font = Font.font("Times New Roman", 15);
+					       	map.get(hero).setFont(font);
+					           map.get(hero).setStyle("-fx-padding: 7px;");
+					           map.get(hero).setDisable(true);
+						} 
+			           catch (IllegalArgumentException e) {
+							System.out.println("Invalid step! Try again. You cannot step on flags or revealed spaces.");
+						}
 			                    
 			                }else if(button==MouseButton.SECONDARY){
 			                	System.out.print("in2");
 			                	ToggleButton findme =  (ToggleButton) event.getTarget();
 			                	 int hero =	map.indexOf(findme);
 			                	  Image img = new Image("/greatflag.png");
-			                	  
+			                	  if(map.get(hero).isSelected() != true)
+			                			  {
+			                		  
+			                			  
 			                      ImageView view = new ImageView(img);
 			                      view.setFitHeight(30);
 			                      view.setFitWidth(30);
@@ -142,6 +159,20 @@ public class guitview extends Application{
 			                      map.get(hero).setGraphic(view);
 			                      map.get(hero).setStyle("-fx-padding: 0px;");
 			                	 map.get(hero).setGraphicTextGap(0);
+			                			  }
+			                	  else
+			                	  {
+			                	
+			                		  ToggleButton get =  (ToggleButton) event.getTarget();
+			                		  int one =	map.indexOf(get);
+			                		  map.get(one).setGraphic(null);
+			                		  Font font = Font.font("Times New Roman", 6);
+			                			map.get(one).setFont(font);
+			                			 map.get(one).setText("");
+			            				map.get(one).setStyle("-fx-border-style: solid;"+  "-fx-padding: 10px;" +  "-fx-border-color: lightgreen;" );
+			            				map.get(one).setEffect(new DropShadow(10, Color.rgb(0, 0, 0, 0.4)));
+			            				//map.get(i).setWrapText(true);  
+			                	  }
 			                }
 			                
 			            }
@@ -157,9 +188,15 @@ public class guitview extends Application{
 				//running.get(io).setMaxWidth(-0.01);
 				topscreen.add(map.get(i), colab, row);
 				row++;
+				
 			}
 			   
 	        primaryStage.setScene(new Scene(topscreen));
 	        primaryStage.show();
+	    }
+	    @Override
+		public void update(Observable o, Object arg) {
+			MinesweeperModel model = (MinesweeperModel) o;
+			grid = model.getGrid();
 	    }
 	}
