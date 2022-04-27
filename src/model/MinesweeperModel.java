@@ -12,7 +12,7 @@ public class MinesweeperModel extends Observable {
 
 	private static int FIELD_WIDTH = 16;
 	private static int FIELD_LENGTH = 16;
-	private static int NUMBER_OF_MINES = 10; // based on difficulty level (if implemented)
+	private static int NUMBER_OF_MINES = 25; // based on difficulty level (if implemented)
 
 	private Space[][] grid;		// first index is used for the rows (y-values), second index is used for the columns (x-values)
 
