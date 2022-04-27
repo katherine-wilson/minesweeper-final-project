@@ -1,5 +1,12 @@
 /face.png
-/model/
+/greatflag.png
+/objects/
 /view/
+<<<<<<< HEAD
 /controller/
 /utilities/
+=======
+/model/
+/controller/
+/utilities/
+>>>>>>> refs/heads/kw

@@ -28,6 +28,7 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import model.MinesweeperModel;
+import utilities.IllegalStepException;
 import utilities.Space;
 
 
@@ -108,7 +109,7 @@ public class guitview extends Application  {
 			            @Override
 			            public void handle(MouseEvent event) {
 			                MouseButton button = event.getButton();
-			                grid = model.getGrid();
+			                grid = model.getMinefield();
 			                if(button==MouseButton.PRIMARY){
 			                	ToggleButton findme =  (ToggleButton) event.getTarget();
 			                	
@@ -154,7 +155,7 @@ public class guitview extends Application  {
 
 						}
 						} 
-			           catch (IllegalArgumentException e) {
+			           catch (IllegalArgumentException | IllegalStepException e) {					// XXX: added custom exception class here (you can remove this comment, just a note)
 			        	   //Space m = grid[ho][y];
 			        	   map.get(hero).setDisable(true);
 							//System.out.println("Invalid step! Try again. You cannot step on flags or revealed spaces.");
