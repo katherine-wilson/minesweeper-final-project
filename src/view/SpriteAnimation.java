@@ -39,7 +39,7 @@ private int hold;
     	int lastx = 0;
        int random = lastIndex;
         hold++;
-        	 double hero =  Math.sin(random)*150;
+        	 double hero =  Math.sin(random)*95;
         	//.k. System.out.print(hero);
         	 
             int x = (int) hero + offsetX;
@@ -56,12 +56,14 @@ private int hold;
            
            
             final int y =  offsetY  + 5;
-            if(0==x%50)
-            {
-                     imageView.setViewport(new Rectangle2D(x, y, width, height));
-            }
-        	hold=0;
+          if(hold== 11)
+          {
+            	hold=0;
             lastIndex++;
+          }          imageView.setViewport(new Rectangle2D(x, y, width, height));
+            
+        	
+            
           
             
         

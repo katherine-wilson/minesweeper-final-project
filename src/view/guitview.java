@@ -9,18 +9,25 @@ import java.util.Observer;
 import controller.MinesweeperController;
 import javafx.animation.Animation;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.event.EventHandler;
+import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.ToggleButton;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
@@ -28,6 +35,7 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import model.MinesweeperModel;
+import utilities.IllegalFlagPlacementException;
 import utilities.IllegalStepException;
 import utilities.Space;
 
@@ -60,7 +68,7 @@ public class guitview extends Application  {
 	    private static final int COLUMNS  =   20;
 	    private static int COUNT    =  3;
 	    private static final int OFFSET_X =  100;
-	    private static final int OFFSET_Y =  10;
+	    private static final int OFFSET_Y =  10; // 100 to move y  
 	    private static  int WIDTH  =  50;
 	    private static final int HEIGHT   = 90;
 
@@ -109,7 +117,7 @@ public class guitview extends Application  {
 			            @Override
 			            public void handle(MouseEvent event) {
 			                MouseButton button = event.getButton();
-			                grid = model.getMinefield();
+			                grid = controller.getMinefield();
 			                if(button==MouseButton.PRIMARY){
 			                	ToggleButton findme =  (ToggleButton) event.getTarget();
 			                	
@@ -127,7 +135,7 @@ public class guitview extends Application  {
 			              
 			               
 			             //  controller.takeStep(ho, y);
-			              System.out.print("y" + y + "x" +ho);
+			              System.out.print("y" + y+ "x" +ho);
 			              
 
 			           try {
@@ -150,14 +158,23 @@ public class guitview extends Application  {
 							 map.get(hero).setText("m");
 						       	Font font = Font.font("Times New Roman", 15);
 						       	map.get(hero).setFont(font);
-						           map.get(hero).setStyle("-fx-padding: 7px;");
+						           map.get(hero).setStyle("-fx-padding: 6px;");
 						           map.get(hero).setDisable(true);
-
+						           Alert alert = new Alert(AlertType.CONFIRMATION);
+									alert.setTitle("You hit a mine!");
+									 alert.setContentText("Keep on playing?");
+									  alert.showAndWait();
+									  if(alert.getResult() == ButtonType.CANCEL)
+										{
+									Platform.exit();
+										}
 						}
 						} 
 			           catch (IllegalArgumentException | IllegalStepException e) {					// XXX: added custom exception class here (you can remove this comment, just a note)
 			        	   //Space m = grid[ho][y];
 			        	   map.get(hero).setDisable(true);
+			        	  
+			           
 							//System.out.println("Invalid step! Try again. You cannot step on flags or revealed spaces.");
 						}
 			                    
@@ -166,7 +183,7 @@ public class guitview extends Application  {
 			                	ToggleButton findme =  (ToggleButton) event.getTarget();
 			                	 int hero =	map.indexOf(findme);
 			                	  Image img = new Image("/greatflag.png");
-			                	  if(false == map.get(hero).isDisabled())
+			                	  if(null == map.get(hero).getGraphic())
 			                			  {
 			                		  
 			                		   int ho= hero/16;
@@ -177,21 +194,47 @@ public class guitview extends Application  {
 			 			              }
 			 			                int  y= hero%16;  
 			 			               Space m = grid[ho][y];
+			 			             
+			 			            
 			 			               m.placeFlag();
+			 			             if( true == controller.isGameOver()) // line needs work
+			 			              {
+			 			 	           Alert alert = new Alert(AlertType.CONFIRMATION);
+										alert.setTitle("You Won!");
+										 alert.setContentText("See Board?");
+										  alert.showAndWait();
+										  if(alert.getResult() == ButtonType.CANCEL)
+											{
+										Platform.exit();
+											}  
+			 			              }
+			 			              			 			            	   
 			                      ImageView view = new ImageView(img);
 			                      view.setFitHeight(30);
 			                      view.setFitWidth(30);
 			                      view.setPreserveRatio(true);
-			                      map.get(hero).setGraphic(view);
+			                     map.get(hero).setGraphic(view);
+			                    //  map.get(hero).setText("F");
 			                      map.get(hero).setStyle("-fx-padding: 0px;");
-			                	 map.get(hero).setGraphicTextGap(0);
-			                	 map.get(hero).setDisable(true);
+			                	 //map.get(hero).setGraphicTextGap(0);
+			                	 //map.get(hero).setDisable(true);
 			                			  }
-			                	  else if(true == map.get(hero).isDisabled())
+			                	  else if(null != map.get(hero).getGraphic())
 			                	  {
+			                		  int ho= hero/16;
+			 			              // System.out.print("" + ho);
+			 			              if(ho == 16)
+			 			              {
+			 			            	  ho--;
+			 			              }
+			 			                int  y= hero%16;  
+			 			               Space m = grid[ho][y];
+			 			              
+			 			               m.removeFlag();
 			                		  
 			                		  System.out.print("in second");
 			                		  	  map.get(hero).setDisable(false);
+			                		  	  
 			                		  map.get(hero).setGraphic(null);
 			                		  Font font = Font.font("Times New Roman", 6);
 			                			map.get(hero).setFont(font);
@@ -217,8 +260,24 @@ public class guitview extends Application  {
 				row++;
 				
 			}
-			   
-	        primaryStage.setScene(new Scene(topscreen));
+			Label toptext = new Label("Mine Sweaper");
+			Font tittlefont = Font.font("Times New Roman", 30);
+			toptext.setFont(tittlefont);
+			HBox doom = new HBox();
+			VBox vbox = new VBox();
+			HBox title = new HBox();
+			HBox board = new HBox();
+			doom.getChildren().add(imageView);
+			title.getChildren().add(toptext);
+			board.getChildren().add(topscreen);
+			title.setAlignment(Pos.TOP_CENTER);
+			doom.setAlignment(Pos.TOP_CENTER);
+			board.setAlignment(Pos.CENTER);
+			vbox.getChildren().add(title);
+			vbox.getChildren().add(doom);
+			vbox.getChildren().add(board);
+
+	        primaryStage.setScene(new Scene(vbox));
 	        primaryStage.show();
 	    }
 	   /* @Override
