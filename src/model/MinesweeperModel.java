@@ -1,6 +1,11 @@
 package model;
 
 import java.awt.Point;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.util.HashSet;
 import java.util.Observable;
 import java.util.Random;
@@ -26,6 +31,7 @@ import utilities.Space;
  * @see Observable
  * 
  * @author Katherine Wilson
+ * @author Giang Huong Pham
  */
 @SuppressWarnings("deprecation")
 public class MinesweeperModel extends Observable {
@@ -87,13 +93,44 @@ public class MinesweeperModel extends Observable {
 
 	// --------------------------------------------------[  PUBLIC METHODS  ]--------------------------------------------------
 	/**
+	 * Creates a <code>MinesweeperModel</code> object by
+	 * loading data from the input file.
+	 * 
+	 * @param filename name of the file which saves data from the old game.
+	 * @throws IOException 
+	 * @throws FileNotFoundException 
+	 * @throws ClassNotFoundException 
+	 */
+	public MinesweeperModel(String filename) throws FileNotFoundException, IOException, ClassNotFoundException {
+		ObjectInputStream input = new ObjectInputStream(new FileInputStream(filename));
+		MinesweeperModel model = (MinesweeperModel) input.readObject();
+		if (model != null) {
+			this.safeSpacesRevealed = model.safeSpacesRevealed;
+			this.stepsTaken = model.stepsTaken;
+			this.flagsPlaced = model.flagsPlaced;
+			this.gameOver = model.gameOver;
+		}else {
+			this.defaultSetting();
+		}
+	}
+	
+	/**
 	 * Creates a <code>MinesweeperModel</code> object and initializes it
-	 * to a default state. By default, the <code>MinesweeperModel</code>
+	 * to a default state by calling helper function to set all fields
+	 * to the beginning value.
+	 */
+	public MinesweeperModel() {
+		this.defaultSetting();
+	}
+	
+	/**
+	 * Initialize the MinesweeperModel to a default state. 
+	 * By default, the <code>MinesweeperModel</code>
 	 * has no revealed safe squares, no turns made, no flags placed, and
 	 * has not been won or lost yet. This method will also initialize the
 	 * minefield and place mines within it.
 	 */
-	public MinesweeperModel() {
+	private void defaultSetting() {
 		safeSpacesRevealed = 0;
 		stepsTaken = 0;
 		flagsPlaced = 0;
@@ -141,8 +178,8 @@ public class MinesweeperModel extends Observable {
 				}	
 			}
 			stepsTaken++;
-			setChanged();
-			notifyObservers();
+			this.setChanged();
+			this.notifyObservers();
 			return safeStep;
 		}
 		return true;		// ignores input

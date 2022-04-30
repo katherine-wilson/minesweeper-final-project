@@ -1,7 +1,8 @@
 package view;
 
-
-
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
@@ -39,250 +40,243 @@ import utilities.IllegalFlagPlacementException;
 import utilities.IllegalStepException;
 import utilities.Space;
 
+@SuppressWarnings("deprecation")
+public class guitview extends Application implements Observer {
+	private int buttonmapper;
+	private MinesweeperModel model;
+	private MinesweeperController controller;
+	private Space[][] grid;
+	private ArrayList<ToggleButton> map;
+	private static final Image IMAGE = new Image("/face.png");
+	private static final int COLUMNS = 20;
+	private static int COUNT = 3;
+	private static final int OFFSET_X = 100;
+	private static final int OFFSET_Y = 10; // 100 to move y
+	private static int WIDTH = 50;
+	private static final int HEIGHT = 90;	
 
-public class guitview extends Application  {
-	private int buttonmapper =0;
-	MinesweeperModel model = new MinesweeperModel();
-	MinesweeperController controller = new MinesweeperController(model);
-	Space[][] grid;
-	 private ArrayList<ToggleButton> map = new ArrayList<ToggleButton>();
-	 private static final Image IMAGE = new Image("/face.png");
-	 public ArrayList<ToggleButton> setlabel(int x, int y)
-	    {
-		 int button = x*y;
-		 button ++;
-	     ArrayList <ToggleButton> number = new ArrayList<>();
-	     for(int u =0; u < button; u++)
-	     {
-	    	 String s=String.valueOf(u);
-	    	// System.out.print(s);
-	    	 ToggleButton bio = new ToggleButton();
-	    	
-	            number.add(bio);
-	            
-	     }
-	    
+	public guitview() {
+		buttonmapper = 0;
+		File savedGame = new File("saved_game.dat");
+		if (savedGame.exists()) {
+			try {
+				model = new MinesweeperModel("saved_game.dat");
+			} catch (FileNotFoundException e) {
+				System.out.println("Cannot find the saved game file.");
+			} catch (ClassNotFoundException e) {
+				System.out.println("Cannot load the data from the saved game.");
+			} catch (IOException e) {
+				System.out.println("Fail to load the saved game from file.");
+			}
+		} else {
+			model = new MinesweeperModel();
+		}
+		model.addObserver(this);
+		controller = new MinesweeperController(model);
+		map = new ArrayList<ToggleButton>();
+	}
+	
+	public static void main(String[] args) {
+		launch(args);
+	}
+	@Override
+	public void start(Stage primaryStage) {
+		primaryStage.setTitle("The Horse in Motion");
+		ImageView imageView = new ImageView(IMAGE);
+		imageView.setViewport(new Rectangle2D(OFFSET_X, OFFSET_Y, WIDTH, HEIGHT));
+		final Animation animation = new SpriteAnimation(imageView, Duration.millis(1000), COUNT, COLUMNS, OFFSET_X,
+									OFFSET_Y, WIDTH, HEIGHT);
+		animation.setCycleCount(Animation.INDEFINITE);
+		animation.play();
+		map = setlabel(16, 16);
+		// bottem = setlabel();
+		GridPane topscreen = new GridPane();
+		//
 
-	        return number;
-	    }
-	    private static final int COLUMNS  =   20;
-	    private static int COUNT    =  3;
-	    private static final int OFFSET_X =  100;
-	    private static final int OFFSET_Y =  10; // 100 to move y  
-	    private static  int WIDTH  =  50;
-	    private static final int HEIGHT   = 90;
+		// ArrayList<Label> numbs = new ArrayList<>();
+		// ArrayList<Label> running = new ArrayList<>();
 
-	    public static void main(String[] args) {
-	        launch(args);
-	    }
-	    @Override
-	    public void start(Stage primaryStage) {
-	        primaryStage.setTitle("The Horse in Motion");
-	      //  MinesweeperModel model = new MinesweeperModel();
-	        controller = new MinesweeperController(model);
-	        ImageView imageView = new ImageView(IMAGE);
-	        imageView.setViewport(new Rectangle2D(OFFSET_X, OFFSET_Y, WIDTH, HEIGHT));
+		int row = 0;
+		int colab = 0;
+		int h = map.size();
+		for (int i = 1; i < h; i++) {
+			if (row > 15) {
+				row = 0;
+				colab++;
+			}
+			// topscreen.add(numbs.get(i), row, colab);
 
-	        final Animation animation = new SpriteAnimation(
-	                imageView,
-	                Duration.millis(1000),
-	                COUNT, COLUMNS,
-	                OFFSET_X, OFFSET_Y,
-	                WIDTH, HEIGHT
-	        );
-	        animation.setCycleCount(Animation.INDEFINITE);
-	        animation.play();
-	        map = setlabel(16,16);
-			//bottem = setlabel();
-			GridPane topscreen = new GridPane();
-			//
-			
-			//ArrayList<Label> numbs = new ArrayList<>();
-		//	ArrayList<Label> running = new ArrayList<>();
-			
-			int row= 0;
-			int colab=0;
-			int h =map.size();
-			for(int i = 1; i < h; i++)
-			{
-				if(row > 15)
-				{
-				row= 0;
-				
-			     colab++;
-				}
-				//topscreen.add(numbs.get(i), row, colab);
-				 
-				 map.get(i).setOnMouseClicked(new EventHandler<MouseEvent>() {
-			            @Override
-			            public void handle(MouseEvent event) {
-			                MouseButton button = event.getButton();
-			                grid = controller.getMinefield();
-			                if(button==MouseButton.PRIMARY){
-			                	ToggleButton findme =  (ToggleButton) event.getTarget();
-			                	
-			                int hero =	map.indexOf(findme);
-			                
-			                 int ho= hero/16;
-			              // System.out.print("" + ho);
-			              if(ho == 16)
-			              {
-			            	  ho--;
-			              }
-			                int  y= hero%16;
-			              
-			            	   //y = 15;  
-			              
-			               
-			             //  controller.takeStep(ho, y);
-			              System.out.print("y" + y+ "x" +ho);
-			              
+			map.get(i).setOnMouseClicked(new EventHandler<MouseEvent>() {
+				@Override
+				public void handle(MouseEvent event) {
+					MouseButton button = event.getButton();
+					grid = controller.getMinefield();
+					if (button == MouseButton.PRIMARY) {
+						ToggleButton findme = (ToggleButton) event.getTarget();
 
-			           try {
+						int hero = map.indexOf(findme);
+
+						int ho = hero / 16;
+						// System.out.print("" + ho);
+						if (ho == 16) {
+							ho--;
+						}
+						int y = hero % 16;
+
+						// y = 15;
+
+						// controller.takeStep(ho, y);
+						System.out.print("y" + y + "x" + ho);
+
+						try {
 							controller.takeStep(ho, y);
 							Space m = grid[ho][y];
-						int minetext =  m.adjacentMines();
-						m.isRevealed();
-						
-						
-						if(m.hasMine() == false)
-						{
-							 map.get(hero).setText("" + minetext);
-					       	Font font = Font.font("Times New Roman", 15);
-					       	map.get(hero).setFont(font);
-					           map.get(hero).setStyle("-fx-padding: 7px;");
-					           map.get(hero).setDisable(true);
-						}
-						if(m.hasMine() == true)
-						{
-							 map.get(hero).setText("m");
-						       	Font font = Font.font("Times New Roman", 15);
-						       	map.get(hero).setFont(font);
-						           map.get(hero).setStyle("-fx-padding: 6px;");
-						           map.get(hero).setDisable(true);
-						           Alert alert = new Alert(AlertType.CONFIRMATION);
-									alert.setTitle("You hit a mine!");
-									 alert.setContentText("Keep on playing?");
-									  alert.showAndWait();
-									  if(alert.getResult() == ButtonType.CANCEL)
-										{
-									Platform.exit();
-										}
-						}
-						} 
-			           catch (IllegalArgumentException | IllegalStepException e) {					// XXX: added custom exception class here (you can remove this comment, just a note)
-			        	   //Space m = grid[ho][y];
-			        	   map.get(hero).setDisable(true);
-			        	  
-			           
-							//System.out.println("Invalid step! Try again. You cannot step on flags or revealed spaces.");
-						}
-			                    
-			                }else if(button==MouseButton.SECONDARY){
-			                	System.out.print("in2");
-			                	ToggleButton findme =  (ToggleButton) event.getTarget();
-			                	 int hero =	map.indexOf(findme);
-			                	  Image img = new Image("/greatflag.png");
-			                	  if(null == map.get(hero).getGraphic())
-			                			  {
-			                		  
-			                		   int ho= hero/16;
-			 			              // System.out.print("" + ho);
-			 			              if(ho == 16)
-			 			              {
-			 			            	  ho--;
-			 			              }
-			 			                int  y= hero%16;  
-			 			               Space m = grid[ho][y];
-			 			             
-			 			            
-			 			               m.placeFlag();
-			 			             if( true == controller.isGameOver()) // line needs work
-			 			              {
-			 			 	           Alert alert = new Alert(AlertType.CONFIRMATION);
-										alert.setTitle("You Won!");
-										 alert.setContentText("See Board?");
-										  alert.showAndWait();
-										  if(alert.getResult() == ButtonType.CANCEL)
-											{
-										Platform.exit();
-											}  
-			 			              }
-			 			              			 			            	   
-			                      ImageView view = new ImageView(img);
-			                      view.setFitHeight(30);
-			                      view.setFitWidth(30);
-			                      view.setPreserveRatio(true);
-			                     map.get(hero).setGraphic(view);
-			                    //  map.get(hero).setText("F");
-			                      map.get(hero).setStyle("-fx-padding: 0px;");
-			                	 //map.get(hero).setGraphicTextGap(0);
-			                	 //map.get(hero).setDisable(true);
-			                			  }
-			                	  else if(null != map.get(hero).getGraphic())
-			                	  {
-			                		  int ho= hero/16;
-			 			              // System.out.print("" + ho);
-			 			              if(ho == 16)
-			 			              {
-			 			            	  ho--;
-			 			              }
-			 			                int  y= hero%16;  
-			 			               Space m = grid[ho][y];
-			 			              
-			 			               m.removeFlag();
-			                		  
-			                		  System.out.print("in second");
-			                		  	  map.get(hero).setDisable(false);
-			                		  	  
-			                		  map.get(hero).setGraphic(null);
-			                		  Font font = Font.font("Times New Roman", 6);
-			                			map.get(hero).setFont(font);
-			                			 map.get(hero).setText("");
-			            				map.get(hero).setStyle("-fx-border-style: solid;"+  "-fx-padding: 10px;" +  "-fx-border-color: lightgreen;" );
-			            				map.get(hero).setEffect(new DropShadow(10, Color.rgb(0, 0, 0, 0.4)));
-			            				//map.get(i).setWrapText(true);  
-			                	  }
-			                }
-			                
-			            }
-			        });
-					// System.out.print(io);
-				Font font = Font.font("Times New Roman", 6);
-				map.get(i).setFont(font);
-				map.get(i).setStyle("-fx-border-style: solid;"+  "-fx-padding: 11px;" +  "-fx-border-color: lightgreen;" );
-				map.get(i).setEffect(new DropShadow(10, Color.rgb(0, 0, 0, 0.4)));
-				//map.get(i).setWrapText(true);
-			//	map.get(i).setTextFill(Color.web("#FBF7F5"));
-				//map.get(i).setTextAlignment(TextAlignment.JUSTIFY);
-				//running.get(io).setMaxWidth(-0.01);
-				topscreen.add(map.get(i), colab, row);
-				row++;
-				
-			}
-			Label toptext = new Label("Mine Sweaper");
-			Font tittlefont = Font.font("Times New Roman", 30);
-			toptext.setFont(tittlefont);
-			HBox doom = new HBox();
-			VBox vbox = new VBox();
-			HBox title = new HBox();
-			HBox board = new HBox();
-			doom.getChildren().add(imageView);
-			title.getChildren().add(toptext);
-			board.getChildren().add(topscreen);
-			title.setAlignment(Pos.TOP_CENTER);
-			doom.setAlignment(Pos.TOP_CENTER);
-			board.setAlignment(Pos.CENTER);
-			vbox.getChildren().add(title);
-			vbox.getChildren().add(doom);
-			vbox.getChildren().add(board);
+							int minetext = m.adjacentMines();
+							m.isRevealed();
 
-	        primaryStage.setScene(new Scene(vbox));
-	        primaryStage.show();
-	    }
-	   /* @Override
-		public void update(Observable o, Object arg) {
-			
-			grid = 
-	    }*/
+							if (m.hasMine() == false) {
+								map.get(hero).setText("" + minetext);
+								Font font = Font.font("Times New Roman", 15);
+								map.get(hero).setFont(font);
+								map.get(hero).setStyle("-fx-padding: 7px;");
+								map.get(hero).setDisable(true);
+							}
+							if (m.hasMine() == true) {
+								map.get(hero).setText("m");
+								Font font = Font.font("Times New Roman", 15);
+								map.get(hero).setFont(font);
+								map.get(hero).setStyle("-fx-padding: 6px;");
+								map.get(hero).setDisable(true);
+								Alert alert = new Alert(AlertType.CONFIRMATION);
+								alert.setTitle("You hit a mine!");
+								alert.setContentText("Keep on playing?");
+								alert.showAndWait();
+								if (alert.getResult() == ButtonType.CANCEL) {
+									Platform.exit();
+								}
+							}
+						} catch (IllegalArgumentException | IllegalStepException e) { // XXX: added custom exception
+																						// class here (you can remove
+																						// this comment, just a note)
+							// Space m = grid[ho][y];
+							map.get(hero).setDisable(true);
+
+							// System.out.println("Invalid step! Try again. You cannot step on flags or
+							// revealed spaces.");
+						}
+
+					} else if (button == MouseButton.SECONDARY) {
+						System.out.print("in2");
+						ToggleButton findme = (ToggleButton) event.getTarget();
+						int hero = map.indexOf(findme);
+						Image img = new Image("/greatflag.png");
+						if (null == map.get(hero).getGraphic()) {
+
+							int ho = hero / 16;
+							// System.out.print("" + ho);
+							if (ho == 16) {
+								ho--;
+							}
+							int y = hero % 16;
+							Space m = grid[ho][y];
+
+							m.placeFlag();
+							if (true == controller.isGameOver()) // line needs work
+							{
+								Alert alert = new Alert(AlertType.CONFIRMATION);
+								alert.setTitle("You Won!");
+								alert.setContentText("See Board?");
+								alert.showAndWait();
+								if (alert.getResult() == ButtonType.CANCEL) {
+									Platform.exit();
+								}
+							}
+
+							ImageView view = new ImageView(img);
+							view.setFitHeight(30);
+							view.setFitWidth(30);
+							view.setPreserveRatio(true);
+							map.get(hero).setGraphic(view);
+							// map.get(hero).setText("F");
+							map.get(hero).setStyle("-fx-padding: 0px;");
+							// map.get(hero).setGraphicTextGap(0);
+							// map.get(hero).setDisable(true);
+						} else if (null != map.get(hero).getGraphic()) {
+							int ho = hero / 16;
+							// System.out.print("" + ho);
+							if (ho == 16) {
+								ho--;
+							}
+							int y = hero % 16;
+							Space m = grid[ho][y];
+
+							m.removeFlag();
+
+							System.out.print("in second");
+							map.get(hero).setDisable(false);
+
+							map.get(hero).setGraphic(null);
+							Font font = Font.font("Times New Roman", 6);
+							map.get(hero).setFont(font);
+							map.get(hero).setText("");
+							map.get(hero).setStyle("-fx-border-style: solid;" + "-fx-padding: 10px;"
+									+ "-fx-border-color: lightgreen;");
+							map.get(hero).setEffect(new DropShadow(10, Color.rgb(0, 0, 0, 0.4)));
+							// map.get(i).setWrapText(true);
+						}
+					}
+
+				}
+			});
+			// System.out.print(io);
+			Font font = Font.font("Times New Roman", 6);
+			map.get(i).setFont(font);
+			map.get(i).setStyle("-fx-border-style: solid;" + "-fx-padding: 11px;" + "-fx-border-color: lightgreen;");
+			map.get(i).setEffect(new DropShadow(10, Color.rgb(0, 0, 0, 0.4)));
+			// map.get(i).setWrapText(true);
+			// map.get(i).setTextFill(Color.web("#FBF7F5"));
+			// map.get(i).setTextAlignment(TextAlignment.JUSTIFY);
+			// running.get(io).setMaxWidth(-0.01);
+			topscreen.add(map.get(i), colab, row);
+			row++;
+		}
+		Label toptext = new Label("Mine Sweaper");
+		Font tittlefont = Font.font("Times New Roman", 30);
+		toptext.setFont(tittlefont);
+		HBox doom = new HBox();
+		VBox vbox = new VBox();
+		HBox title = new HBox();
+		HBox board = new HBox();
+		doom.getChildren().add(imageView);
+		title.getChildren().add(toptext);
+		board.getChildren().add(topscreen);
+		title.setAlignment(Pos.TOP_CENTER);
+		doom.setAlignment(Pos.TOP_CENTER);
+		board.setAlignment(Pos.CENTER);
+		vbox.getChildren().add(title);
+		vbox.getChildren().add(doom);
+		vbox.getChildren().add(board);
+
+		primaryStage.setScene(new Scene(vbox));
+		primaryStage.show();
 	}
+
+	private ArrayList<ToggleButton> setlabel(int x, int y) {
+		int button = x * y;
+		button++;
+		ArrayList<ToggleButton> number = new ArrayList<>();
+		for (int u = 0; u < button; u++) {
+			String s = String.valueOf(u);
+			// System.out.print(s);
+			ToggleButton bio = new ToggleButton();
+			number.add(bio);
+		}
+		return number;
+	}
+
+	@Override
+	public void update(Observable o, Object arg) {
+		this.model = (MinesweeperModel) o;
+
+	}
+}
