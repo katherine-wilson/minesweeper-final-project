@@ -130,6 +130,7 @@ public class MinesweeperModel extends Observable {
 					replaceMine(location);						// replaces mine and reinitializes minefield's adjacent mine values 
 					markSpacesAdjacentToMines();
 					revealContiguousZeroes(location, new HashSet<Point>());
+					safeStep = true;
 				}
 			} else {												// if the player's step was safe...
 				if (stepsTaken == 0) {							// initializes adjacent mine counts for each space in the minefield

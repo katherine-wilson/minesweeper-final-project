@@ -21,18 +21,18 @@ public class MinesweeperTextView implements Observer {
 		controller = new MinesweeperController(model);
 		printField(model);
 		System.out.println("Welcome to Minesweeper!");
-		inputLoopStep(controller);
+		inputLoopStep(controller, model);
 	}
 	
 	// coordinates must be entered in format: "x y"
-	private void inputLoopStep(MinesweeperController controller) {
+	private void inputLoopStep(MinesweeperController controller, MinesweeperModel model) {
 		System.out.println("Type a pair of coordinates in the format 'x y' to begin. Enter 'F' to switch to flag mode.");
-		while (!controller.isGameOver()) {
+		while (!model.isGameOver()) {
 			Scanner input = new Scanner(System.in);
 			if (input.hasNextLine()) {
 				String coords[] = input.nextLine().split(" ");
 				if (coords[0].equals("F") || coords[0].equals("f")) {
-				 	inputLoopFlag(controller);
+				 	inputLoopFlag(controller, model);
 				} else {
 					int x = Integer.parseInt(coords[0]);
 					int y = Integer.parseInt(coords[1]);
@@ -47,14 +47,14 @@ public class MinesweeperTextView implements Observer {
 	}
 
 	// coordinates must be entered in format: "x y"
-	private void inputLoopFlag(MinesweeperController controller) {
+	private void inputLoopFlag(MinesweeperController controller, MinesweeperModel model) {
 		System.out.println("Placing flags. Enter the coordinates of the Flag you want to replace/remove in the format 'x y'.\nEnter 'M' to go back to taking steps.");
-		while (!controller.isGameOver()) {
+		while (!model.isGameOver()) {
 			Scanner input = new Scanner(System.in);
 			if (input.hasNextLine()) {
 				String coords[] = input.nextLine().split(" ");
 				if (coords[0].equals("M") || coords[0].equals("m")) {
-				 	inputLoopStep(controller);
+				 	inputLoopStep(controller, model);
 				} else {
 					int x = Integer.parseInt(coords[0]);
 					int y = Integer.parseInt(coords[1]);
