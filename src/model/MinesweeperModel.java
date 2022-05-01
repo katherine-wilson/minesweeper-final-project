@@ -85,6 +85,11 @@ public class MinesweeperModel extends Observable {
 	 */
 	private boolean gameOver;
 
+	/**
+	 * <code>time</code> the time elapsed in the game so far. 
+	 */
+	private int timeInSeconds;
+
 	// --------------------------------------------------[  PUBLIC METHODS  ]--------------------------------------------------
 	/**
 	 * Creates a <code>MinesweeperModel</code> object and initializes it
@@ -97,6 +102,7 @@ public class MinesweeperModel extends Observable {
 		safeSpacesRevealed = 0;
 		stepsTaken = 0;
 		flagsPlaced = 0;
+		timeInSeconds = 0;
 		gameOver = false;
 		initField();
 		placeMines();
@@ -251,6 +257,13 @@ public class MinesweeperModel extends Observable {
 		return safeSpacesRevealed == (FIELD_WIDTH*FIELD_LENGTH - NUMBER_OF_MINES);
 	}
 	
+	public int getTime(){
+		return this.timeInSeconds;
+	}
+
+	public void setTime(int time){
+		this.timeInSeconds = time;
+	}
 	
 	// --------------------------------------------------[  PRIVATE METHODS  ]--------------------------------------------------
 	/**

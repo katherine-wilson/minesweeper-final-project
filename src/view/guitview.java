@@ -2,6 +2,7 @@ package view;
 
 
 
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
@@ -29,6 +30,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -77,6 +79,7 @@ public class guitview extends Application  {
 	    public static void main(String[] args) {
 	        launch(args);
 	    }
+	    
 	    @Override
 	    public void start(Stage primaryStage) {
 	        primaryStage.setTitle("The Horse in Motion");
@@ -101,6 +104,10 @@ public class guitview extends Application  {
 				}
 			}, 1000);
 			// Timer Code ends here
+			
+			// Timer GUI starts here.
+			Label timeLabel = new Label(""+controller.getTime());
+			// Timer GUI ends here. 
 			
 			//ArrayList<Label> numbs = new ArrayList<>();
 		//	ArrayList<Label> running = new ArrayList<>();
@@ -279,6 +286,7 @@ public class guitview extends Application  {
 			doom.setAlignment(Pos.TOP_CENTER);
 			board.setAlignment(Pos.CENTER);
 			vbox.getChildren().add(title);
+			vbox.getChildren().add(timeLabel);
 			vbox.getChildren().add(doom);
 			vbox.getChildren().add(board);
 

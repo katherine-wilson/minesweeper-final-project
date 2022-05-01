@@ -123,11 +123,11 @@ public class MinesweeperController {
 		return model.getPlayerWon();
 	}
 	
-	/* DUMMY TIME FUNCTIONS */
+	/* TIME FUNCTIONS */
 	public int getTime() {
-		return 0;
+		return model.getTime();
 	}
 	public void setTime(int time) {
-		return;
+		model.setTime(time);
 	}
 }
