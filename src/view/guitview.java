@@ -244,7 +244,7 @@ public class guitview extends Application  {
 			            }
 			        });
 					// System.out.print(io);
-				 //push
+				 //push issue
 				Font font = Font.font("Times New Roman", 6);
 				map.get(i).setFont(font);
 				map.get(i).setStyle("-fx-border-style: solid;"+  "-fx-padding: 11px;" +  "-fx-border-color: lightgreen;" );
