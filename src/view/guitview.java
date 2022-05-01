@@ -41,11 +41,15 @@ import utilities.Space;
 
 
 public class guitview extends Application  {
-	private int buttonmapper =0;
+
 	MinesweeperModel model = new MinesweeperModel();
 	MinesweeperController controller = new MinesweeperController(model);
 	Space[][] grid;
+	private  ImageView headview;
+	
 	 private ArrayList<ToggleButton> map = new ArrayList<ToggleButton>();
+	 private static final Image gameOver = new Image("/deadface.png");
+	 private static final Image head = new Image("/sileyface.jpg");
 	 private static final Image IMAGE = new Image("/face.png");
 	 public ArrayList<ToggleButton> setlabel(int x, int y)
 	    {
@@ -124,7 +128,6 @@ public class guitview extends Application  {
 			                int hero =	map.indexOf(findme);
 			                
 			                 int ho= hero/16;
-			              // System.out.print("" + ho);
 			              if(ho == 16)
 			              {
 			            	  ho--;
@@ -160,14 +163,7 @@ public class guitview extends Application  {
 						       	map.get(hero).setFont(font);
 						           map.get(hero).setStyle("-fx-padding: 6px;");
 						           map.get(hero).setDisable(true);
-						           Alert alert = new Alert(AlertType.CONFIRMATION);
-									alert.setTitle("You hit a mine!");
-									 alert.setContentText("Keep on playing?");
-									  alert.showAndWait();
-									  if(alert.getResult() == ButtonType.CANCEL)
-										{
-									Platform.exit();
-										}
+						           headview.setImage(gameOver);
 						}
 						} 
 			           catch (IllegalArgumentException | IllegalStepException e) {					// XXX: added custom exception class here (you can remove this comment, just a note)
@@ -179,7 +175,7 @@ public class guitview extends Application  {
 						}
 			                    
 			                }else if(button==MouseButton.SECONDARY){
-			                	System.out.print("in2");
+			                	//System.out.print("in2");
 			                	ToggleButton findme =  (ToggleButton) event.getTarget();
 			                	 int hero =	map.indexOf(findme);
 			                	  Image img = new Image("/greatflag.png");
@@ -187,7 +183,7 @@ public class guitview extends Application  {
 			                			  {
 			                		  
 			                		   int ho= hero/16;
-			 			              // System.out.print("" + ho);
+			 			               System.out.println(topscreen.getRowIndex(map.get(hero)) + " " + topscreen.getColumnIndex(map.get(hero)));
 			 			              if(ho == 16)
 			 			              {
 			 			            	  ho--;
@@ -260,6 +256,27 @@ public class guitview extends Application  {
 				row++;
 				
 			}
+			headview = new ImageView(head);
+			headview.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+
+			     @Override
+			     public void handle(MouseEvent event) {
+			        
+			         if(headview.getImage() == head)
+			         {
+			        	 System.out.println("reset board with simley"); 
+			         }
+			         
+			         if(headview.getImage() == gameOver)
+			         {
+			        	 System.out.println("reset board after gamover");  
+			         }
+			         //event.consume();
+			     }
+			});
+			 headview.setFitHeight(100);
+			 headview.setFitWidth(100);
+			 headview.setPreserveRatio(true);
 			Label toptext = new Label("Mine Sweaper");
 			Font tittlefont = Font.font("Times New Roman", 30);
 			toptext.setFont(tittlefont);
@@ -267,7 +284,7 @@ public class guitview extends Application  {
 			VBox vbox = new VBox();
 			HBox title = new HBox();
 			HBox board = new HBox();
-			doom.getChildren().add(imageView);
+			doom.getChildren().add(headview);
 			title.getChildren().add(toptext);
 			board.getChildren().add(topscreen);
 			title.setAlignment(Pos.TOP_CENTER);
