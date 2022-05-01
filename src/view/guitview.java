@@ -1,3 +1,15 @@
+/**
+ * NAME: guitview.java
+ * COURSE: CSC 335 - Spring 2022
+ * DESCRIPTION: This file contains GUI component of the application for Minesweeper. It initializes the
+ * 				interface of the game and allows the user to interact with it. It presents the 
+ * 				mine field with a gridpane of ToggleButton
+ * USAGE: to be used with the whole project including MinesweeperController.java, MinesweeperLauncher.java
+ * 		  MinesweeperModel.java along with other utilities.
+ * 
+ * @author Eleanor Simon
+ * @author Giang Huong Pham
+ */
 package view;
 
 import java.io.File;
@@ -24,12 +36,15 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
@@ -40,23 +55,95 @@ import utilities.IllegalFlagPlacementException;
 import utilities.IllegalStepException;
 import utilities.Space;
 
-@SuppressWarnings("deprecation")
 public class guitview extends Application implements Observer {
-	private int buttonmapper;
-	private MinesweeperModel model;
-	private MinesweeperController controller;
-	private Space[][] grid;
-	private ArrayList<ToggleButton> map;
-	private static final Image IMAGE = new Image("/face.png");
-	private static final int COLUMNS = 20;
-	private static int COUNT = 3;
-	private static final int OFFSET_X = 100;
-	private static final int OFFSET_Y = 10; // 100 to move y
-	private static int WIDTH = 50;
-	private static final int HEIGHT = 90;	
+	/* The size of the game windows */
+	private static final int SCENE_WIDTH = 800;
+	private static final int SCENE_HEIGHT = 600;
 
-	public guitview() {
-		buttonmapper = 0;
+	/**
+	 * This is the model where all game's data is stored.
+	 */
+	private MinesweeperModel model;
+	/**
+	 * This is the controller of the game, through which the gui change the
+	 * underlying data in the model
+	 */
+	private MinesweeperController controller;
+	/**
+	 * XXX This contains the underlying grid of Space object that the model has
+	 */
+	private Space[][] grid;
+	/**
+	 * This field contains the grid of ToggleButton representing the minfield's
+	 * interactable "boxes".
+	 */
+	private ToggleButton[][] gridpaneMap;
+	/**
+	 * This field is the GridPane representing the mine field.
+	 */
+	private GridPane gridpane;
+
+	/**
+	 * This field contains the dimension of the mine field.
+	 */
+	private int FIELD_LENGTH;
+	private int FIELD_WIDTH;
+	private static final int SPACE_SIZE = 50;
+
+//	 model = new MinesweeperModel();
+//	 controller = new MinesweeperController(model);
+//	Space[][] grid;
+//	private ArrayList<ToggleButton> gridpaneMap = new ArrayList<ToggleButton>();
+//	private static final Image IMAGE = new Image("/face.png");
+
+	public static void main(String[] args) {
+		launch(args);
+	}
+
+	@Override
+	public void start(Stage primaryStage) {
+		// Displaying the title "Mine Sweeper"
+		Label toptext = new Label("Mine Sweeper");
+		Font tittlefont = Font.font("Times New Roman", 30);
+		toptext.setFont(tittlefont);
+		HBox title = new HBox();
+		title.getChildren().add(toptext);
+		title.setAlignment(Pos.TOP_CENTER);
+
+		// load the saved game if there is any, and
+		// set the dimension of the game
+		this.initGame();
+
+		// HBox that contains the GridPane
+		HBox board = new HBox();
+		gridpane = new GridPane();
+		gridpaneMap = setlabel(FIELD_LENGTH, FIELD_WIDTH, gridpane);
+		board.getChildren().add(gridpane);
+		board.setAlignment(Pos.CENTER);
+
+		// adding 2 HBox into the VBox
+		VBox vbox = new VBox();
+		vbox.getChildren().add(title);
+		vbox.getChildren().add(board);
+
+		Scene scene = new Scene(vbox, SCENE_WIDTH, SCENE_HEIGHT);
+
+//		scene.setOnKeyReleased(keyEvent -> {
+//			handleKey(keyEvent);
+//		});
+
+		primaryStage.setScene(scene);
+		primaryStage.show();
+	}
+
+	// --------------------------------------------------[ PRIVATE METHODS]-------------------------------------------------- //
+
+	/**
+	 * This method initialize the game when the game is launched: it checks for
+	 * saved files of the previous uncompleted game
+	 */
+	private void initGame() {
+		// Trying to load the saved_game when the application is launched
 		File savedGame = new File("saved_game.dat");
 		if (savedGame.exists()) {
 			try {
@@ -73,210 +160,154 @@ public class guitview extends Application implements Observer {
 		}
 		model.addObserver(this);
 		controller = new MinesweeperController(model);
-		map = new ArrayList<ToggleButton>();
+		// get dimension of the mine field and create
+		// a 2D array of ToggleButton with the same dimension
+		int[] dimension = model.getDimensions();
+		this.FIELD_LENGTH = dimension[0];
+		this.FIELD_WIDTH = dimension[1];
 	}
-	
-	public static void main(String[] args) {
-		launch(args);
-	}
-	@Override
-	public void start(Stage primaryStage) {
-		primaryStage.setTitle("The Horse in Motion");
-		ImageView imageView = new ImageView(IMAGE);
-		imageView.setViewport(new Rectangle2D(OFFSET_X, OFFSET_Y, WIDTH, HEIGHT));
-		final Animation animation = new SpriteAnimation(imageView, Duration.millis(1000), COUNT, COLUMNS, OFFSET_X,
-									OFFSET_Y, WIDTH, HEIGHT);
-		animation.setCycleCount(Animation.INDEFINITE);
-		animation.play();
-		map = setlabel(16, 16);
-		// bottem = setlabel();
-		GridPane topscreen = new GridPane();
-		//
 
-		// ArrayList<Label> numbs = new ArrayList<>();
-		// ArrayList<Label> running = new ArrayList<>();
-
-		int row = 0;
-		int colab = 0;
-		int h = map.size();
-		for (int i = 1; i < h; i++) {
-			if (row > 15) {
-				row = 0;
-				colab++;
+	/**
+	 * This method initialize toggle buttons in the grid pane and add them to an
+	 * array list to keep track
+	 * 
+	 * @param x    integer representing the width of the mine field
+	 * @param y    integer representing the length of the mine field
+	 * @param pane GirdPane representing the mine field.
+	 * @return a 2D array of ToggleButtons displayed on the grid pane
+	 */
+	private ToggleButton[][] setlabel(int x, int y, GridPane pane) {
+		ToggleButton[][] ret = new ToggleButton[x][y];
+		for (int i = 0; i < x; i++) {
+			for (int j = 0; j < y; j++) {
+				ToggleButton button = new ToggleButton();
+				ret[i][j] = button;
+				setEventListener(button, pane);
+				GridPane.setConstraints(button, j, i);
+				pane.getChildren().add(button);
 			}
-			// topscreen.add(numbs.get(i), row, colab);
+		}
+		return ret;
+	}
 
-			map.get(i).setOnMouseClicked(new EventHandler<MouseEvent>() {
-				@Override
-				public void handle(MouseEvent event) {
-					MouseButton button = event.getButton();
-					grid = controller.getMinefield();
-					if (button == MouseButton.PRIMARY) {
-						ToggleButton findme = (ToggleButton) event.getTarget();
-
-						int hero = map.indexOf(findme);
-
-						int ho = hero / 16;
-						// System.out.print("" + ho);
-						if (ho == 16) {
-							ho--;
-						}
-						int y = hero % 16;
-
-						// y = 15;
-
-						// controller.takeStep(ho, y);
-						System.out.print("y" + y + "x" + ho);
-
-						try {
-							controller.takeStep(ho, y);
-							Space m = grid[ho][y];
-							int minetext = m.adjacentMines();
-							m.isRevealed();
-
-							if (m.hasMine() == false) {
-								map.get(hero).setText("" + minetext);
-								Font font = Font.font("Times New Roman", 15);
-								map.get(hero).setFont(font);
-								map.get(hero).setStyle("-fx-padding: 7px;");
-								map.get(hero).setDisable(true);
-							}
-							if (m.hasMine() == true) {
-								map.get(hero).setText("m");
-								Font font = Font.font("Times New Roman", 15);
-								map.get(hero).setFont(font);
-								map.get(hero).setStyle("-fx-padding: 6px;");
-								map.get(hero).setDisable(true);
-								Alert alert = new Alert(AlertType.CONFIRMATION);
-								alert.setTitle("You hit a mine!");
-								alert.setContentText("Keep on playing?");
-								alert.showAndWait();
-								if (alert.getResult() == ButtonType.CANCEL) {
-									Platform.exit();
-								}
-							}
-						} catch (IllegalArgumentException | IllegalStepException e) { // XXX: added custom exception
-																						// class here (you can remove
-																						// this comment, just a note)
-							// Space m = grid[ho][y];
-							map.get(hero).setDisable(true);
-
-							// System.out.println("Invalid step! Try again. You cannot step on flags or
-							// revealed spaces.");
-						}
-
-					} else if (button == MouseButton.SECONDARY) {
-						System.out.print("in2");
-						ToggleButton findme = (ToggleButton) event.getTarget();
-						int hero = map.indexOf(findme);
-						Image img = new Image("/greatflag.png");
-						if (null == map.get(hero).getGraphic()) {
-
-							int ho = hero / 16;
-							// System.out.print("" + ho);
-							if (ho == 16) {
-								ho--;
-							}
-							int y = hero % 16;
-							Space m = grid[ho][y];
-
-							m.placeFlag();
-							if (true == controller.isGameOver()) // line needs work
-							{
-								Alert alert = new Alert(AlertType.CONFIRMATION);
-								alert.setTitle("You Won!");
-								alert.setContentText("See Board?");
-								alert.showAndWait();
-								if (alert.getResult() == ButtonType.CANCEL) {
-									Platform.exit();
-								}
-							}
-
-							ImageView view = new ImageView(img);
-							view.setFitHeight(30);
-							view.setFitWidth(30);
-							view.setPreserveRatio(true);
-							map.get(hero).setGraphic(view);
-							// map.get(hero).setText("F");
-							map.get(hero).setStyle("-fx-padding: 0px;");
-							// map.get(hero).setGraphicTextGap(0);
-							// map.get(hero).setDisable(true);
-						} else if (null != map.get(hero).getGraphic()) {
-							int ho = hero / 16;
-							// System.out.print("" + ho);
-							if (ho == 16) {
-								ho--;
-							}
-							int y = hero % 16;
-							Space m = grid[ho][y];
-
-							m.removeFlag();
-
-							System.out.print("in second");
-							map.get(hero).setDisable(false);
-
-							map.get(hero).setGraphic(null);
-							Font font = Font.font("Times New Roman", 6);
-							map.get(hero).setFont(font);
-							map.get(hero).setText("");
-							map.get(hero).setStyle("-fx-border-style: solid;" + "-fx-padding: 10px;"
-									+ "-fx-border-color: lightgreen;");
-							map.get(hero).setEffect(new DropShadow(10, Color.rgb(0, 0, 0, 0.4)));
-							// map.get(i).setWrapText(true);
-						}
+	
+	/**
+	 * This method adds necessary event listener onto the ToggleButton
+	 * 
+	 * @param button ToggleButton where event was caught
+	 * @param pane   GridPane representing the mine field. 
+	 */
+	private void setEventListener(ToggleButton button, GridPane pane) {
+		button.setOnMouseClicked(mouseEvent -> {
+			MouseButton click = mouseEvent.getButton();
+			ToggleButton target = (ToggleButton) mouseEvent.getTarget();
+			
+			int y = GridPane.getRowIndex(target);
+			int x = GridPane.getColumnIndex(target);
+			
+			try {
+				// left click to reveal a space
+				if (click == MouseButton.PRIMARY) {
+					controller.takeStep(x, y);
+				} // right click to put/remove flag/question mark
+				// TODO if we implement question: if it's a flag, turn into question
+				// if it's a question, turn into open space (unrevealed) 
+				// TODO: implement the model also if we ddecide to do the question mark.
+				else if (click == MouseButton.SECONDARY) {
+					// remove flag if the Space is already flagged
+					if (grid[x][y].hasFlag()) {
+						controller.removeFlag(x, y);
+					}// place flag in a unrevealed space 
+					else {
+						controller.placeFlag(x, y);
 					}
-
 				}
-			});
-			// System.out.print(io);
-			Font font = Font.font("Times New Roman", 6);
-			map.get(i).setFont(font);
-			map.get(i).setStyle("-fx-border-style: solid;" + "-fx-padding: 11px;" + "-fx-border-color: lightgreen;");
-			map.get(i).setEffect(new DropShadow(10, Color.rgb(0, 0, 0, 0.4)));
-			// map.get(i).setWrapText(true);
-			// map.get(i).setTextFill(Color.web("#FBF7F5"));
-			// map.get(i).setTextAlignment(TextAlignment.JUSTIFY);
-			// running.get(io).setMaxWidth(-0.01);
-			topscreen.add(map.get(i), colab, row);
-			row++;
-		}
-		Label toptext = new Label("Mine Sweaper");
-		Font tittlefont = Font.font("Times New Roman", 30);
-		toptext.setFont(tittlefont);
-		HBox doom = new HBox();
-		VBox vbox = new VBox();
-		HBox title = new HBox();
-		HBox board = new HBox();
-		doom.getChildren().add(imageView);
-		title.getChildren().add(toptext);
-		board.getChildren().add(topscreen);
-		title.setAlignment(Pos.TOP_CENTER);
-		doom.setAlignment(Pos.TOP_CENTER);
-		board.setAlignment(Pos.CENTER);
-		vbox.getChildren().add(title);
-		vbox.getChildren().add(doom);
-		vbox.getChildren().add(board);
-
-		primaryStage.setScene(new Scene(vbox));
-		primaryStage.show();
+			} catch (IllegalStepException e) {
+				System.out.println(e.getMessage());
+				return;
+			} catch (IllegalFlagPlacementException e) {
+				System.out.println(e.getMessage());
+				return;
+			}
+		});
 	}
 
-	private ArrayList<ToggleButton> setlabel(int x, int y) {
-		int button = x * y;
-		button++;
-		ArrayList<ToggleButton> number = new ArrayList<>();
-		for (int u = 0; u < button; u++) {
-			String s = String.valueOf(u);
-			// System.out.print(s);
-			ToggleButton bio = new ToggleButton();
-			number.add(bio);
+	/**
+	 * This method updates the gridpane of ToggleButton 
+	 * @param revealMine boolean to tell whether to show the mine on the map or not
+	 * @param spaceGrid  Space[][] representing the underlying mine map. 
+	 */
+	private void updateGrid(boolean revealMine, Space[][] spaceGrid) {
+		// TODO: update with "question mark"
+		for (int i = 0; i< this.FIELD_LENGTH; i++) {
+			for (int j = 0; j  < this.FIELD_WIDTH; j++) {
+				Space space = spaceGrid[i][j];
+				ToggleButton button = gridpaneMap[i][j];
+				// if the space is flagged
+				if (space.isRevealed() && space.hasFlag()) {
+					updateImage(button, "flag");
+				} // if the space is not flagged and does not have mine
+				else if (space.isRevealed() && !space.hasMine()) {
+					int adjMine = space.adjacentMines();
+					button.getStyleClass().add("grey-button");
+					if (adjMine == 1) {
+						button.setText("1");
+						button.setTextFill(Paint.valueOf("blue"));
+					} else if (adjMine == 2) {
+						button.setText("2");
+						button.setTextFill(Paint.valueOf("green"));
+					} else if (adjMine == 2) {
+						button.setText("3");
+						button.setTextFill(Paint.valueOf("red"));
+					} else if (adjMine == 2) {
+						button.setText("4");
+						button.setTextFill(Paint.valueOf("purple"));
+					} else if (adjMine == 2) {
+						button.setText("5");
+						button.setTextFill(Paint.valueOf("black"));
+					} else if (adjMine == 2) {
+						button.setText("6");
+						button.setTextFill(Paint.valueOf("gray"));
+					} else if (adjMine == 2) {
+						button.setText("7");
+						button.setTextFill(Paint.valueOf("maroon"));
+					} else if (adjMine == 2) {
+						button.setText("8");
+						button.setTextFill(Paint.valueOf("turquoise"));
+					}
+				}
+			}
 		}
-		return number;
 	}
 
+	/**
+	 * This method updates the given ToggleButton according to 
+	 * the passed in string: "flag" or "mine" or "question"
+	 * @param button ToggleButton to change the image of 
+	 * @param string name of image to put onto the button display
+	 */
+	private void updateImage(ToggleButton button, String string) {
+		// TODO
+		
+	}
+
+	/**
+	 * This method overrides the update method in the observer. 
+	 * @param o Observable object, in this case, the game model
+	 * @param saveGame (expected to be boolean) tells whether or not to save the game 
+	 * 		  the game should be saved when game is not Over
+	 */
 	@Override
-	public void update(Observable o, Object arg) {
-		this.model = (MinesweeperModel) o;
-
+	public void update(Observable o, Object saveGame) {
+		MinesweeperModel model = (MinesweeperModel) o;
+		boolean toSave = (boolean) saveGame;
+		grid = model.getMinefield();
+		updateGrid(model.isGameOver(), model.getMinefield());
+		// TODO: implement function in model to be called when the user exit the game:
+		// check if isGameover() -> if not, set arg to a boolean to decide to serialize 
+		// the model or not 
+		// "saved_game.dat"
+		
 	}
+
 }

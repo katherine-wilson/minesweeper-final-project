@@ -1,5 +1,7 @@
 package utilities;
 
+import java.io.Serializable;
+
 /**
  * This class stores gameplay data to fit the needs of the Minesweeper game's mine field.
  * Each <code>Space</code> object represents a space in the mine field and its relevant data.
@@ -9,7 +11,7 @@ package utilities;
  * 
  * @author Katherine Wilson
  */
-public class Space {
+public class Space implements Serializable{
 	// ------------------------------------------------------[  FIELDS  ]------------------------------------------------------	
 	/**
 	 * <code>true</code> if this <code>Space</code> contains a mine.

@@ -39,11 +39,11 @@ public class MinesweeperModel extends Observable {
 	/**
 	 * Width of mine field.
 	 */
-	private static int FIELD_WIDTH = 16;		// XXX: changed with difficulty level (if implemented)
+	private static int FIELD_WIDTH;		// XXX: changed with difficulty level (if implemented)
 	/**
 	 * Length of the mine field.
 	 */
-	private static int FIELD_LENGTH = 16;	// XXX: changed with difficulty level
+	private static int FIELD_LENGTH;	// XXX: changed with difficulty level
 	/**
 	 * Number of mines in the mine field.
 	 */
@@ -131,6 +131,8 @@ public class MinesweeperModel extends Observable {
 	 * minefield and place mines within it.
 	 */
 	private void defaultSetting() {
+		this.FIELD_WIDTH = 16;
+		this.FIELD_LENGTH = 16;
 		safeSpacesRevealed = 0;
 		stepsTaken = 0;
 		flagsPlaced = 0;
@@ -156,7 +158,7 @@ public class MinesweeperModel extends Observable {
 	 * @return <code>true</code>  if the step was safe.
 	 * 	   <br><code>false</code> if the player stepped on a mine.
 	 */
-	public boolean takeStep(Point location) {
+	public boolean takeStep(Point location) { 
 		if (!gameOver) {		// only updates game state if the game is still in progress
 			boolean safeStep = !minefield[location.y][location.x].hasMine();
 			if (!safeStep) {										// if player stepped on a mine...
@@ -169,17 +171,17 @@ public class MinesweeperModel extends Observable {
 					revealContiguousZeroes(location, new HashSet<Point>());
 				}
 			} else {												// if the player's step was safe...
-				if (stepsTaken == 0) {							// initializes adjacent mine counts for each space in the minefield
-					markSpacesAdjacentToMines();				// (necessary to do it here in case of first-step-mine incident)
+				if (stepsTaken == 0) { // initializes adjacent mine counts for each space in the minefield
+					markSpacesAdjacentToMines(); // (necessary to do it here in case of first-step-mine incident)
 				}
 				revealContiguousZeroes(location, new HashSet<Point>());
-				if (safeSpacesRevealed == (FIELD_WIDTH * FIELD_LENGTH - NUMBER_OF_MINES)) {		
-					gameOver = true;					// ends game if this step reveals the remaining safe spaces on the board
+				if (safeSpacesRevealed == (FIELD_WIDTH * FIELD_LENGTH - NUMBER_OF_MINES)) {
+					gameOver = true; // ends game if this step reveals the remaining safe spaces on the board
 				}	
 			}
 			stepsTaken++;
 			this.setChanged();
-			this.notifyObservers();
+			this.notifyObservers(false);
 			return safeStep;
 		}
 		return true;		// ignores input
@@ -205,7 +207,7 @@ public class MinesweeperModel extends Observable {
 			flagsPlaced++;
 		}
 		setChanged();
-		notifyObservers();
+		notifyObservers(false);
 	}
 
 	/**
@@ -288,6 +290,15 @@ public class MinesweeperModel extends Observable {
 		return safeSpacesRevealed == (FIELD_WIDTH*FIELD_LENGTH - NUMBER_OF_MINES);
 	}
 	
+	/**
+	 * This method is meant to be called when the user try to close the window. 
+	 */
+	public void gameExit() {
+		if (!this.isGameOver()) {
+			setChanged();
+			this.notifyObservers(true);
+		}
+	}
 	
 	// --------------------------------------------------[  PRIVATE METHODS  ]--------------------------------------------------
 	/**

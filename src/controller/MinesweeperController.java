@@ -105,6 +105,17 @@ public class MinesweeperController {
 	}
 
 	/**
+	 * Remove flag at the given indexx 
+	 * @param x row index of the space to remove flag
+	 * @param y column index of the space to remove flag
+	 */
+	public void removeFlag(int x, int y) {
+		if (model.getMinefield()[x][y].hasFlag()) {
+			model.getMinefield()[x][y].removeFlag();
+		}
+	}
+	
+	/**
 	 * Returns the grid of <code>Space</code> objects used to
 	 * represent the game's minefield. The first row of this 
 	 * array represents the bottom row of the grid.
