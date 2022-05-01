@@ -86,7 +86,7 @@ public class MinesweeperController {
 	 * 
 	 * @param x The x-coordinate of the player's new flag in the minefield.
 	 * 
-	 * @param y The y-coordinate of the player's new flag in the minefield/
+	 * @param y The y-coordinate of the player's new flag in the minefield.
 	 * 
 	 * @throws IllegalFlagPlacementException when an invalid location is given
 	 * for flag placement. This occurs when: <ul>
@@ -104,14 +104,15 @@ public class MinesweeperController {
 		}
 	}
 
-	/**
-	 * Returns the grid of <code>Space</code> objects used to
-	 * represent the game's minefield. The first row of this 
+	/*
+	 **
+	 * Returns the grid of <code>Space</code> objects used to		// XXX: may become deprecated
+	 * represent the game's minefield. The first row of this 		// This could be necessary for the view to show the initial state of the minefield though
 	 * array represents the bottom row of the grid.
 	 * 
 	 * @return a 2-dimensional array of <code>Space</code> objects
 	 * 			that represent the minefield.
-	 */
+	 
 	public Space[][] getMinefield() {
 		return model.getMinefield();
 	}
@@ -122,4 +123,5 @@ public class MinesweeperController {
 	public boolean playerWon() {		// XXX: may become deprecated
 		return model.getPlayerWon();
 	}
+	*/
 }
