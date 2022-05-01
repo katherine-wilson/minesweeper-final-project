@@ -86,7 +86,7 @@ public class MinesweeperController {
 	 * 
 	 * @param x The x-coordinate of the player's new flag in the minefield.
 	 * 
-	 * @param y The y-coordinate of the player's new flag in the minefield/
+	 * @param y The y-coordinate of the player's new flag in the minefield.
 	 * 
 	 * @throws IllegalFlagPlacementException when an invalid location is given
 	 * for flag placement. This occurs when: <ul>
@@ -104,7 +104,8 @@ public class MinesweeperController {
 		}
 	}
 
-	/**
+	
+	/** 
 	 * Remove flag at the given indexx 
 	 * @param x row index of the space to remove flag
 	 * @param y column index of the space to remove flag
@@ -130,7 +131,17 @@ public class MinesweeperController {
 	public boolean isGameOver() {		// XXX: may become deprecated (could be called directly through the model using the view's update() method)
 		return model.isGameOver();
 	}
+	/*
 	public boolean playerWon() {		// XXX: may become deprecated
 		return model.getPlayerWon();
+	}
+	*/
+	
+	/* DUMMY TIME FUNCTIONS */
+	public int getTime() {
+		return 0;
+	}
+	public void setTime(int time) {
+		return;
 	}
 }
