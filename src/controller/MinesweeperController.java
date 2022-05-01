@@ -122,4 +122,12 @@ public class MinesweeperController {
 	public boolean playerWon() {		// XXX: may become deprecated
 		return model.getPlayerWon();
 	}
+	
+	/* DUMMY TIME FUNCTIONS */
+	public int getTime() {
+		return 0;
+	}
+	public void setTime(int time) {
+		return;
+	}
 }

@@ -5,6 +5,8 @@ package view;
 import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import controller.MinesweeperController;
 import javafx.animation.Animation;
@@ -83,19 +85,22 @@ public class guitview extends Application  {
 	        ImageView imageView = new ImageView(IMAGE);
 	        imageView.setViewport(new Rectangle2D(OFFSET_X, OFFSET_Y, WIDTH, HEIGHT));
 
-	        final Animation animation = new SpriteAnimation(
-	                imageView,
-	                Duration.millis(1000),
-	                COUNT, COLUMNS,
-	                OFFSET_X, OFFSET_Y,
-	                WIDTH, HEIGHT
-	        );
-	        animation.setCycleCount(Animation.INDEFINITE);
-	        animation.play();
+
 	        map = setlabel(16,16);
 			//bottem = setlabel();
 			GridPane topscreen = new GridPane();
 			//
+			
+			// Timer Code starts here
+			Timer timer = new Timer();
+			timer.schedule(new TimerTask() {
+
+				@Override
+				public void run() {
+					controller.setTime(controller.getTime()+1);
+				}
+			}, 1000);
+			// Timer Code ends here
 			
 			//ArrayList<Label> numbs = new ArrayList<>();
 		//	ArrayList<Label> running = new ArrayList<>();
