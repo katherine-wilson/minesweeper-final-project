@@ -301,7 +301,11 @@ public class MinesweeperModel extends Observable {
 	 * @param time
 	 */
 	public void setTime(int time) {
-		this.timeInSeconds = time;
+		if(!this.gameOver) {
+			this.timeInSeconds = time;
+		}
+		this.setChanged();
+		this.notifyObservers(!this.isGameOver());
 	}
 
 	/**

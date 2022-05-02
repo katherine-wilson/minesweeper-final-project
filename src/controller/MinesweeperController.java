@@ -142,6 +142,7 @@ public class MinesweeperController {
 		return model.getTime();
 	}
 	public void setTime(int time) {
+		System.out.println(time);
 		model.setTime(time);
 	}
 }

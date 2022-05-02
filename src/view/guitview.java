@@ -335,6 +335,7 @@ public class guitview extends Application implements Observer {
 		// timeLabel != null checked only in case timer starts a few milliseconds before we
 		// init the timeLabel in start()
 		if(timeLabel != null) {
+			System.out.println("updated time");
 			int minutes = model.getTime() / 60;
 			int seconds = model.getTime() % 60;
 			timeLabel.setText(minutes+":"+seconds);
