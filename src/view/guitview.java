@@ -43,11 +43,15 @@ import utilities.IllegalStepException;
 import utilities.Space;
 
 
-public class guitview extends Application {
-
+public class guitview extends Application implements Observer {
+private boolean gameInProgress = false;
+private int timebeforelost;
+private int timeOflost;
+private Space[][] lostgrid;
+private int boardsize;
 	MinesweeperModel model = new MinesweeperModel();
 	MinesweeperController controller = new MinesweeperController(model);
-	Space[][] grid;
+	Space[][] grid = controller.getMinefield();
 	private  ImageView headview;
 	 private GridPane topscreen = new GridPane();
 	 private ArrayList<ToggleButton> map = new ArrayList<ToggleButton>();
@@ -55,6 +59,10 @@ public class guitview extends Application {
 	 private static final Image gameOver = new Image("/deadface.png");
 	 private static final Image head = new Image("/sileyface.jpg");
 	 private static final Image IMAGE = new Image("/face.png");
+	 private int boardsize()
+	 {
+		return boardsize; 
+	 }
 	 public ArrayList<ToggleButton> setlabel(int x, int y)
 	    {
 		 int button = x*y;
@@ -69,8 +77,7 @@ public class guitview extends Application {
 	            number.add(bio);
 	            
 	     }
-	    
-
+	     boardsize= x;
 	        return number;
 	    }
 	    private static final int COLUMNS  =   20;
@@ -83,6 +90,97 @@ public class guitview extends Application {
 	    public static void main(String[] args) {
 	        launch(args);
 	    }
+	    public void checkspaceAndSetMine(int minetext, int hero)
+	    {
+	    	
+	    	if (minetext == 0) {
+	        	   map.get(hero).setSelected(true);
+	        	   map.get(hero).setDisable(true);
+	        	   map.get(hero).setText("0");
+	        	   //clearrow(hero);
+				} else if (minetext == 1) {
+				 map.get(hero).setText("1");
+					map.get(hero).setTextFill(Paint.valueOf("blue"));
+					map.get(hero).setDisable(true);
+					
+				} else if (minetext == 2) {
+					map.get(hero).setText("2");
+					map.get(hero).setTextFill(Paint.valueOf("green"));
+					map.get(hero).setDisable(true);
+				} else if (minetext == 3) {
+					map.get(hero).setText("3");
+					map.get(hero).setTextFill(Paint.valueOf("red"));
+					map.get(hero).setDisable(true);
+				} else if (minetext == 4) {
+					map.get(hero).setText("4");
+					map.get(hero).setTextFill(Paint.valueOf("purple"));
+					map.get(hero).setDisable(true);
+				} else if (minetext == 5) {
+					map.get(hero).setText("5");
+					map.get(hero).setTextFill(Paint.valueOf("black"));
+					map.get(hero).setDisable(true);
+				} else if (minetext == 6) {
+					map.get(hero).setText("6");
+					map.get(hero).setTextFill(Paint.valueOf("gray"));
+					map.get(hero).setDisable(true);
+				} else if (minetext == 7) {
+					map.get(hero).setText("7");
+					map.get(hero).setTextFill(Paint.valueOf("maroon"));
+					map.get(hero).setDisable(true);
+				} else if (minetext == 8) {
+					map.get(hero).setText("8");
+					map.get(hero).setTextFill(Paint.valueOf("turquoise"));
+					map.get(hero).setDisable(true);
+				}
+	    }
+	    public void releacallallspace()
+	    {
+	    int	hero =1;
+	    int minetext =0;
+	    	int x = boardsize;
+	    	int ysize = boardsize;
+	    	int reset =0;
+	    	for(int w = 0; w < x; w++)
+	    	{
+	    	for(int j= 0; j < ysize; j++)
+	    	{
+	    		System.out.print(j + ""+w);
+	    		Space m = grid[j][w];
+	    		minetext = m.adjacentMines();
+	    		if(m.hasMine() == false)
+				{
+					 //map.get(hero).setText("" + minetext);
+			       	Font font = Font.font("Times New Roman", 15);
+			       	map.get(hero).setFont(font);
+			           map.get(hero).setStyle("-fx-padding: 7px;");
+			           map.get(hero).setDisable(true);
+			          
+			           checkspaceAndSetMine(minetext,hero);
+			           if(controller.playerWon() == true)
+	            		 {
+	            	headview.setImage(head);
+	            		 }
+				}
+				if(m.hasMine() == true)
+				{
+					 if( null!= map.get(hero).getGraphic())
+					 {
+						 map.get(hero).setGraphic(null);
+						 map.get(hero).setText("f"); 
+					 }
+					 map.get(hero).setText("m");
+				       	Font font = Font.font("Times New Roman", 15);
+				       	map.get(hero).setFont(font);
+				           map.get(hero).setStyle("-fx-padding: 6px;");
+				           map.get(hero).setDisable(true);
+				           headview.setImage(gameOver);
+				}
+				hero++;
+				} 
+	    	
+	    	}
+	    }
+	    
 	    public  void clearrow(int hero)
 	    {
 	    	int thefallen = hero;
@@ -94,27 +192,27 @@ public class guitview extends Application {
        	  int count= 0;
        	boolean skip = false;
        		  
-       	  while( grid[x][y].adjacentMines() == 0 && grid[ex][ey].hasMine() == false)
+       	  while( grid[x][y].adjacentMines() == 0 && grid[x][y].hasMine() == false &&  grid[x][y].isRevealed())
        		  {
-       		  if(x < 14)
+       		  if(x < boardsize-2)
        		  {
        			  x=0;
        			  y++;
        			thehurt++;
        			skip=true;
        		  }
-       		if(y < 0)
+       		if(y < boardsize-1)
      		  {
      			  break;
      		  }
        		 // System.out.print("inside");
-       		if(thefallen < 256 && skip == false)
+       		if(thefallen < 240)
        		{
-       		thehurt =thehurt+16;
+       		thehurt =thehurt+boardsize+1;
        		}
        		x++;
-       		System.out.println("x"+x);
-       		System.out.println("y"+y);
+       		//System.out.println("x"+x);
+       		//System.out.println("y"+y);
        		map.get(thehurt).setText("0");
        		Font font = Font.font("Times New Roman", 15);
            	map.get(thehurt).setFont(font);
@@ -123,21 +221,21 @@ public class guitview extends Application {
        		skip= false;
        		  
        		  }
-       	  while(grid[ex][ey].adjacentMines() == 0 && grid[ex][ey].hasMine() == false)
+       	  while(grid[ex][ey].adjacentMines() == 0 && grid[ex][ey].hasMine() == false &&  grid[ex][ey].isRevealed())
        	  {
-       		  if(ex < 0)
+       		  if(ex < 2)
        		  {
        			  x=16;
        			  ey--;
-       			thefallen++;
+       			thefallen--;
        			skip=true;
-       		  }if(ey < 0)
+       		  }if(ey < 1)
        		  {
        			  break;
        		  }
-       		if(thefallen > 16 && skip == false)
+       		if(thefallen > boardsize && skip == false)
        		{
-       			thefallen=thefallen-16;	
+       			thefallen=thefallen-boardsize+1;	
        		}
        		
        		ex--;
@@ -152,10 +250,13 @@ public class guitview extends Application {
 	    }
 	    @Override
 	    public void start(Stage primaryStage) {
-	        primaryStage.setTitle("The Horse in Motion");
+	    	/**
+	    	 * buids the board and add the mine interation
+	    	 */
+	        primaryStage.setTitle("minesweaper");
 	        controller = new MinesweeperController(model);
-	        ImageView imageView = new ImageView(defult);
-	        imageView.setViewport(new Rectangle2D(OFFSET_X, OFFSET_Y, WIDTH, HEIGHT));
+	     //   ImageView imageView = new ImageView(defult);
+	   //     imageView.setViewport(new Rectangle2D(OFFSET_X, OFFSET_Y, WIDTH, HEIGHT));
 
 
 	        map = setlabel(16,16);
@@ -179,7 +280,7 @@ public class guitview extends Application {
 			int h =map.size();
 			for(int i = 1; i < h; i++)
 			{
-				if(row > 15)
+				if(row > boardsize-1)
 				{
 				row= 0;
 				
@@ -191,81 +292,26 @@ public class guitview extends Application {
 			            @Override
 			            public void handle(MouseEvent event) {
 			                MouseButton button = event.getButton();
-			                grid = controller.getMinefield();
+			               // grid = controller.getMinefield(); testing 
 			                if(button==MouseButton.PRIMARY){
 			                	ToggleButton findme =  (ToggleButton) event.getTarget();
-			                	
+			               
 			                int hero =	map.indexOf(findme);
 			                
-			              
-			               
-			             //  controller.takeStep(ho, y);
-			          			              
-
+			        
 			           try {
-			        	   
+			        	   	hero =	map.indexOf(findme);
+			        		Space m = grid[topscreen.getRowIndex(map.get(hero))][topscreen.getColumnIndex(map.get(hero))];
 							controller.takeStep(topscreen.getRowIndex(map.get(hero)), topscreen.getColumnIndex(map.get(hero)));
-							Space m = grid[topscreen.getRowIndex(map.get(hero))][topscreen.getColumnIndex(map.get(hero))];
+						
 						int minetext =  m.adjacentMines();
 						m.isRevealed();
-						
-						
-						if(m.hasMine() == false)
+						System.out.print(m.hasMine());
+			
+					
+						 if(m.hasMine() == true || controller.isGameOver())
 						{
-							 //map.get(hero).setText("" + minetext);
-					       	Font font = Font.font("Times New Roman", 15);
-					       	map.get(hero).setFont(font);
-					           map.get(hero).setStyle("-fx-padding: 7px;");
-					           map.get(hero).setDisable(true);
-					           /*if(minetext == 0)
-					           {
-					        	   //clearrow(hero);
-					           }*/
-					           if (minetext == 0) {
-					        	   map.get(hero).setSelected(true);
-					        	   map.get(hero).setDisable(true);
-					        	   map.get(hero).setText("0");
-								} else if (minetext == 1) {
-								 map.get(hero).setText("1");
-									map.get(hero).setTextFill(Paint.valueOf("blue"));
-									map.get(hero).setDisable(true);
-									
-								} else if (minetext == 2) {
-									map.get(hero).setText("2");
-									map.get(hero).setTextFill(Paint.valueOf("green"));
-									map.get(hero).setDisable(true);
-								} else if (minetext == 3) {
-									map.get(hero).setText("3");
-									map.get(hero).setTextFill(Paint.valueOf("red"));
-									map.get(hero).setDisable(true);
-								} else if (minetext == 4) {
-									map.get(hero).setText("4");
-									map.get(hero).setTextFill(Paint.valueOf("purple"));
-									map.get(hero).setDisable(true);
-								} else if (minetext == 5) {
-									map.get(hero).setText("5");
-									map.get(hero).setTextFill(Paint.valueOf("black"));
-									map.get(hero).setDisable(true);
-								} else if (minetext == 6) {
-									map.get(hero).setText("6");
-									map.get(hero).setTextFill(Paint.valueOf("gray"));
-									map.get(hero).setDisable(true);
-								} else if (minetext == 7) {
-									map.get(hero).setText("7");
-									map.get(hero).setTextFill(Paint.valueOf("maroon"));
-									map.get(hero).setDisable(true);
-								} else if (minetext == 8) {
-									map.get(hero).setText("8");
-									map.get(hero).setTextFill(Paint.valueOf("turquoise"));
-									map.get(hero).setDisable(true);
-								}
-					           if(controller.playerWon() == true)
-			            		 {
-			            	headview.setImage(head);
-			            		 }
-						}
-						if(m.hasMine() == true)
-						{
+							
 							 map.get(hero).setText("m");
 						       	Font font = Font.font("Times New Roman", 15);
 						       	map.get(hero).setFont(font);
@@ -273,21 +319,51 @@ public class guitview extends Application {
 						           map.get(hero).setDisable(true);
 						           headview.setImage(gameOver);
 						}
+						 else if(m.hasMine() == false)
+							{
+				              
+								 //map.get(hero).setText("" + minetext);
+						       	Font font = Font.font("Times New Roman", 15);
+						       	map.get(hero).setFont(font);
+						           map.get(hero).setStyle("-fx-padding: 7px;");
+						           map.get(hero).setDisable(true);
+						          
+						           checkspaceAndSetMine(minetext,hero);
+						           if(controller.playerWon() == true)
+				            		 {
+				            	headview.setImage(head);
+				            		 }
+							}
 						} 
 			           catch (IllegalArgumentException | IllegalStepException e) {					// XXX: added custom exception class here (you can remove this comment, just a note)
-			        	   //Space m = grid[ho][y];
-			        		map.get(hero).setText("0");
+			        	   Space f = grid[topscreen.getRowIndex(map.get(hero))][topscreen.getColumnIndex(map.get(hero))];
+			        	  // f.isRevealed();
+			        		if(f.hasMine() == true)
+			        		{
+			        			 map.get(hero).setText("m");
+							       	Font font = Font.font("Times New Roman", 15);
+							       	map.get(hero).setFont(font);
+							           map.get(hero).setStyle("-fx-padding: 6px;");
+							           map.get(hero).setDisable(true);
+							           headview.setImage(gameOver);
+			        		}
+			        	 else if(f.hasMine() == false)
+			        		{
+			        		   checkspaceAndSetMine(f.adjacentMines(),hero);
+			        		
 			        	 	Font font = Font.font("Times New Roman", 15);
 					       	map.get(hero).setFont(font);
 					           map.get(hero).setStyle("-fx-padding: 7px;");
 			        	   map.get(hero).setDisable(true);
-			        	   int thehurt = hero;
-			        	  // clearrow(hero);
-			        	 
+			        	   
+			        		}
 						}
 			                    
 			                }else if(button==MouseButton.SECONDARY){
 			                	//System.out.print("in2");
+			                	/** 
+			                	 * Alows user to flag button
+			                	 */
 			                	ToggleButton findme =  (ToggleButton) event.getTarget();
 			                	 int hero =	map.indexOf(findme);
 			                	  Image img = new Image("/greatflag.png");
@@ -308,14 +384,15 @@ public class guitview extends Application {
 			                      view.setFitWidth(30);
 			                      view.setPreserveRatio(true);
 			                     map.get(hero).setGraphic(view);
-			                    //  map.get(hero).setText("F");
+			                    
 			                      map.get(hero).setStyle("-fx-padding: 0px;");
-			                	 //map.get(hero).setGraphicTextGap(0);
-			                	 //map.get(hero).setDisable(true);
+			                	
 			                			  }
 			                	  else if(null != map.get(hero).getGraphic())
 			                	  {
-			                		 
+			                		 /**
+			                		  * resets button if has flag
+			                		  */
 			 			               Space m = grid[topscreen.getRowIndex(map.get(hero))][topscreen.getColumnIndex(map.get(hero))];
 			 			              
 			 			               m.removeFlag();
@@ -323,7 +400,7 @@ public class guitview extends Application {
 		 			            		 {
 		 			            	headview.setImage(head);
 		 			            		 }
-			                		 // System.out.print("in second");
+			                		
 			                		  	  map.get(hero).setDisable(false);
 			                		  	  
 			                		  map.get(hero).setGraphic(null);
@@ -348,12 +425,17 @@ public class guitview extends Application {
 				row++;
 				
 			}
-			headview = new ImageView(head);
+			headview = new ImageView(defult);
 			headview.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
-
+/**
+ * 
+ * add eventhanler the resets the game
+ */
 			     @Override
 			     public void handle(MouseEvent event) {
-			        
+			        /**
+			         * restarts game
+			         */
 			    	 if(headview.getImage() ==  defult)
 			    	 {
 			    		 start(primaryStage);
@@ -366,7 +448,8 @@ public class guitview extends Application {
 			         }
 			         if(headview.getImage() == gameOver)
 			         {
-			        	  start(primaryStage);
+			        	 releacallallspace();
+			        	  //start(primaryStage);
 			         }
 			         			     }
 			}
@@ -396,14 +479,25 @@ public class guitview extends Application {
 	        primaryStage.show();
 	    }
 	    
-	  /*  @Override
+	  @Override
 		public void update(Observable o, Object saveGame) {
 			MinesweeperModel model = (MinesweeperModel) o;
-			if (model.isGameOver()) {
-				System.out.println("GAME OVER");
-				//gameInProgress = false;
-				 model.getMinefield());
-			} else {
-				updateGrid(false, model.getMinefield());
-			}*/
+			if (!controller.isGameOver()) {
+				gameInProgress = true;
+			grid= model.getMinefield();
+			timebeforelost = controller.getTime(); // line may not be needed
+			lostgrid = grid;
+			
+			}
+			else
+			{
+				gameInProgress= false;	
+			}
+			if(gameInProgress == false ){
+				timeOflost = controller.getTime();
+				
+	
+			}
+			
+	  }
 }
