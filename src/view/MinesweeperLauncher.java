@@ -23,13 +23,13 @@ public class MinesweeperLauncher {
 				MinesweeperTextView textView = new MinesweeperTextView();
 				textView.start();
 			} else if (args[0].toLowerCase().equals("-gui")) {
-				Application.launch(guitview.class,args );
+				Application.launch(MinesweeperGUIView.class,args );
 			} else {
 				System.out.println("Invalid command. Please enter -text or -gui "
 								+ "or leave blank for gui mode.");
 			}
 		} else {
-			Application.launch(guitview.class,args );
+			Application.launch(MinesweeperGUIView.class,args );
 		}
 		
 	}
