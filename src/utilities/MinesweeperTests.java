@@ -57,7 +57,7 @@ public class MinesweeperTests {
 		MinesweeperModel model = new MinesweeperModel();
 		MinesweeperController controller = new MinesweeperController(model);
 		try {
-			controller.placeFlag(3, 3);
+			controller.toggleFlag(3, 3);
 		} catch (IllegalFlagPlacementException e) {
 			fail();
 		}
@@ -71,7 +71,7 @@ public class MinesweeperTests {
 		MinesweeperController controller = new MinesweeperController(model);
 		try {
 			assertEquals(0, model.getFlagsPlaced());
-			controller.placeFlag(3, 5);
+			controller.toggleFlag(3, 5);
 			assertEquals(true, model.getMinefield()[5][3].hasFlag());
 			assertEquals(1, model.getFlagsPlaced());
 		} catch (IllegalFlagPlacementException e) {
@@ -84,10 +84,10 @@ public class MinesweeperTests {
 		MinesweeperModel model = new MinesweeperModel();
 		MinesweeperController controller = new MinesweeperController(model);
 		try {
-			controller.placeFlag(6, 1);
+			controller.toggleFlag(6, 1);
 			assertEquals(true, model.getMinefield()[1][6].hasFlag());
 			assertEquals(1, model.getFlagsPlaced());
-			controller.placeFlag(6, 1);
+			controller.toggleFlag(6, 1);
 			assertEquals(false, model.getMinefield()[1][6].hasFlag());
 			assertEquals(0, model.getFlagsPlaced());
 		} catch (IllegalFlagPlacementException e) {
@@ -106,7 +106,7 @@ public class MinesweeperTests {
 			fail();
 		}
 		
-		assertThrows(IllegalFlagPlacementException.class, () -> controller.placeFlag(5, 5));
+		assertThrows(IllegalFlagPlacementException.class, () -> controller.toggleFlag(5, 5));
 	}
 	
 	@Test
@@ -120,7 +120,7 @@ public class MinesweeperTests {
 				row++;
 			}
 			try {
-				controller.placeFlag(col, row);
+				controller.toggleFlag(col, row);
 				assertEquals(true, model.getMinefield()[row][col].hasFlag());
 				assertEquals(i+1, model.getFlagsPlaced());
 			} catch (IllegalFlagPlacementException e) {
@@ -142,7 +142,7 @@ public class MinesweeperTests {
 				row++;
 			}
 			try {
-				controller.placeFlag(col, row);
+				controller.toggleFlag(col, row);
 				assertEquals(true, model.getMinefield()[row][col].hasFlag());
 				assertEquals(i+1, model.getFlagsPlaced());
 			} catch (IllegalFlagPlacementException e) {
@@ -151,7 +151,7 @@ public class MinesweeperTests {
 			col++;
 		}
 		assertEquals(model.getNumberofMines(), model.getFlagsPlaced());
-		assertThrows(IllegalFlagPlacementException.class, () -> controller.placeFlag(model.getDimensions()[0]-1, model.getDimensions()[1]-1));
+		assertThrows(IllegalFlagPlacementException.class, () -> controller.toggleFlag(model.getDimensions()[0]-1, model.getDimensions()[1]-1));
 	}
 	
 	@Test
@@ -165,7 +165,7 @@ public class MinesweeperTests {
 				row++;
 			}
 			try {
-				controller.placeFlag(col, row);
+				controller.toggleFlag(col, row);
 				assertEquals(true, model.getMinefield()[row][col].hasFlag());
 				assertEquals(i+1, model.getFlagsPlaced());
 			} catch (IllegalFlagPlacementException e) {
@@ -176,7 +176,7 @@ public class MinesweeperTests {
 		assertEquals(model.getNumberofMines(), model.getFlagsPlaced());
 		try {
 			assertEquals(true, model.getMinefield()[0][0].hasFlag());
-			controller.placeFlag(0, 0);
+			controller.toggleFlag(0, 0);
 			assertEquals(model.getNumberofMines()-1, model.getFlagsPlaced());
 		} catch (IllegalFlagPlacementException e) {
 			fail();

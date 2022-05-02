@@ -82,7 +82,7 @@ public class MinesweeperController {
 	 * Uses the x and y coordinates given based on the user's input to
 	 * add a flag to the model's minefield. The values are used to instantiate
 	 * a <code>Point</code> object, which is passed to the model to update
-	 * the game's state accordingly.
+	 * the game's state accordingly. This function will also remove flags.
 	 * 
 	 * @param x The x-coordinate of the player's new flag in the minefield.
 	 * 
@@ -94,25 +94,13 @@ public class MinesweeperController {
 	 * <li>The player attempts to place a flag when they're out of flags</li>
 	 * </ul>
 	 */
-	public void placeFlag(int x, int y) throws IllegalFlagPlacementException {
+	public void toggleFlag(int x, int y) throws IllegalFlagPlacementException {
 		if (model.getMinefield()[y][x].isRevealed()) {
 			throw new IllegalFlagPlacementException("Cannot place a flag on a revealed space.");
 		} else if (model.getFlagsPlaced() == model.getNumberofMines() && !model.getMinefield()[y][x].hasFlag()) {
 			throw new IllegalFlagPlacementException("Out of flags!");
 		} else {
 			model.toggleFlag(new Point(x, y));
-		}
-	}
-
-	
-	/** 
-	 * Remove flag at the given indexx 
-	 * @param x row index of the space to remove flag
-	 * @param y column index of the space to remove flag
-	 */
-	public void removeFlag(int x, int y) {
-		if (model.getMinefield()[x][y].hasFlag()) {
-			model.getMinefield()[x][y].removeFlag();
 		}
 	}
 	

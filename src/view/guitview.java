@@ -231,15 +231,10 @@ public class guitview extends Application implements Observer {
 				} // right click to put/remove flag/question mark
 				// TODO if we implement question: if it's a flag, turn into question
 				// if it's a question, turn into open space (unrevealed) 
-				// TODO: implement the model also if we ddecide to do the question mark.
+				// TODO: implement the model also if we decide to do the question mark.
 				else if (click == MouseButton.SECONDARY) {
-					// remove flag if the Space is already flagged
-					if (grid[x][y].hasFlag()) {
-						controller.removeFlag(x, y);
-					}// place flag in a unrevealed space 
-					else {
-						controller.placeFlag(x, y);
-					}
+					// place flag
+					controller.toggleFlag(x, y);
 				}
 			} catch (IllegalStepException e) {
 				System.out.println(e.getMessage());

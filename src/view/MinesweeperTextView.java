@@ -59,7 +59,7 @@ public class MinesweeperTextView implements Observer {
 					int x = Integer.parseInt(coords[0]);
 					int y = Integer.parseInt(coords[1]);
 					try {
-						controller.placeFlag(x, y);
+						controller.toggleFlag(x, y);
 					} catch (IllegalFlagPlacementException e) {
 						System.out.println(e);
 					}
