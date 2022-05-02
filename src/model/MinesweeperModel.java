@@ -1,6 +1,11 @@
 package model;
 
 import java.awt.Point;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.util.HashSet;
 import java.util.Observable;
 import java.util.Random;
@@ -26,6 +31,7 @@ import utilities.Space;
  * @see Observable
  * 
  * @author Katherine Wilson
+ * @author Giang Huong Pham
  */
 @SuppressWarnings("deprecation")
 public class MinesweeperModel extends Observable {
@@ -33,11 +39,11 @@ public class MinesweeperModel extends Observable {
 	/**
 	 * Width of mine field.
 	 */
-	private static int FIELD_WIDTH = 16;		// XXX: changed with difficulty level (if implemented)
+	private static int FIELD_WIDTH;		// XXX: changed with difficulty level (if implemented)
 	/**
 	 * Length of the mine field.
 	 */
-	private static int FIELD_LENGTH = 16;	// XXX: changed with difficulty level
+	private static int FIELD_LENGTH;	// XXX: changed with difficulty level
 	/**
 	 * Number of mines in the mine field.
 	 */
@@ -84,20 +90,60 @@ public class MinesweeperModel extends Observable {
 	 * loses by stepping on a mine.
 	 */
 	private boolean gameOver;
+	
+	/**
+	 * <code>time elapsed</code> in seconds since the start of the game. 
+	 */
+	private int timeInSeconds;
 
 	// --------------------------------------------------[  PUBLIC METHODS  ]--------------------------------------------------
 	/**
+	 * Creates a <code>MinesweeperModel</code> object by
+	 * loading data from the input file.
+	 * 
+	 * @param filename name of the file which saves data from the old game.
+	 * @throws IOException 
+	 * @throws FileNotFoundException 
+	 * @throws ClassNotFoundException 
+	 */
+	public MinesweeperModel(String filename) throws FileNotFoundException, IOException, ClassNotFoundException {
+		ObjectInputStream input = new ObjectInputStream(new FileInputStream(filename));
+		MinesweeperModel model = (MinesweeperModel) input.readObject();
+		if (model != null) {
+			this.safeSpacesRevealed = model.safeSpacesRevealed;
+			this.stepsTaken = model.stepsTaken;
+			this.flagsPlaced = model.flagsPlaced;
+			this.gameOver = model.gameOver;
+			this.timeInSeconds = model.timeInSeconds;
+		}else {
+			this.defaultSetting();
+		}
+	}
+	
+	/**
 	 * Creates a <code>MinesweeperModel</code> object and initializes it
-	 * to a default state. By default, the <code>MinesweeperModel</code>
+	 * to a default state by calling helper function to set all fields
+	 * to the beginning value.
+	 */
+	public MinesweeperModel() {
+		this.defaultSetting();
+	}
+	
+	/**
+	 * Initialize the MinesweeperModel to a default state. 
+	 * By default, the <code>MinesweeperModel</code>
 	 * has no revealed safe squares, no turns made, no flags placed, and
 	 * has not been won or lost yet. This method will also initialize the
 	 * minefield and place mines within it.
 	 */
-	public MinesweeperModel() {
+	private void defaultSetting() {
+		this.FIELD_WIDTH = 16;
+		this.FIELD_LENGTH = 16;
 		safeSpacesRevealed = 0;
 		stepsTaken = 0;
 		flagsPlaced = 0;
 		gameOver = false;
+		timeInSeconds = 0;
 		initField();
 		placeMines();
 	}
@@ -119,7 +165,7 @@ public class MinesweeperModel extends Observable {
 	 * @return <code>true</code>  if the step was safe.
 	 * 	   <br><code>false</code> if the player stepped on a mine.
 	 */
-	public boolean takeStep(Point location) {
+	public boolean takeStep(Point location) { 
 		if (!gameOver) {		// only updates game state if the game is still in progress
 			boolean safeStep = !minefield[location.y][location.x].hasMine();
 			if (!safeStep) {										// if player stepped on a mine...
@@ -133,17 +179,17 @@ public class MinesweeperModel extends Observable {
 					safeStep = true;
 				}
 			} else {												// if the player's step was safe...
-				if (stepsTaken == 0) {							// initializes adjacent mine counts for each space in the minefield
-					markSpacesAdjacentToMines();				// (necessary to do it here in case of first-step-mine incident)
+				if (stepsTaken == 0) { // initializes adjacent mine counts for each space in the minefield
+					markSpacesAdjacentToMines(); // (necessary to do it here in case of first-step-mine incident)
 				}
 				revealContiguousZeroes(location, new HashSet<Point>());
-				if (safeSpacesRevealed == (FIELD_WIDTH * FIELD_LENGTH - NUMBER_OF_MINES)) {		
-					gameOver = true;					// ends game if this step reveals the remaining safe spaces on the board
+				if (safeSpacesRevealed == (FIELD_WIDTH * FIELD_LENGTH - NUMBER_OF_MINES)) {
+					gameOver = true; // ends game if this step reveals the remaining safe spaces on the board
 				}	
 			}
 			stepsTaken++;
-			setChanged();
-			notifyObservers();
+			this.setChanged();
+			this.notifyObservers(false);
 			return safeStep;
 		}
 		return true;		// ignores input
@@ -169,7 +215,7 @@ public class MinesweeperModel extends Observable {
 			flagsPlaced++;
 		}
 		setChanged();
-		notifyObservers();
+		notifyObservers(false);
 	}
 
 	/**
@@ -241,6 +287,26 @@ public class MinesweeperModel extends Observable {
 	public int[] getDimensions() {
 		return new int[] { FIELD_LENGTH, FIELD_WIDTH };
 	}
+	
+	/**
+	 * gets the current time in seconds
+	 * @return the current time in seconds
+	 */
+	public int getTime() {
+		return this.timeInSeconds;
+	}
+	
+	/**
+	 * Updates the current time in seconds. 
+	 * @param time
+	 */
+	public void setTime(int time) {
+		if(!this.gameOver) {
+			this.timeInSeconds = time;
+		}
+		this.setChanged();
+		this.notifyObservers(!this.isGameOver());
+	}
 
 	/**
 	 * Returns whether or not the player has won.
@@ -252,6 +318,15 @@ public class MinesweeperModel extends Observable {
 		return safeSpacesRevealed == (FIELD_WIDTH*FIELD_LENGTH - NUMBER_OF_MINES);
 	}
 	
+	/**
+	 * This method is meant to be called when the user try to close the window. 
+	 */
+	public void gameExit() {
+		if (!this.isGameOver()) {
+			setChanged();
+			this.notifyObservers(true);
+		}
+	}
 	
 	// --------------------------------------------------[  PRIVATE METHODS  ]--------------------------------------------------
 	/**
