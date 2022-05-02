@@ -10,50 +10,31 @@
  * @author Eleanor Simon
  * @author Giang Huong Pham
  * @author Tanmay Agrawal
+ * @author Katherine Wilson
  */
 package view;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.Timer;
-import java.util.TimerTask;
-
 import controller.MinesweeperController;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
-import javafx.application.Platform;
-import javafx.event.EventHandler;
 import javafx.geometry.Pos;
-import javafx.geometry.Rectangle2D;
-import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.ToggleButton;
-import javafx.scene.control.Alert.AlertType;
-import javafx.scene.effect.DropShadow;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
-import javafx.scene.text.Text;
-import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import model.MinesweeperModel;
@@ -61,6 +42,7 @@ import utilities.IllegalFlagPlacementException;
 import utilities.IllegalStepException;
 import utilities.Space;
 
+@SuppressWarnings("deprecation")
 public class guitview extends Application implements Observer {
 	/* The size of the game windows */
 	private static final int SCENE_WIDTH = 800;
@@ -81,7 +63,7 @@ public class guitview extends Application implements Observer {
 	private Space[][] grid;
 	/**
 	 * This field contains the grid of ToggleButton representing the minfield's
-	 * interactable "boxes".
+	 * interative "boxes".
 	 */
 	private ToggleButton[][] gridpaneMap;
 	/**
@@ -99,6 +81,12 @@ public class guitview extends Application implements Observer {
 	private int FIELD_LENGTH;
 	private int FIELD_WIDTH;
 	private static final int SPACE_SIZE = 50;
+	
+	/**
+	 * True while game is in progress.
+	 */
+	private boolean gameInProgress = true;
+
 
 //	 model = new MinesweeperModel();
 //	 controller = new MinesweeperController(model);
@@ -200,6 +188,7 @@ public class guitview extends Application implements Observer {
 		for (int i = 0; i < x; i++) {
 			for (int j = 0; j < y; j++) {
 				ToggleButton button = new ToggleButton();
+				button.setMinWidth(25);
 				ret[i][j] = button;
 				setEventListener(button, pane);
 				GridPane.setConstraints(button, j, i);
@@ -219,15 +208,17 @@ public class guitview extends Application implements Observer {
 	private void setEventListener(ToggleButton button, GridPane pane) {
 		button.setOnMouseClicked(mouseEvent -> {
 			MouseButton click = mouseEvent.getButton();
+
 			ToggleButton target = (ToggleButton) mouseEvent.getTarget();
-			
 			int y = GridPane.getRowIndex(target);
 			int x = GridPane.getColumnIndex(target);
 			
 			try {
 				// left click to reveal a space
 				if (click == MouseButton.PRIMARY) {
-					controller.takeStep(x, y);
+					if (gameInProgress) {			// BLOCK INPUT
+						controller.takeStep(x, y);
+					}
 				} // right click to put/remove flag/question mark
 				// TODO if we implement question: if it's a flag, turn into question
 				// if it's a question, turn into open space (unrevealed) 
@@ -257,38 +248,56 @@ public class guitview extends Application implements Observer {
 			for (int j = 0; j  < this.FIELD_WIDTH; j++) {
 				Space space = spaceGrid[i][j];
 				ToggleButton button = gridpaneMap[i][j];
-				// if the space is flagged
-				if (space.isRevealed() && space.hasFlag()) {
+				if (space.hasFlag()) {										// if the space is flagged
+					button.setText("F");
+					button.setSelected(false);
+					button.setDisable(false);
 					updateImage(button, "flag");
-				} // if the space is not flagged and does not have mine
-				else if (space.isRevealed() && !space.hasMine()) {
+				} else if (space.isRevealed() && !space.hasMine()) {		// if the space is not flagged and does not have mine
 					int adjMine = space.adjacentMines();
 					button.getStyleClass().add("grey-button");
-					if (adjMine == 1) {
+					if (adjMine == 0) {
+						button.setSelected(true);
+						button.setDisable(true);
+						button.setText("  ");
+					} else if (adjMine == 1) {
 						button.setText("1");
 						button.setTextFill(Paint.valueOf("blue"));
+						button.setSelected(false);
 					} else if (adjMine == 2) {
 						button.setText("2");
 						button.setTextFill(Paint.valueOf("green"));
-					} else if (adjMine == 2) {
+						button.setSelected(false);
+					} else if (adjMine == 3) {
 						button.setText("3");
 						button.setTextFill(Paint.valueOf("red"));
-					} else if (adjMine == 2) {
+						button.setSelected(false);
+					} else if (adjMine == 4) {
 						button.setText("4");
 						button.setTextFill(Paint.valueOf("purple"));
-					} else if (adjMine == 2) {
+						button.setSelected(false);
+					} else if (adjMine == 5) {
 						button.setText("5");
 						button.setTextFill(Paint.valueOf("black"));
-					} else if (adjMine == 2) {
+						button.setSelected(false);
+					} else if (adjMine == 6) {
 						button.setText("6");
 						button.setTextFill(Paint.valueOf("gray"));
-					} else if (adjMine == 2) {
+						button.setSelected(false);
+					} else if (adjMine == 7) {
 						button.setText("7");
 						button.setTextFill(Paint.valueOf("maroon"));
-					} else if (adjMine == 2) {
+						button.setSelected(false);
+					} else if (adjMine == 8) {
 						button.setText("8");
 						button.setTextFill(Paint.valueOf("turquoise"));
+						button.setSelected(false);
 					}
+				} else if (space.hasMine() && revealMine) {
+					button.setText("*");
+					button.setTextFill(Color.MEDIUMVIOLETRED);
+				} else {
+					button.setText("");
 				}
 			}
 		}
@@ -327,9 +336,15 @@ public class guitview extends Application implements Observer {
 	@Override
 	public void update(Observable o, Object saveGame) {
 		MinesweeperModel model = (MinesweeperModel) o;
+		if (model.isGameOver()) {
+			System.out.println("GAME OVER");
+			gameInProgress = false;
+			updateGrid(true, model.getMinefield());
+		} else {
+			updateGrid(false, model.getMinefield());
+		}
+		
 		boolean toSave = (boolean) saveGame;
-		grid = model.getMinefield();
-		updateGrid(model.isGameOver(), model.getMinefield());
 		
 		// update the timeLabel
 		// timeLabel != null checked only in case timer starts a few milliseconds before we
