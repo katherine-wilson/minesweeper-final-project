@@ -248,7 +248,7 @@ public class guitview extends Application  {
 			                
 			            }
 			        });
-				 //jght
+				 // I'm not using the rewite
 					// Systtem.out.print(io);
 				 //push issue working on
 				Font font = Font.font("Times New Roman", 6);
