@@ -31,6 +31,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
@@ -42,14 +43,15 @@ import utilities.IllegalStepException;
 import utilities.Space;
 
 
-public class guitview extends Application  {
+public class guitview extends Application {
 
 	MinesweeperModel model = new MinesweeperModel();
 	MinesweeperController controller = new MinesweeperController(model);
 	Space[][] grid;
 	private  ImageView headview;
-	
+	 private GridPane topscreen = new GridPane();
 	 private ArrayList<ToggleButton> map = new ArrayList<ToggleButton>();
+	 private static final Image defult = new Image("/defult.png");
 	 private static final Image gameOver = new Image("/deadface.png");
 	 private static final Image head = new Image("/sileyface.jpg");
 	 private static final Image IMAGE = new Image("/face.png");
@@ -81,17 +83,83 @@ public class guitview extends Application  {
 	    public static void main(String[] args) {
 	        launch(args);
 	    }
+	    public  void clearrow(int hero)
+	    {
+	    	int thefallen = hero;
+	    	 int thehurt = hero;
+	    	 int y = topscreen.getColumnIndex(map.get(hero)); 
+       	  int x =topscreen.getRowIndex(map.get(hero)); 
+       	  int ex =topscreen.getRowIndex(map.get(hero)); 
+       	  int ey= topscreen.getColumnIndex(map.get(hero)); 
+       	  int count= 0;
+       	boolean skip = false;
+       		  
+       	  while( grid[x][y].adjacentMines() == 0 && grid[ex][ey].hasMine() == false)
+       		  {
+       		  if(x < 14)
+       		  {
+       			  x=0;
+       			  y++;
+       			thehurt++;
+       			skip=true;
+       		  }
+       		if(y < 0)
+     		  {
+     			  break;
+     		  }
+       		 // System.out.print("inside");
+       		if(thefallen < 256 && skip == false)
+       		{
+       		thehurt =thehurt+16;
+       		}
+       		x++;
+       		System.out.println("x"+x);
+       		System.out.println("y"+y);
+       		map.get(thehurt).setText("0");
+       		Font font = Font.font("Times New Roman", 15);
+           	map.get(thehurt).setFont(font);
+               map.get(thehurt).setStyle("-fx-padding: 7px;");
+       		 map.get(thehurt).setDisable(true);
+       		skip= false;
+       		  
+       		  }
+       	  while(grid[ex][ey].adjacentMines() == 0 && grid[ex][ey].hasMine() == false)
+       	  {
+       		  if(ex < 0)
+       		  {
+       			  x=16;
+       			  ey--;
+       			thefallen++;
+       			skip=true;
+       		  }if(ey < 0)
+       		  {
+       			  break;
+       		  }
+       		if(thefallen > 16 && skip == false)
+       		{
+       			thefallen=thefallen-16;	
+       		}
+       		
+       		ex--;
+       	map.get(thefallen).setText("0");
+     	Font font = Font.font("Times New Roman", 15);
+       	map.get(thefallen).setFont(font);
+           map.get(thefallen).setStyle("-fx-padding: 7px;");
+       	 map.get(thefallen).setDisable(true);
+       	skip= false;
+          
+       	  }
+	    }
 	    @Override
 	    public void start(Stage primaryStage) {
 	        primaryStage.setTitle("The Horse in Motion");
-	      //  MinesweeperModel model = new MinesweeperModel();
 	        controller = new MinesweeperController(model);
-	        ImageView imageView = new ImageView(IMAGE);
+	        ImageView imageView = new ImageView(defult);
 	        imageView.setViewport(new Rectangle2D(OFFSET_X, OFFSET_Y, WIDTH, HEIGHT));
 
 
 	        map = setlabel(16,16);
-			//bottem = setlabel();
+			
 			GridPane topscreen = new GridPane();
 			//
 			
@@ -104,10 +172,7 @@ public class guitview extends Application  {
 					controller.setTime(controller.getTime()+1);
 				}
 			}, 1000);
-			// Timer Code ends here
-			
-			//ArrayList<Label> numbs = new ArrayList<>();
-		//	ArrayList<Label> running = new ArrayList<>();
+		
 			
 			int row= 0;
 			int colab=0;
@@ -132,34 +197,72 @@ public class guitview extends Application  {
 			                	
 			                int hero =	map.indexOf(findme);
 			                
-			                 int ho= hero/16;
-			              if(ho == 16)
-			              {
-			            	  ho--;
-			              }
-			                int  y= hero%16;
-			              
-			            	   //y = 15;  
 			              
 			               
 			             //  controller.takeStep(ho, y);
-			              System.out.print("y" + y+ "x" +ho);
-			              
+			          			              
 
 			           try {
-							controller.takeStep(ho, y);
-							Space m = grid[ho][y];
+			        	   
+							controller.takeStep(topscreen.getRowIndex(map.get(hero)), topscreen.getColumnIndex(map.get(hero)));
+							Space m = grid[topscreen.getRowIndex(map.get(hero))][topscreen.getColumnIndex(map.get(hero))];
 						int minetext =  m.adjacentMines();
 						m.isRevealed();
 						
 						
 						if(m.hasMine() == false)
 						{
-							 map.get(hero).setText("" + minetext);
+							 //map.get(hero).setText("" + minetext);
 					       	Font font = Font.font("Times New Roman", 15);
 					       	map.get(hero).setFont(font);
 					           map.get(hero).setStyle("-fx-padding: 7px;");
 					           map.get(hero).setDisable(true);
+					           /*if(minetext == 0)
+					           {
+					        	   //clearrow(hero);
+					           }*/
+					           if (minetext == 0) {
+					        	   map.get(hero).setSelected(true);
+					        	   map.get(hero).setDisable(true);
+					        	   map.get(hero).setText("0");
+								} else if (minetext == 1) {
+								 map.get(hero).setText("1");
+									map.get(hero).setTextFill(Paint.valueOf("blue"));
+									map.get(hero).setDisable(true);
+									
+								} else if (minetext == 2) {
+									map.get(hero).setText("2");
+									map.get(hero).setTextFill(Paint.valueOf("green"));
+									map.get(hero).setDisable(true);
+								} else if (minetext == 3) {
+									map.get(hero).setText("3");
+									map.get(hero).setTextFill(Paint.valueOf("red"));
+									map.get(hero).setDisable(true);
+								} else if (minetext == 4) {
+									map.get(hero).setText("4");
+									map.get(hero).setTextFill(Paint.valueOf("purple"));
+									map.get(hero).setDisable(true);
+								} else if (minetext == 5) {
+									map.get(hero).setText("5");
+									map.get(hero).setTextFill(Paint.valueOf("black"));
+									map.get(hero).setDisable(true);
+								} else if (minetext == 6) {
+									map.get(hero).setText("6");
+									map.get(hero).setTextFill(Paint.valueOf("gray"));
+									map.get(hero).setDisable(true);
+								} else if (minetext == 7) {
+									map.get(hero).setText("7");
+									map.get(hero).setTextFill(Paint.valueOf("maroon"));
+									map.get(hero).setDisable(true);
+								} else if (minetext == 8) {
+									map.get(hero).setText("8");
+									map.get(hero).setTextFill(Paint.valueOf("turquoise"));
+									map.get(hero).setDisable(true);
+								}
+					           if(controller.playerWon() == true)
+			            		 {
+			            	headview.setImage(head);
+			            		 }
 						}
 						if(m.hasMine() == true)
 						{
@@ -173,10 +276,14 @@ public class guitview extends Application  {
 						} 
 			           catch (IllegalArgumentException | IllegalStepException e) {					// XXX: added custom exception class here (you can remove this comment, just a note)
 			        	   //Space m = grid[ho][y];
+			        		map.get(hero).setText("0");
+			        	 	Font font = Font.font("Times New Roman", 15);
+					       	map.get(hero).setFont(font);
+					           map.get(hero).setStyle("-fx-padding: 7px;");
 			        	   map.get(hero).setDisable(true);
-			        	  
-			           
-							//System.out.println("Invalid step! Try again. You cannot step on flags or revealed spaces.");
+			        	   int thehurt = hero;
+			        	  // clearrow(hero);
+			        	 
 						}
 			                    
 			                }else if(button==MouseButton.SECONDARY){
@@ -187,28 +294,14 @@ public class guitview extends Application  {
 			                	  if(null == map.get(hero).getGraphic())
 			                			  {
 			                		  
-			                		   int ho= hero/16;
-			 			               System.out.println(topscreen.getRowIndex(map.get(hero)) + " " + topscreen.getColumnIndex(map.get(hero)));
-			 			              if(ho == 16)
-			 			              {
-			 			            	  ho--;
-			 			              }
-			 			                int  y= hero%16;  
-			 			               Space m = grid[ho][y];
+			                      Space m = grid[topscreen.getRowIndex(map.get(hero))][topscreen.getColumnIndex(map.get(hero))];
 			 			             
 			 			            
 			 			               m.placeFlag();
-			 			             if( true == controller.isGameOver()) // line needs work
-			 			              {
-			 			 	           Alert alert = new Alert(AlertType.CONFIRMATION);
-										alert.setTitle("You Won!");
-										 alert.setContentText("See Board?");
-										  alert.showAndWait();
-										  if(alert.getResult() == ButtonType.CANCEL)
-											{
-										Platform.exit();
-											}  
-			 			              }
+			 			             if(controller.playerWon() == true)
+			 			            		 {
+			 			            	headview.setImage(head);
+			 			            		 }
 			 			              			 			            	   
 			                      ImageView view = new ImageView(img);
 			                      view.setFitHeight(30);
@@ -222,18 +315,15 @@ public class guitview extends Application  {
 			                			  }
 			                	  else if(null != map.get(hero).getGraphic())
 			                	  {
-			                		  int ho= hero/16;
-			 			              // System.out.print("" + ho);
-			 			              if(ho == 16)
-			 			              {
-			 			            	  ho--;
-			 			              }
-			 			                int  y= hero%16;  
-			 			               Space m = grid[ho][y];
+			                		 
+			 			               Space m = grid[topscreen.getRowIndex(map.get(hero))][topscreen.getColumnIndex(map.get(hero))];
 			 			              
 			 			               m.removeFlag();
-			                		  
-			                		  System.out.print("in second");
+			 			              if(controller.playerWon() == true)
+		 			            		 {
+		 			            	headview.setImage(head);
+		 			            		 }
+			                		 // System.out.print("in second");
 			                		  	  map.get(hero).setDisable(false);
 			                		  	  
 			                		  map.get(hero).setGraphic(null);
@@ -248,17 +338,12 @@ public class guitview extends Application  {
 			                
 			            }
 			        });
-				 // I'm not using the rewite
-					// Systtem.out.print(io);
-				 //push issue working on
+				
 				Font font = Font.font("Times New Roman", 6);
 				map.get(i).setFont(font);
 				map.get(i).setStyle("-fx-border-style: solid;"+  "-fx-padding: 11px;" +  "-fx-border-color: lightgreen;" );
 				map.get(i).setEffect(new DropShadow(10, Color.rgb(0, 0, 0, 0.4)));
-				//map.get(i).setWrapText(true);
-			//	map.get(i).setTextFill(Color.web("#FBF7F5"));
-				//map.get(i).setTextAlignment(TextAlignment.JUSTIFY);
-				//running.get(io).setMaxWidth(-0.01);
+			
 				topscreen.add(map.get(i), colab, row);
 				row++;
 				
@@ -269,18 +354,24 @@ public class guitview extends Application  {
 			     @Override
 			     public void handle(MouseEvent event) {
 			        
+			    	 if(headview.getImage() ==  defult)
+			    	 {
+			    		 start(primaryStage);
+			    		
+			    	 }
 			         if(headview.getImage() == head)
 			         {
-			        	 System.out.println("reset board with simley"); 
+			        	 start(primaryStage);
+			        	
 			         }
-			         
 			         if(headview.getImage() == gameOver)
 			         {
-			        	 System.out.println("reset board after gamover");  
+			        	  start(primaryStage);
 			         }
-			         //event.consume();
-			     }
-			});
+			         			     }
+			}
+			
+			 );
 			 headview.setFitHeight(100);
 			 headview.setFitWidth(100);
 			 headview.setPreserveRatio(true);
@@ -304,9 +395,15 @@ public class guitview extends Application  {
 	        primaryStage.setScene(new Scene(vbox));
 	        primaryStage.show();
 	    }
-	   /* @Override
-		public void update(Observable o, Object arg) {
-			
-			grid = 
-	    }*/
-	}
+	    
+	  /*  @Override
+		public void update(Observable o, Object saveGame) {
+			MinesweeperModel model = (MinesweeperModel) o;
+			if (model.isGameOver()) {
+				System.out.println("GAME OVER");
+				//gameInProgress = false;
+				 model.getMinefield());
+			} else {
+				updateGrid(false, model.getMinefield());
+			}*/
+}
