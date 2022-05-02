@@ -343,7 +343,8 @@ public class guitview extends Application implements Observer {
 			System.out.println("updated time");
 			int minutes = model.getTime() / 60;
 			int seconds = model.getTime() % 60;
-			timeLabel.setText(minutes+" : "+seconds);
+			String secondsString = ((int)(seconds/10))==0? "0"+seconds: ""+seconds;
+			timeLabel.setText(minutes+" : "+ secondsString);
 		}
 		// TODO: implement function in model to be called when the user exit the game:
 		// check if isGameover() -> if not, set arg to a boolean to decide to serialize 
