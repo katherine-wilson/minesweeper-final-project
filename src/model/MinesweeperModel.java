@@ -167,23 +167,21 @@ public class MinesweeperModel extends Observable {
 	 */
 	public boolean takeStep(Point location) { 
 		if (!gameOver) {		// only updates game state if the game is still in progress
+			if (stepsTaken == 0) {
+				replaceMine(location);
+				markSpacesAdjacentToMines();
+			}
+			
 			boolean safeStep = !minefield[location.y][location.x].hasMine();
 			if (!safeStep) {										// if player stepped on a mine...
 				if (stepsTaken != 0) {								
 					minefield[location.y][location.x].reveal();		// marks mine as revealed
 					gameOver = true;							// ends game
-				} else {								// if the player stepped on a mine on their first turn...
-					replaceMine(location);						// replaces mine and reinitializes minefield's adjacent mine values 
-					markSpacesAdjacentToMines();
-					revealContiguousZeroes(location, new HashSet<Point>());
-					safeStep = true;
 				}
 			} else {												// if the player's step was safe...
-				if (stepsTaken == 0) { // initializes adjacent mine counts for each space in the minefield
-					markSpacesAdjacentToMines(); // (necessary to do it here in case of first-step-mine incident)
-				}
 				revealContiguousZeroes(location, new HashSet<Point>());
 				if (safeSpacesRevealed == (FIELD_WIDTH * FIELD_LENGTH - NUMBER_OF_MINES)) {
+					System.out.println("Player won.");
 					gameOver = true; // ends game if this step reveals the remaining safe spaces on the board
 				}	
 			}
@@ -400,8 +398,6 @@ public class MinesweeperModel extends Observable {
 		}
 	}
 
-
-
 	/**
 	 * Initializes a blank minefield with no mines. <code>Space</code> objects
 	 * with default states are initialized for each location in the minefield.
@@ -439,19 +435,37 @@ public class MinesweeperModel extends Observable {
 	 * Replaces a mine if the player steps on it on their first turn. The mine is
 	 * removed from the {@link #mineLocations} set and its location in the 
 	 * {@link #minefield} grid. If the field happens to be placed in the location
-	 * of another mine, it will be replaced until it occupies an empty location.
+	 * of another mine, it will be replaced until it occupies an empty location that
+	 * is not adjacent to step.
 	 */
 	private void replaceMine(Point location) {
+		HashSet<Point> adjacentLocations = new HashSet<Point>();
+		adjacentLocations.add(new Point(location.x, location.y));	
+		adjacentLocations.add(new Point(location.x+1, location.y));			// E
+		adjacentLocations.add(new Point(location.x, location.y+1));			// N
+		adjacentLocations.add(new Point(location.x+1, location.y+1));		// NE
+		adjacentLocations.add(new Point(location.x-1, location.y));			// W
+		adjacentLocations.add(new Point(location.x, location.y-1));			// S
+		adjacentLocations.add(new Point(location.x-1, location.y-1));		// SW
+		adjacentLocations.add(new Point(location.x+1, location.y-1));		// SE
+		adjacentLocations.add(new Point(location.x-1, location.y+1));		// NW
 		Random rdm = new Random();
-		mineLocations.remove(location);
-		minefield[location.y][location.x].removeMine();
-		boolean mineAdded = false;
-		while (!mineAdded) {
-			Point mine = new Point(rdm.nextInt(FIELD_WIDTH), rdm.nextInt(FIELD_LENGTH));
-			if (!mineLocations.contains(mine)) {
-				mineLocations.add(mine);
-				minefield[mine.y][mine.x].placeMine();
-				mineAdded = true;
+		
+		for (Point p : adjacentLocations) {
+			if (p.y >= 0 && p.y < FIELD_LENGTH && p.x >= 0 && p.y <= FIELD_WIDTH) {
+				if (minefield[p.y][p.x].hasMine()) {
+					mineLocations.remove(p);
+					minefield[p.y][p.x].removeMine();
+					boolean mineAdded = false;
+					while (!mineAdded) {
+						Point mine = new Point(rdm.nextInt(FIELD_WIDTH), rdm.nextInt(FIELD_LENGTH));
+						if (!mineLocations.contains(mine) && !adjacentLocations.contains(mine)) {
+							mineLocations.add(mine);
+							minefield[mine.y][mine.x].placeMine();
+							mineAdded = true;
+						}
+					}
+				}
 			}
 		}
 	}
