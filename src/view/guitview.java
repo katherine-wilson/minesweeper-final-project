@@ -47,6 +47,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
@@ -127,6 +128,10 @@ public class guitview extends Application implements Observer {
 		
 		// Label for the Timer Initialized here
 		timeLabel = new Label();
+		HBox timeBox = new HBox();
+		timeBox.getChildren().add(timeLabel);
+		timeLabel.setAlignment(Pos.CENTER);
+		timeBox.setAlignment(Pos.CENTER);
 		// HBox that contains the GridPane
 		HBox board = new HBox();
 		gridpane = new GridPane();
@@ -137,7 +142,7 @@ public class guitview extends Application implements Observer {
 		// adding 2 HBox into the VBox
 		VBox vbox = new VBox();
 		vbox.getChildren().add(title);
-		vbox.getChildren().add(timeLabel);
+		vbox.getChildren().add(timeBox);
 		vbox.getChildren().add(board);
 
 		Scene scene = new Scene(vbox, SCENE_WIDTH, SCENE_HEIGHT);
@@ -338,7 +343,7 @@ public class guitview extends Application implements Observer {
 			System.out.println("updated time");
 			int minutes = model.getTime() / 60;
 			int seconds = model.getTime() % 60;
-			timeLabel.setText(minutes+":"+seconds);
+			timeLabel.setText(minutes+" : "+seconds);
 		}
 		// TODO: implement function in model to be called when the user exit the game:
 		// check if isGameover() -> if not, set arg to a boolean to decide to serialize 
