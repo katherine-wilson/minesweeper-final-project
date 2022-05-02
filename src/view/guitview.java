@@ -9,6 +9,7 @@
  * 
  * @author Eleanor Simon
  * @author Giang Huong Pham
+ * @author Tanmay Agrawal
  */
 package view;
 
@@ -23,6 +24,8 @@ import java.util.TimerTask;
 
 import controller.MinesweeperController;
 import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
@@ -84,6 +87,10 @@ public class guitview extends Application implements Observer {
 	 * This field is the GridPane representing the mine field.
 	 */
 	private GridPane gridpane;
+	/**
+	 * This field is basically used to display the current time in seconds
+	 */
+	private Label timeLabel;
 
 	/**
 	 * This field contains the dimension of the mine field.
@@ -104,6 +111,8 @@ public class guitview extends Application implements Observer {
 
 	@Override
 	public void start(Stage primaryStage) {
+		// Start the timer
+		startTime();
 		// Displaying the title "Mine Sweeper"
 		Label toptext = new Label("Mine Sweeper");
 		Font tittlefont = Font.font("Times New Roman", 30);
@@ -115,7 +124,9 @@ public class guitview extends Application implements Observer {
 		// load the saved game if there is any, and
 		// set the dimension of the game
 		this.initGame();
-
+		
+		// Label for the Timer Initialized here
+		timeLabel = new Label();
 		// HBox that contains the GridPane
 		HBox board = new HBox();
 		gridpane = new GridPane();
@@ -126,6 +137,7 @@ public class guitview extends Application implements Observer {
 		// adding 2 HBox into the VBox
 		VBox vbox = new VBox();
 		vbox.getChildren().add(title);
+		vbox.getChildren().add(timeLabel);
 		vbox.getChildren().add(board);
 
 		Scene scene = new Scene(vbox, SCENE_WIDTH, SCENE_HEIGHT);
@@ -281,6 +293,19 @@ public class guitview extends Application implements Observer {
 			}
 		}
 	}
+	
+	/**
+	 * This method basically is used to update time in the background by 
+	 * prompting the controller to set a chain of events that update time every second. 
+	 * @param controller the instance of the controller for the gameplay
+	 */
+	private void startTime() {
+		Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(1), event -> {
+			controller.setTime(controller.getTime()+1);
+		}));
+		timeline.setCycleCount(Animation.INDEFINITE);
+		timeline.play();
+	}
 
 	/**
 	 * This method updates the given ToggleButton according to 
@@ -305,6 +330,15 @@ public class guitview extends Application implements Observer {
 		boolean toSave = (boolean) saveGame;
 		grid = model.getMinefield();
 		updateGrid(model.isGameOver(), model.getMinefield());
+		
+		// update the timeLabel
+		// timeLabel != null checked only in case timer starts a few milliseconds before we
+		// init the timeLabel in start()
+		if(timeLabel != null) {
+			int minutes = model.getTime() / 60;
+			int seconds = model.getTime() % 60;
+			timeLabel.setText(minutes+":"+seconds);
+		}
 		// TODO: implement function in model to be called when the user exit the game:
 		// check if isGameover() -> if not, set arg to a boolean to decide to serialize 
 		// the model or not 

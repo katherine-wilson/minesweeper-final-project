@@ -139,9 +139,9 @@ public class MinesweeperController {
 	
 	/* DUMMY TIME FUNCTIONS */
 	public int getTime() {
-		return 0;
+		return model.getTime();
 	}
 	public void setTime(int time) {
-		return;
+		model.setTime(time);
 	}
 }

@@ -90,6 +90,11 @@ public class MinesweeperModel extends Observable {
 	 * loses by stepping on a mine.
 	 */
 	private boolean gameOver;
+	
+	/**
+	 * <code>time elapsed</code> in seconds since the start of the game. 
+	 */
+	private int timeInSeconds;
 
 	// --------------------------------------------------[  PUBLIC METHODS  ]--------------------------------------------------
 	/**
@@ -109,6 +114,7 @@ public class MinesweeperModel extends Observable {
 			this.stepsTaken = model.stepsTaken;
 			this.flagsPlaced = model.flagsPlaced;
 			this.gameOver = model.gameOver;
+			this.timeInSeconds = model.timeInSeconds;
 		}else {
 			this.defaultSetting();
 		}
@@ -137,6 +143,7 @@ public class MinesweeperModel extends Observable {
 		stepsTaken = 0;
 		flagsPlaced = 0;
 		gameOver = false;
+		timeInSeconds = 0;
 		initField();
 		placeMines();
 	}
@@ -279,6 +286,22 @@ public class MinesweeperModel extends Observable {
 	 */
 	public int[] getDimensions() {
 		return new int[] { FIELD_LENGTH, FIELD_WIDTH };
+	}
+	
+	/**
+	 * gets the current time in seconds
+	 * @return the current time in seconds
+	 */
+	public int getTime() {
+		return this.timeInSeconds;
+	}
+	
+	/**
+	 * Updates the current time in seconds. 
+	 * @param time
+	 */
+	public void setTime(int time) {
+		this.timeInSeconds = time;
 	}
 
 	/**
