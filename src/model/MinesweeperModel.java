@@ -4,8 +4,11 @@ import java.awt.Point;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Observable;
 import java.util.Random;
@@ -34,7 +37,7 @@ import utilities.Space;
  * @author Giang Huong Pham
  */
 @SuppressWarnings("deprecation")
-public class MinesweeperModel extends Observable {
+public class MinesweeperModel extends Observable implements Serializable {
 	// ------------------------------------------------------[  FIELDS  ]------------------------------------------------------	
 	/**
 	 * Width of mine field.
@@ -114,7 +117,10 @@ public class MinesweeperModel extends Observable {
 			this.stepsTaken = model.stepsTaken;
 			this.flagsPlaced = model.flagsPlaced;
 			this.gameOver = model.gameOver;
+			this.minefield = model.minefield;
 			this.timeInSeconds = model.timeInSeconds;
+			
+			System.out.println("Done");
 		}else {
 			this.defaultSetting();
 		}
@@ -304,6 +310,27 @@ public class MinesweeperModel extends Observable {
 		}
 		this.setChanged();
 		this.notifyObservers(!this.isGameOver());
+	}
+	
+	public void saveGameData() {
+		if(this.isGameOver()) {
+			System.out.println("Game is over. No game state is being saved");
+			return;
+		}
+		try {
+			FileOutputStream outputStream =  new FileOutputStream("saved_game.dat");
+			ObjectOutputStream objOut= new ObjectOutputStream(outputStream);
+			
+			objOut.writeObject(this);
+			objOut.close();
+			outputStream.close();
+			System.out.println("Game state has been saved");
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	/**

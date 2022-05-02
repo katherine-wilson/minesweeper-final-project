@@ -100,6 +100,7 @@ public class MinesweeperGUIView extends Application implements Observer {
 
 	@Override
 	public void start(Stage primaryStage) {
+		System.out.println("Start of stage");
 		// Start the timer
 		startTime();
 		// Displaying the title "Mine Sweeper"
@@ -141,6 +142,11 @@ public class MinesweeperGUIView extends Application implements Observer {
 
 		primaryStage.setScene(scene);
 		primaryStage.show();
+		
+		primaryStage.setOnCloseRequest( ev -> {
+			this.controller.saveGameState();
+		});
+		System.out.println("Stage showing now");
 	}
 
 	// --------------------------------------------------[ PRIVATE METHODS]-------------------------------------------------- //
@@ -350,7 +356,6 @@ public class MinesweeperGUIView extends Application implements Observer {
 		// timeLabel != null checked only in case timer starts a few milliseconds before we
 		// init the timeLabel in start()
 		if(timeLabel != null) {
-			System.out.println("updated time");
 			int minutes = model.getTime() / 60;
 			int seconds = model.getTime() % 60;
 			String secondsString = ((int)(seconds/10))==0? "0"+seconds: ""+seconds;
