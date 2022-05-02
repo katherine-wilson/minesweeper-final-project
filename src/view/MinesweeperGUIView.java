@@ -58,12 +58,8 @@ public class MinesweeperGUIView extends Application implements Observer {
 	 */
 	private MinesweeperController controller;
 	/**
-	 * XXX This contains the underlying grid of Space object that the model has
-	 */
-	private Space[][] grid;
-	/**
 	 * This field contains the grid of ToggleButton representing the minfield's
-	 * interative "boxes".
+	 * interactive "boxes".
 	 */
 	private ToggleButton[][] gridpaneMap;
 	/**
@@ -80,7 +76,7 @@ public class MinesweeperGUIView extends Application implements Observer {
 	 */
 	private int FIELD_LENGTH;
 	private int FIELD_WIDTH;
-	private static final int SPACE_SIZE = 50;
+	private static final int SPACE_SIZE = 25;
 	
 	/**
 	 * True while game is in progress.
@@ -160,13 +156,17 @@ public class MinesweeperGUIView extends Application implements Observer {
 		File savedGame = new File("saved_game.dat");
 		if (savedGame.exists()) {
 			try {
+				System.out.println("Save loaded.");
 				model = new MinesweeperModel("saved_game.dat");
 			} catch (FileNotFoundException e) {
 				System.out.println("Cannot find the saved game file.");
+				model = new MinesweeperModel();
 			} catch (ClassNotFoundException e) {
 				System.out.println("Cannot load the data from the saved game.");
+				model = new MinesweeperModel();
 			} catch (IOException e) {
 				System.out.println("Fail to load the saved game from file.");
+				model = new MinesweeperModel();
 			}
 		} else {
 			model = new MinesweeperModel();
@@ -175,9 +175,8 @@ public class MinesweeperGUIView extends Application implements Observer {
 		controller = new MinesweeperController(model);
 		// get dimension of the mine field and create
 		// a 2D array of ToggleButton with the same dimension
-		int[] dimension = model.getDimensions();
-		this.FIELD_LENGTH = dimension[0];
-		this.FIELD_WIDTH = dimension[1];
+		this.FIELD_LENGTH = model.getDimensions()[0];
+		this.FIELD_WIDTH = model.getDimensions()[1];
 	}
 
 	/**
@@ -186,7 +185,7 @@ public class MinesweeperGUIView extends Application implements Observer {
 	 * 
 	 * @param x    integer representing the width of the mine field
 	 * @param y    integer representing the length of the mine field
-	 * @param pane GirdPane representing the mine field.
+	 * @param pane GridPane representing the mine field.
 	 * @return a 2D array of ToggleButtons displayed on the grid pane
 	 */
 	private ToggleButton[][] setlabel(int x, int y, GridPane pane) {
@@ -194,7 +193,7 @@ public class MinesweeperGUIView extends Application implements Observer {
 		for (int i = 0; i < x; i++) {
 			for (int j = 0; j < y; j++) {
 				ToggleButton button = new ToggleButton();
-				button.setMinWidth(25);
+				button.setMinWidth(SPACE_SIZE);
 				ret[i][j] = button;
 				setEventListener(button, pane);
 				GridPane.setConstraints(button, j, i);

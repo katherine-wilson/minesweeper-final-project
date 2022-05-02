@@ -42,15 +42,15 @@ public class MinesweeperModel extends Observable implements Serializable {
 	/**
 	 * Width of mine field.
 	 */
-	private static int FIELD_WIDTH;		// XXX: changed with difficulty level (if implemented)
+	private  int FIELD_WIDTH;		// XXX: changed with difficulty level (if implemented)
 	/**
 	 * Length of the mine field.
 	 */
-	private static int FIELD_LENGTH;	// XXX: changed with difficulty level
+	private int FIELD_LENGTH;	// XXX: changed with difficulty level
 	/**
 	 * Number of mines in the mine field.
 	 */
-	private static int NUMBER_OF_MINES = 25; // XXX: changed with difficulty level 
+	private int NUMBER_OF_MINES = 25; // XXX: changed with difficulty level 
 	
 	/**
 	 * Number of flags that have been placed in the field so far by the player.
@@ -119,9 +119,13 @@ public class MinesweeperModel extends Observable implements Serializable {
 			this.gameOver = model.gameOver;
 			this.minefield = model.minefield;
 			this.timeInSeconds = model.timeInSeconds;
-			
+			this.FIELD_LENGTH = model.FIELD_LENGTH;
+			this.FIELD_WIDTH = model.FIELD_WIDTH;
+			this.NUMBER_OF_MINES = model.NUMBER_OF_MINES;
 			System.out.println("Done");
-		}else {
+			System.out.println(this.FIELD_LENGTH);
+			System.out.println(this.FIELD_WIDTH);
+		} else {
 			this.defaultSetting();
 		}
 	}
@@ -133,6 +137,8 @@ public class MinesweeperModel extends Observable implements Serializable {
 	 */
 	public MinesweeperModel() {
 		this.defaultSetting();
+		this.setChanged();
+		this.notifyObservers(false);
 	}
 	
 	/**
