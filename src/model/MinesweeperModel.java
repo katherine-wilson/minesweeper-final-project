@@ -177,6 +177,15 @@ public class MinesweeperModel extends Observable implements Serializable {
 	 * @return <code>true</code>  if the step was safe.
 	 * 	   <br><code>false</code> if the player stepped on a mine.
 	 */
+	public void setboard(int width, int length)
+	{
+		//int[] data = new int[1];
+		FIELD_WIDTH=width;
+		//data[0] = FIELD_WIDTH;
+		FIELD_LENGTH=length;
+		//data[1] =FIELD_LENGTH;
+		//return data;
+	}
 	public boolean takeStep(Point location) { 
 		if (!gameOver) {		// only updates game state if the game is still in progress
 			if (stepsTaken == 0) {

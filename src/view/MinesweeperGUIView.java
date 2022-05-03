@@ -19,6 +19,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.Scanner;
+
 import controller.MinesweeperController;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
@@ -52,6 +54,7 @@ public class MinesweeperGUIView extends Application implements Observer {
 	private static final int SCENE_WIDTH = 800;
 	private static final int SCENE_HEIGHT = 600;
 	private  ImageView headview;
+	private File savefile;
 	 private static final Image mine = new Image("/mine.png");
 	 private static final Image defult = new Image("/defult.png");
 	 private static final Image gameOver = new Image("/deadface.png");
@@ -119,7 +122,9 @@ public class MinesweeperGUIView extends Application implements Observer {
 		// load the saved game if there is any, and
 		// set the dimension of the game
 		this.initGame();
-		
+	//	int store[] = this.controller.getwidth(16, 16);
+		//FIELD_LENGTH=store[0];
+		//FIELD_WIDTH=store[1];
 		// Label for the Timer Initialized here
 		timeLabel = new Label();
 		HBox timeBox = new HBox();
@@ -150,10 +155,12 @@ public class MinesweeperGUIView extends Application implements Observer {
 											         }
 											         if(headview.getImage() == gameOver)
 											         {
+											        	
 											        	 controller.saveGameState();
 											        	 gameInProgress = true;
-											        	 start(primaryStage);
 											        	 
+											        	 start(primaryStage);
+											        	
 											         }
 											         			     }
 											}
@@ -181,14 +188,15 @@ public class MinesweeperGUIView extends Application implements Observer {
 
 		Scene scene = new Scene(vbox, SCENE_WIDTH, SCENE_HEIGHT);
 
-//		scene.setOnKeyReleased(keyEvent -> {
+		//scene.setOnKeyReleased(keyEvent -> {
 //			handleKey(keyEvent);
 //		});
-
+		  this.controller.saveGameState();
 		primaryStage.setScene(scene);
 		primaryStage.show();
 		
 		primaryStage.setOnCloseRequest( ev -> {
+			
 			this.controller.saveGameState();
 		});
 		System.out.println("Stage showing now");
@@ -203,9 +211,12 @@ public class MinesweeperGUIView extends Application implements Observer {
 	private void initGame() {
 		// Trying to load the saved_game when the application is launched
 		File savedGame = new File("saved_game.dat");
-		if (savedGame.exists()) {
+		
+		if (savedGame.isFile()) {
 			try {
+				
 				System.out.println("Save loaded.");
+		
 				model = new MinesweeperModel("saved_game.dat");
 			} catch (FileNotFoundException e) {
 				System.out.println("Cannot find the saved game file.");
@@ -217,13 +228,26 @@ public class MinesweeperGUIView extends Application implements Observer {
 				System.out.println("Fail to load the saved game from file.");
 				model = new MinesweeperModel();
 			}
-		} else {
-			model = new MinesweeperModel();
+		} else {			
+				model = new MinesweeperModel();
+			System.out.println("enter board size and width use space");
+			Scanner input = new Scanner(System.in);
+			if (input.hasNextLine()) {
+				String coords[] = input.nextLine().split(" ");
+				int x = Integer.parseInt(coords[0]);
+				int y = Integer.parseInt(coords[1]);
+				model.setboard(x, y);	
+				String TEXT_FILE = "/saved_game.dat";
+				 savefile = new File(TEXT_FILE);
+				 
+			}
+			
 		}
 		model.addObserver(this);
-		controller = new MinesweeperController(model);
+		this.controller = new MinesweeperController(model);
 		// get dimension of the mine field and create
 		// a 2D array of ToggleButton with the same dimension
+	
 		this.FIELD_LENGTH = model.getDimensions()[0];
 		this.FIELD_WIDTH = model.getDimensions()[1];
 	}
@@ -298,6 +322,7 @@ public class MinesweeperGUIView extends Application implements Observer {
 	 */
 	private void updateGrid(boolean revealMine, Space[][] spaceGrid) {
 		// TODO: update with "question mark"
+		controller.saveGameState();
 		for (int i = 0; i< this.FIELD_LENGTH; i++) {
 			for (int j = 0; j  < this.FIELD_WIDTH; j++) {
 				Space space = spaceGrid[i][j];
@@ -374,6 +399,7 @@ public class MinesweeperGUIView extends Application implements Observer {
 				} else {
 					button.setText("");
 				}
+				
 			}
 		}
 	}
@@ -413,7 +439,8 @@ public class MinesweeperGUIView extends Application implements Observer {
 		MinesweeperModel model = (MinesweeperModel) o;
 		if(model.getPlayerWon())
 		{
-			headview.setImage(head);	
+			headview.setImage(head);
+			updateGrid(true, model.getMinefield());
 		}
 		if (model.isGameOver()) {
 			System.out.println("GAME OVER");

@@ -68,6 +68,10 @@ public class MinesweeperController {
 	 * <li>The player attempts to step on an already revealed space</li>
 	 * </ul>
 	 */
+	/*public void getwidth(int width, int height)
+	{
+		 return model.setboard(width, height);
+	}*/
 	public boolean takeStep(int x, int y) throws IllegalStepException {
 		if (model.getMinefield()[y][x].hasFlag()) {
 			throw new IllegalStepException("Cannot step on a flag.");
