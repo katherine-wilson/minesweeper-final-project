@@ -339,7 +339,7 @@ public class MinesweeperModel extends Observable implements Serializable {
 			objOut.writeObject(this);
 			objOut.close();
 			outputStream.close();
-			System.out.println("Game state has been saved");
+			//System.out.println("Game state has been saved");
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {

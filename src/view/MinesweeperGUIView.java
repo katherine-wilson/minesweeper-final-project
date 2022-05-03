@@ -51,8 +51,10 @@ import utilities.Space;
 @SuppressWarnings("deprecation")
 public class MinesweeperGUIView extends Application implements Observer {
 	/* The size of the game windows */
+	private boolean fordoublemine = false;
 	private static final int SCENE_WIDTH = 800;
 	private static final int SCENE_HEIGHT = 600;
+	private String f;
 	private  ImageView headview;
 	private File savefile;
 	 private static final Image mine = new Image("/mine.png");
@@ -158,7 +160,7 @@ public class MinesweeperGUIView extends Application implements Observer {
 											        	
 											        	 controller.saveGameState();
 											        	 gameInProgress = true;
-											        	 
+											        	 f="no";
 											        	 start(primaryStage);
 											        	
 											         }
@@ -198,6 +200,7 @@ public class MinesweeperGUIView extends Application implements Observer {
 		primaryStage.setOnCloseRequest( ev -> {
 			
 			this.controller.saveGameState();
+			f="yes";
 		});
 		System.out.println("Stage showing now");
 	}
@@ -210,9 +213,23 @@ public class MinesweeperGUIView extends Application implements Observer {
 	 */
 	private void initGame() {
 		// Trying to load the saved_game when the application is launched
-		File savedGame = new File("saved_game.dat");
-		
-		if (savedGame.isFile()) {
+	//	File check = new File("saved_game.dat");
+		if (savefile != null && f =="no") {
+		System.out.println("New game(Yes or no)");
+		Scanner input = new Scanner(System.in);
+		{
+			if (input.hasNextLine()) {
+				f = input.nextLine();
+				if(f =="yes")
+				{
+					savefile.delete();
+				
+				}
+			}
+		}
+		}
+		//File savedGame = new File("saved_game.dat");
+		if (savefile != null) {
 			try {
 				
 				System.out.println("Save loaded.");
@@ -231,9 +248,9 @@ public class MinesweeperGUIView extends Application implements Observer {
 		} else {			
 				model = new MinesweeperModel();
 			System.out.println("enter board size and width use space");
-			Scanner input = new Scanner(System.in);
-			if (input.hasNextLine()) {
-				String coords[] = input.nextLine().split(" ");
+			Scanner in = new Scanner(System.in);
+			if (in.hasNextLine()) {
+				String coords[] = in.nextLine().split(" ");
 				int x = Integer.parseInt(coords[0]);
 				int y = Integer.parseInt(coords[1]);
 				model.setboard(x, y);	
@@ -303,7 +320,32 @@ public class MinesweeperGUIView extends Application implements Observer {
 				// TODO: implement the model also if we decide to do the question mark.
 				else if (click == MouseButton.SECONDARY) {
 					// place flag
+					
+					//System.out.println
+					
 					controller.toggleFlag(x, y);
+					Space[][] m = controller.getMinefield();
+					if(!m[x][y].hasFlag())
+					{
+						if(!m[x][y].hasMine())
+						{
+						target.setGraphic(null);
+						target.setText(" "+ m[x][y].adjacentMines());
+						}
+						else
+						{
+							target.setGraphic(null);
+							 ImageView view = new ImageView(mine);
+							 view.setFitHeight(23);
+		                     view.setFitWidth(23);
+		                     target.setStyle("-fx-padding: 0px;");
+		                     view.setPreserveRatio(true);
+		                     target.setGraphic(view);
+						}
+						
+					//updateGrid(m[x][y].hasMine(),m);
+					}
+					//updateGrid(false, model.getMinefield());
 				}
 			} catch (IllegalStepException e) {
 				System.out.println(e.getMessage());
@@ -322,14 +364,15 @@ public class MinesweeperGUIView extends Application implements Observer {
 	 */
 	private void updateGrid(boolean revealMine, Space[][] spaceGrid) {
 		// TODO: update with "question mark"
-		controller.saveGameState();
+		
 		for (int i = 0; i< this.FIELD_LENGTH; i++) {
 			for (int j = 0; j  < this.FIELD_WIDTH; j++) {
 				Space space = spaceGrid[i][j];
 				ToggleButton button = gridpaneMap[i][j];
-				if (space.hasFlag()) {										// if the space is flagged
+				if (space.hasFlag()) {	
+					// if the space is flagged
 					//button.setText("F");
-					button.setSelected(false);
+					//button.setSelected(false);
 					button.setDisable(false);
 					 ImageView view = new ImageView(greatflag);
 					 view.setFitHeight(20);
@@ -337,14 +380,14 @@ public class MinesweeperGUIView extends Application implements Observer {
                      view.setPreserveRatio(true);
 					button.setGraphic(view);
 					button.setStyle("-fx-padding: 2px;");
-				} else if (space.isRevealed() && !space.hasMine()) {		// if the space is not flagged and does not have mine
+				} else if (space.isRevealed() &&!space.hasMine()) {		// if the space is not flagged and does not have mine
 					int adjMine = space.adjacentMines();
 					button.getStyleClass().add("grey-button");
 					if (adjMine == 0) {
 						button.setGraphic(null);
 						button.setSelected(true);
 						button.setDisable(true);
-						button.setText("  ");
+						button.setText(" ");
 					} else if (adjMine == 1) {
 						button.setGraphic(null);
 						button.setText("1");
@@ -437,10 +480,17 @@ public class MinesweeperGUIView extends Application implements Observer {
 	@Override
 	public void update(Observable o, Object saveGame) {
 		MinesweeperModel model = (MinesweeperModel) o;
-		if(model.getPlayerWon())
+		int l= FIELD_LENGTH;
+		int w =FIELD_WIDTH;
+		int check = l*w;
+		System.out.println(model.getFlagsPlaced());
+		check= check-model.getNumberofMines();
+		int other =model.getSpacesRevealed()-model.getNumberofMines()+model.getFlagsPlaced();
+		System.out.println(check +" " + other);
+		if(model.getPlayerWon() ||other == check)
 		{
 			headview.setImage(head);
-			updateGrid(true, model.getMinefield());
+			//updateGrid(true, model.getMinefield());
 		}
 		if (model.isGameOver()) {
 			System.out.println("GAME OVER");
@@ -448,6 +498,8 @@ public class MinesweeperGUIView extends Application implements Observer {
 			headview.setImage(gameOver);
 			updateGrid(true, model.getMinefield());
 		} else {
+			//controller.saveGameState(); fixed some issues
+			
 			updateGrid(false, model.getMinefield());
 		}
 		
@@ -461,6 +513,7 @@ public class MinesweeperGUIView extends Application implements Observer {
 			int seconds = model.getTime() % 60;
 			String secondsString = ((int)(seconds/10))==0? "0"+seconds: ""+seconds;
 			timeLabel.setText(minutes+" : "+ secondsString);
+			controller.saveGameState();
 		}
 		// TODO: implement function in model to be called when the user exit the game:
 		// check if isGameover() -> if not, set arg to a boolean to decide to serialize 
