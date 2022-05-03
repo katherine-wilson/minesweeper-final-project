@@ -44,10 +44,21 @@ import utilities.Space;
 
 @SuppressWarnings("deprecation")
 public class MinesweeperGUIView extends Application implements Observer {
-	/* The size of the game windows */
+	/**
+	 * Width of the game window.
+	 */
 	private static final int SCENE_WIDTH = 800;
+	
+	/**
+	 * Height of the game window.
+	 */
 	private static final int SCENE_HEIGHT = 600;
 
+	/**
+	 * Name of the save file.
+	 */
+	private static final String SAVE_NAME = "saved_game.dat";
+	
 	/**
 	 * This is the model where all game's data is stored.
 	 */
@@ -153,11 +164,11 @@ public class MinesweeperGUIView extends Application implements Observer {
 	 */
 	private void initGame() {
 		// Trying to load the saved_game when the application is launched
-		File savedGame = new File("saved_game.dat");
+		File savedGame = new File(SAVE_NAME);
 		if (savedGame.exists()) {
 			try {
 				System.out.println("Save loaded.");
-				model = new MinesweeperModel("saved_game.dat");
+				model = new MinesweeperModel(SAVE_NAME);
 			} catch (FileNotFoundException e) {
 				System.out.println("Cannot find the saved game file.");
 				model = new MinesweeperModel();
@@ -342,7 +353,6 @@ public class MinesweeperGUIView extends Application implements Observer {
 	public void update(Observable o, Object saveGame) {
 		MinesweeperModel model = (MinesweeperModel) o;
 		if (model.isGameOver()) {
-			System.out.println("GAME OVER");
 			gameInProgress = false;
 			updateGrid(true, model.getMinefield());
 		} else {
@@ -362,9 +372,7 @@ public class MinesweeperGUIView extends Application implements Observer {
 		}
 		// TODO: implement function in model to be called when the user exit the game:
 		// check if isGameover() -> if not, set arg to a boolean to decide to serialize 
-		// the model or not 
-		// "saved_game.dat"
-		
+		// the model or not 	
 	}
 
 }

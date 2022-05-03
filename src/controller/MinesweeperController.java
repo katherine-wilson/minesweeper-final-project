@@ -5,7 +5,6 @@ import java.awt.Point;
 import model.MinesweeperModel;
 import utilities.IllegalFlagPlacementException;
 import utilities.IllegalStepException;
-import utilities.Space;
 
 /**
  * This class is designed to mediate any necessary interactions between the model 
@@ -105,34 +104,27 @@ public class MinesweeperController {
 	}
 	
 	/**
-	 * Returns the grid of <code>Space</code> objects used to
-	 * represent the game's minefield. The first row of this 
-	 * array represents the bottom row of the grid.
+	 * Returns the time that has elapsed since the start of the game.
 	 * 
-	 * @return a 2-dimensional array of <code>Space</code> objects
-	 * 			that represent the minefield.
+	 * @return the time (in seconds) that have elapsed since the player's
+	 * first move.
 	 */
-	public Space[][] getMinefield() {
-		return model.getMinefield();
-	}
-	
-	public boolean isGameOver() {		// XXX: may become deprecated (could be called directly through the model using the view's update() method)
-		return model.isGameOver();
-	}
-	/*
-	public boolean playerWon() {		// XXX: may become deprecated
-		return model.getPlayerWon();
-	}
-	*/
-	
-	/* DUMMY TIME FUNCTIONS */
 	public int getTime() {
 		return model.getTime();
 	}
+	
+	/**
+	 * Manually sets the elapsed time stored in the model.
+	 * 
+	 * @param time new elapsed time (in seconds).
+	 */
 	public void setTime(int time) {
 		model.setTime(time);
 	}
 	
+	/**
+	 * Signals to the model that a new game save should be created.
+	 */
 	public void saveGameState() {
 		model.saveGameData();
 	}

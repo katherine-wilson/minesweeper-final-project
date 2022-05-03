@@ -152,7 +152,14 @@ public class Space implements Serializable{
 		return adjacentMines;
 	}
 	
-	public String toString() {			// XXX: may become deprecated
+	/**
+	 * Returns the string form of the current space which reflects its status.
+	 * This includes whether or not it contains a mine or flag or if it has been
+	 * revealed or not.
+	 * 
+	 * @return a one-character string indicating describing this <code>Space</code>.
+	 */
+	public String toString() {
 		if (hasMine && revealed) {
 			return "*";
 		} else if (hasFlag) {

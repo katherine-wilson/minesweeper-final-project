@@ -1,7 +1,6 @@
 package model;
 
 import java.awt.Point;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -36,21 +35,27 @@ import utilities.Space;
  * @author Katherine Wilson
  * @author Giang Huong Pham
  */
-@SuppressWarnings("deprecation")
+@SuppressWarnings({ "deprecation", "serial" })
 public class MinesweeperModel extends Observable implements Serializable {
 	// ------------------------------------------------------[  FIELDS  ]------------------------------------------------------	
 	/**
+	 * Name of the save file that will be created from this
+	 * game if the game is saved.
+	 */
+	private static final String SAVE_NAME = "saved_game.dat";
+	
+	/**
 	 * Width of mine field.
 	 */
-	private  int FIELD_WIDTH;		// XXX: changed with difficulty level (if implemented)
+	private int FIELD_WIDTH;				// XXX: changed with difficulty level (if implemented)
 	/**
 	 * Length of the mine field.
 	 */
-	private int FIELD_LENGTH;	// XXX: changed with difficulty level
+	private int FIELD_LENGTH;				// XXX: changed with difficulty level
 	/**
 	 * Number of mines in the mine field.
 	 */
-	private int NUMBER_OF_MINES = 25; // XXX: changed with difficulty level 
+	private int NUMBER_OF_MINES; 			// XXX: changed with difficulty level 
 	
 	/**
 	 * Number of flags that have been placed in the field so far by the player.
@@ -104,11 +109,13 @@ public class MinesweeperModel extends Observable implements Serializable {
 	 * Creates a <code>MinesweeperModel</code> object by
 	 * loading data from the input file.
 	 * 
-	 * @param filename name of the file which saves data from the old game.
-	 * @throws IOException 
-	 * @throws FileNotFoundException 
-	 * @throws ClassNotFoundException 
+	 * @param filename name of the save file which contains data from the previous game.
+	 * @throws IOException when there is an error accessing the file.
+	 * @throws FileNotFoundException if an invalid file is given.
+	 * @throws ClassNotFoundException if a <code>MinesweeperModel</code> cannot be read from
+	 * the file.
 	 */
+	@SuppressWarnings("resource")
 	public MinesweeperModel(String filename) throws FileNotFoundException, IOException, ClassNotFoundException {
 		ObjectInputStream input = new ObjectInputStream(new FileInputStream(filename));
 		MinesweeperModel model = (MinesweeperModel) input.readObject();
@@ -123,8 +130,6 @@ public class MinesweeperModel extends Observable implements Serializable {
 			this.FIELD_WIDTH = model.FIELD_WIDTH;
 			this.NUMBER_OF_MINES = model.NUMBER_OF_MINES;
 			System.out.println("Done");
-			System.out.println(this.FIELD_LENGTH);
-			System.out.println(this.FIELD_WIDTH);
 		} else {
 			this.defaultSetting();
 		}
@@ -139,25 +144,6 @@ public class MinesweeperModel extends Observable implements Serializable {
 		this.defaultSetting();
 		this.setChanged();
 		this.notifyObservers(false);
-	}
-	
-	/**
-	 * Initialize the MinesweeperModel to a default state. 
-	 * By default, the <code>MinesweeperModel</code>
-	 * has no revealed safe squares, no turns made, no flags placed, and
-	 * has not been won or lost yet. This method will also initialize the
-	 * minefield and place mines within it.
-	 */
-	private void defaultSetting() {
-		this.FIELD_WIDTH = 16;
-		this.FIELD_LENGTH = 16;
-		safeSpacesRevealed = 0;
-		stepsTaken = 0;
-		flagsPlaced = 0;
-		gameOver = false;
-		timeInSeconds = 0;
-		initField();
-		placeMines();
 	}
 
 	/**
@@ -185,11 +171,9 @@ public class MinesweeperModel extends Observable implements Serializable {
 			}
 			
 			boolean safeStep = !minefield[location.y][location.x].hasMine();
-			if (!safeStep) {										// if player stepped on a mine...
-				if (stepsTaken != 0) {								
-					minefield[location.y][location.x].reveal();		// marks mine as revealed
-					gameOver = true;							// ends game
-				}
+			if (!safeStep) {										// if player stepped on a mine...			
+				minefield[location.y][location.x].reveal();		// marks mine as revealed
+				gameOver = true;							// ends game
 			} else {												// if the player's step was safe...
 				revealContiguousZeroes(location, new HashSet<Point>());
 				if (safeSpacesRevealed == (FIELD_WIDTH * FIELD_LENGTH - NUMBER_OF_MINES)) {
@@ -299,16 +283,17 @@ public class MinesweeperModel extends Observable implements Serializable {
 	}
 	
 	/**
-	 * gets the current time in seconds
-	 * @return the current time in seconds
+	 * Returns the current time elapsed in seconds.
+	 * @return time elapsed in seconds.
 	 */
 	public int getTime() {
 		return this.timeInSeconds;
 	}
 	
 	/**
-	 * Updates the current time in seconds. 
-	 * @param time
+	 * Updates the current time.
+	 * 
+	 * @param number of seconds.
 	 */
 	public void setTime(int time) {
 		if(!this.gameOver) {
@@ -318,23 +303,26 @@ public class MinesweeperModel extends Observable implements Serializable {
 		this.notifyObservers(!this.isGameOver());
 	}
 	
+	/**
+	 * Creates a save based on the current state of the model. The 
+	 * resulting file will be a .dat file named "saved_game.dat". 
+	 * The file stores this model as an object and can be read by
+	 * an <code>ObjectInputStream</code>. The state of the game
+	 * won't be stored if the game has ended.
+	 */
 	public void saveGameData() {
 		if(this.isGameOver()) {
 			System.out.println("Game is over. No game state is being saved");
 			return;
 		}
 		try {
-			FileOutputStream outputStream =  new FileOutputStream("saved_game.dat");
-			ObjectOutputStream objOut= new ObjectOutputStream(outputStream);
-			
-			objOut.writeObject(this);
-			objOut.close();
-			outputStream.close();
+			ObjectOutputStream output =  new ObjectOutputStream(new FileOutputStream(SAVE_NAME));
+			output.writeObject(this);
+			output.close();
 			System.out.println("Game state has been saved");
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -501,6 +489,27 @@ public class MinesweeperModel extends Observable implements Serializable {
 				}
 			}
 		}
+	}
+	
+	
+	/**
+	 * Initializes the MinesweeperModel to a default state. 
+	 * By default, the <code>MinesweeperModel</code> has no revealed safe
+	 * squares, no turns made, no flags placed, and has not been won or 
+	 * lost yet. This method will also initialize the minefield and
+	 * place mines within it.
+	 */
+	private void defaultSetting() {
+		this.FIELD_WIDTH = 16;
+		this.FIELD_LENGTH = 16;
+		this.NUMBER_OF_MINES = 25;
+		safeSpacesRevealed = 0;
+		stepsTaken = 0;
+		flagsPlaced = 0;
+		gameOver = false;
+		timeInSeconds = 0;
+		initField();
+		placeMines();
 	}
 	
 }
