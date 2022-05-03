@@ -160,7 +160,7 @@ public class MinesweeperGUIView extends Application implements Observer {
 											        	
 											        	 controller.saveGameState();
 											        	 gameInProgress = true;
-											        	 f="no";
+											        	 f="yes";
 											        	 start(primaryStage);
 											        	
 											         }
@@ -200,7 +200,7 @@ public class MinesweeperGUIView extends Application implements Observer {
 		primaryStage.setOnCloseRequest( ev -> {
 			
 			this.controller.saveGameState();
-			f="yes";
+			f="no";
 		});
 		System.out.println("Stage showing now");
 	}
@@ -214,7 +214,7 @@ public class MinesweeperGUIView extends Application implements Observer {
 	private void initGame() {
 		// Trying to load the saved_game when the application is launched
 	//	File check = new File("saved_game.dat");
-		if (savefile != null && f =="no") {
+		if (f =="no") {
 		System.out.println("New game(Yes or no)");
 		Scanner input = new Scanner(System.in);
 		{
@@ -325,14 +325,17 @@ public class MinesweeperGUIView extends Application implements Observer {
 					
 					controller.toggleFlag(x, y);
 					Space[][] m = controller.getMinefield();
-					if(!m[x][y].hasFlag())
+					if(m[x][y].hasFlag() == false)
 					{
-						if(!m[x][y].hasMine())
-						{
+						target.setMaxWidth(25);
+						target.setPrefHeight(25);
 						target.setGraphic(null);
-						target.setText(" "+ m[x][y].adjacentMines());
+						target.setText(" ");
+					/*	if(!m[x][y].hasMine())
+						{
+						
 						}
-						else
+					else if(m[x][y].hasMine())
 						{
 							target.setGraphic(null);
 							 ImageView view = new ImageView(mine);
@@ -341,7 +344,7 @@ public class MinesweeperGUIView extends Application implements Observer {
 		                     target.setStyle("-fx-padding: 0px;");
 		                     view.setPreserveRatio(true);
 		                     target.setGraphic(view);
-						}
+						}*/
 						
 					//updateGrid(m[x][y].hasMine(),m);
 					}
@@ -371,7 +374,7 @@ public class MinesweeperGUIView extends Application implements Observer {
 				ToggleButton button = gridpaneMap[i][j];
 				if (space.hasFlag()) {	
 					// if the space is flagged
-					//button.setText("F");
+					button.setText("");
 					//button.setSelected(false);
 					button.setDisable(false);
 					 ImageView view = new ImageView(greatflag);
@@ -487,7 +490,7 @@ public class MinesweeperGUIView extends Application implements Observer {
 		check= check-model.getNumberofMines();
 		int other =model.getSpacesRevealed()-model.getNumberofMines()+model.getFlagsPlaced();
 		System.out.println(check +" " + other);
-		if(model.getPlayerWon() ||other == check)
+		if(model.getPlayerWon())
 		{
 			headview.setImage(head);
 			//updateGrid(true, model.getMinefield());
