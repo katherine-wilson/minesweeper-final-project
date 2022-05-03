@@ -24,11 +24,15 @@ import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ToggleButton;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -47,7 +51,12 @@ public class MinesweeperGUIView extends Application implements Observer {
 	/* The size of the game windows */
 	private static final int SCENE_WIDTH = 800;
 	private static final int SCENE_HEIGHT = 600;
-
+	private  ImageView headview;
+	 private static final Image mine = new Image("/mine.png");
+	 private static final Image defult = new Image("/defult.png");
+	 private static final Image gameOver = new Image("/deadface.png");
+	private static final Image head = new Image("/sileyface.jpg");
+	 private static final Image greatflag = new Image("/greatflag.png");
 	/**
 	 * This is the model where all game's data is stored.
 	 */
@@ -114,6 +123,45 @@ public class MinesweeperGUIView extends Application implements Observer {
 		// Label for the Timer Initialized here
 		timeLabel = new Label();
 		HBox timeBox = new HBox();
+		HBox face = new HBox();
+		headview = new ImageView(defult);
+		headview.setFitHeight(70);
+						 headview.setFitWidth(70);
+						 headview.setPreserveRatio(true);
+						 headview.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+								/**
+								 * 
+								 * add event hanlerd the resets the game
+								 */
+											     @Override
+											     public void handle(MouseEvent event) {
+											        /**
+											         * restarts game
+											         */
+											    	 if(headview.getImage() ==  defult)
+											    	 {
+											    		 controller.saveGameState();
+											    		
+											    	 }
+											         if(headview.getImage() == head)
+											         {
+											        	 controller.saveGameState();
+											        	
+											         }
+											         if(headview.getImage() == gameOver)
+											         {
+											        	 controller.saveGameState();
+											        	 gameInProgress = true;
+											        	 start(primaryStage);
+											        	 
+											         }
+											         			     }
+											}
+											
+											 );
+											
+		face.getChildren().add(headview);
+		face.setAlignment(Pos.CENTER);
 		timeBox.getChildren().add(timeLabel);
 		timeLabel.setAlignment(Pos.CENTER);
 		timeBox.setAlignment(Pos.CENTER);
@@ -126,6 +174,7 @@ public class MinesweeperGUIView extends Application implements Observer {
 
 		// adding 2 HBox into the VBox
 		VBox vbox = new VBox();
+		vbox.getChildren().add(face);
 		vbox.getChildren().add(title);
 		vbox.getChildren().add(timeBox);
 		vbox.getChildren().add(board);
@@ -254,52 +303,73 @@ public class MinesweeperGUIView extends Application implements Observer {
 				Space space = spaceGrid[i][j];
 				ToggleButton button = gridpaneMap[i][j];
 				if (space.hasFlag()) {										// if the space is flagged
-					button.setText("F");
+					//button.setText("F");
 					button.setSelected(false);
 					button.setDisable(false);
-					updateImage(button, "flag");
+					 ImageView view = new ImageView(greatflag);
+					 view.setFitHeight(20);
+                     view.setFitWidth(15);
+                     view.setPreserveRatio(true);
+					button.setGraphic(view);
+					button.setStyle("-fx-padding: 2px;");
 				} else if (space.isRevealed() && !space.hasMine()) {		// if the space is not flagged and does not have mine
 					int adjMine = space.adjacentMines();
 					button.getStyleClass().add("grey-button");
 					if (adjMine == 0) {
+						button.setGraphic(null);
 						button.setSelected(true);
 						button.setDisable(true);
 						button.setText("  ");
 					} else if (adjMine == 1) {
+						button.setGraphic(null);
 						button.setText("1");
 						button.setTextFill(Paint.valueOf("blue"));
 						button.setSelected(false);
 					} else if (adjMine == 2) {
+						button.setGraphic(null);
 						button.setText("2");
 						button.setTextFill(Paint.valueOf("green"));
 						button.setSelected(false);
 					} else if (adjMine == 3) {
+						button.setGraphic(null);
 						button.setText("3");
 						button.setTextFill(Paint.valueOf("red"));
 						button.setSelected(false);
 					} else if (adjMine == 4) {
+						button.setGraphic(null);
 						button.setText("4");
 						button.setTextFill(Paint.valueOf("purple"));
 						button.setSelected(false);
 					} else if (adjMine == 5) {
+						button.setGraphic(null);
 						button.setText("5");
 						button.setTextFill(Paint.valueOf("black"));
 						button.setSelected(false);
 					} else if (adjMine == 6) {
+						button.setGraphic(null);
 						button.setText("6");
 						button.setTextFill(Paint.valueOf("gray"));
 						button.setSelected(false);
 					} else if (adjMine == 7) {
+						button.setGraphic(null);
 						button.setText("7");
 						button.setTextFill(Paint.valueOf("maroon"));
 						button.setSelected(false);
 					} else if (adjMine == 8) {
+						button.setGraphic(null);
 						button.setText("8");
 						button.setTextFill(Paint.valueOf("turquoise"));
 						button.setSelected(false);
 					}
 				} else if (space.hasMine() && revealMine) {
-					button.setText("*");
+					button.setGraphic(null);
+					 ImageView view = new ImageView(mine);
+					 view.setFitHeight(23);
+                     view.setFitWidth(23);
+                     button.setStyle("-fx-padding: 0px;");
+                     view.setPreserveRatio(true);
+					button.setGraphic(view);
+				
 					button.setTextFill(Color.MEDIUMVIOLETRED);
 				} else {
 					button.setText("");
@@ -341,9 +411,14 @@ public class MinesweeperGUIView extends Application implements Observer {
 	@Override
 	public void update(Observable o, Object saveGame) {
 		MinesweeperModel model = (MinesweeperModel) o;
+		if(model.getPlayerWon())
+		{
+			headview.setImage(head);	
+		}
 		if (model.isGameOver()) {
 			System.out.println("GAME OVER");
 			gameInProgress = false;
+			headview.setImage(gameOver);
 			updateGrid(true, model.getMinefield());
 		} else {
 			updateGrid(false, model.getMinefield());

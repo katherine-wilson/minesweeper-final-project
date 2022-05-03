@@ -225,7 +225,7 @@ public class MinesweeperModel extends Observable implements Serializable {
 			flagsPlaced++;
 		}
 		setChanged();
-		notifyObservers(false);
+		notifyObservers(true);
 	}
 
 	/**
