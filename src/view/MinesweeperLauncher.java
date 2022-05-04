@@ -1,11 +1,11 @@
 /**
- * This class serve as the main class for the Minesweeper game. 
+ * This class serves as the main class for the Minesweeper game. 
  * The program will launch the GUI view or text view based on the
- * command-line arguments. Default mode without any argument is the 
- * GUI view.
+ * command-line arguments. If this game is launched with no arguments,
+ * then the GUI view will be loaded with 25 mines and a 16x16 minefield.
  * 
  * The GUI view also offers the ability to save/load the state of a Minesweeper game if 
- * the user quit before the end of the game. Every time the application is launched, the
+ * the user quits before the end of the game. Every time the application is launched, the
  * most recent save is loaded.
  * 
  * @see <code><a href="../view/MinesweeperView.html"> MinesweeperView</a></code>
