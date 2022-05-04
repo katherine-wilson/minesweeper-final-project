@@ -28,21 +28,18 @@ import javafx.application.Application;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.ToggleButton;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.CycleMethod;
-import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.Paint;
-import javafx.scene.paint.Stop;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -121,6 +118,17 @@ public class MinesweeperGUIView extends Application implements Observer {
 	 * True while game is in progress.
 	 */
 	private boolean gameInProgress = true;
+	
+	/**
+	 * Object used throughout gameplay to show the user various alerts.
+	 */
+	private Alert alert = new Alert(AlertType.NONE);
+	
+	/**
+	 * True when the alert at the end of the game has already been shown. False
+	 * if not.
+	 */
+	private boolean alertShown = false;
 
 	public static void main(String[] args) {
 		launch(args);
@@ -304,7 +312,11 @@ public class MinesweeperGUIView extends Application implements Observer {
 		
 	}
 	
-	
+	/**
+	 * Removes the flag image from a button.
+	 * 
+	 * @param button button in which flag is removed from.
+	 */
 	void removeFlag(ToggleButton button) {
 		button.setMaxWidth(25);
 		button.setPrefHeight(25);
@@ -314,17 +326,17 @@ public class MinesweeperGUIView extends Application implements Observer {
 	
 	/**
 	 * This method updates the GridPane of ToggleButton 
-	 * @param revealMine boolean to tell whether to show the mine on the map or not
+	 * 
+	 * @param revealMine boolean to tell whether to show the mine on the map or not.
+	 * 
 	 * @param spaceGrid  Space[][] representing the underlying mine map. 
 	 */
 	private void updateGrid(boolean revealMine, Space[][] spaceGrid, boolean playerWon) {
-		// TODO: update with "question mark"
 		for (int i = 0; i< this.FIELD_LENGTH; i++) {
 			for (int j = 0; j  < this.FIELD_WIDTH; j++) {
 				Space space = spaceGrid[i][j];
 				ToggleButton button = gridpaneMap[i][j];
 				if (space.hasFlag()) {										// if the space is flagged
-					//button.setText("F");
 					setImage("flag", button);
 					button.setText("");
 					button.setSelected(false);
@@ -373,14 +385,12 @@ public class MinesweeperGUIView extends Application implements Observer {
 						button.setSelected(false);
 					}
 				} else if (space.hasMine() && revealMine) {
-					//button.setText("*");
 					setImage("mine", button);
 					if (playerWon) {
 						waveAnimation(button, new Duration(500));
 					} else {
 						shakeAnimation(button, new Duration(10));
 					}
-					//button.setTextFill(Color.MEDIUMVIOLETRED);
 				} else {
 					removeFlag(button);
 					button.setText("");
@@ -394,7 +404,7 @@ public class MinesweeperGUIView extends Application implements Observer {
 	 * Method waveAnimation takes a node and a time as parameters that is used to make
 	 * a wave-like animation out of sequential labels that are passed to it.
 	 * 
-	 * @param toWave a JavaFX Node.
+	 * @param toWake JavaFX <code>Node</code> to wave.
 	 * 
 	 * @param timeLimit the duration of the animation.
 	 */
@@ -408,11 +418,19 @@ public class MinesweeperGUIView extends Application implements Observer {
 		wave.play();
 	}
 	
-	private void shakeAnimation(Node toWave, Duration timeLimit) {
+	/**
+	 * Creates an animation on a node. This quickly shakes the nodes horizontally
+	 * for 12 cycles.
+	 * 
+	 * @param toShake JavaFX <code>Node</code> to shake.
+	 * @param timeLimit the duration of the animation.
+	 */
+	private void shakeAnimation(Node toShave, Duration timeLimit) {
 		TranslateTransition wave = new TranslateTransition();
 		wave.setDuration(timeLimit);
-		wave.setNode(toWave);
+		wave.setNode(toShave);
 		wave.setByX(-5);
+		wave.setByX(5);
 		wave.setCycleCount(12);
 		wave.setAutoReverse(true);
 		wave.play();
@@ -420,7 +438,8 @@ public class MinesweeperGUIView extends Application implements Observer {
 	
 	/**
 	 * This method basically is used to update time in the background by 
-	 * prompting the controller to set a chain of events that update time every second. 
+	 * prompting the controller to set a chain of events that update time every second.
+	 * 
 	 * @param controller the instance of the controller for the gameplay
 	 */
 	private void startTime() {
@@ -434,19 +453,31 @@ public class MinesweeperGUIView extends Application implements Observer {
 
 	/**
 	 * This method overrides the update method in the observer. 
-	 * @param o Observable object, in this case, the game model
+	 * @param o Observable object, in this case, the game model.
+	 * 
 	 * @param saveGame (expected to be boolean) tells whether or not to save the game 
-	 * 		  the game should be saved when game is not Over
+	 * 		  the game should be saved when game is not Over.
 	 */
 	@Override
 	public void update(Observable o, Object saveGame) {
 		MinesweeperModel model = (MinesweeperModel) o;
 		if (model.isGameOver()) {
-			System.out.println("GAME OVER");
 			gameInProgress = false;
 			if (model.getPlayerWon()) {
+				if (!alertShown) {
+					alert.setAlertType(AlertType.INFORMATION);
+					alert.setContentText("You win!"); // alert the game is over
+					alert.show();
+					alertShown = true;
+				}
 				updateGrid(true, model.getMinefield(), true);
 			} else {
+				if (!alertShown) {
+	 				alert.setAlertType(AlertType.INFORMATION);
+					alert.setContentText("You lost!"); // alert the game is over
+					alert.show();
+					alertShown = true;
+				}
 				updateGrid(true, model.getMinefield(), false);
 			}
 			File savedGame = new File(SAVE_NAME);
