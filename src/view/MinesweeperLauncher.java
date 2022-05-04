@@ -6,8 +6,8 @@
  * Otherwise, this class expects to receive three positive integers that
  * represent the length, width, and number of mines in the minefield, in 
  * that order. The minimum length and width of the minefield is 4 spaces
- * long. The maximum number of mines that can be placed can be calculated
- * with the formula: (length-1)*(width-1).
+ * long. The number of mines that can be placed must be no more than half
+ * the number of spaces in the field.
  * 
  * The GUI view also offers the ability to save/load the state of a Minesweeper game if 
  * the user quits before the end of the game. Every time the application is launched, the
@@ -72,7 +72,7 @@ public class MinesweeperLauncher {
 	 * 				<li>Length/width of the minefield must be greater than three</li>
 	 * 				<li>length/width of the minefield may not exceed 30</li>
 	 * 				<li>The number of mines must be greater than zero</li>
-	 * 				<li>The number of mines may not exceed (length-1)*(width-1)</li>
+	 * 				<li>The number of mines may not exceed more than half the spaces in the minefield</li>
 	 * </ul>
 	 */
 	private static boolean argIsValid(String[] args) {
@@ -84,7 +84,7 @@ public class MinesweeperLauncher {
 			if (length <= 3 || length > 30 || width <= 3 || width > 30 || count <= 0) {
 				return false;
 			} 
-			return count < (length*width) / 2;
+			return count < (length*width) / 2.0;
 		} catch (Exception e) {
 			throw e;
 		}
