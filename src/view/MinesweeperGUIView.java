@@ -523,7 +523,11 @@ public class MinesweeperGUIView extends Application implements Observer {
 	
 
 	/**
-	 * This method overrides the update method in the observer. 
+	 * This method overrides the update method in the observer. Depending
+	 * on the progress made in the game, different elements of the GUI will
+	 * be updated to reflect the changes in game state as a result of the player's
+	 * actions.
+	 * 
 	 * @param o Observable object, in this case, the game model.
 	 * 
 	 * @param saveGame (expected to be boolean) tells whether or not to save the game 
@@ -555,8 +559,7 @@ public class MinesweeperGUIView extends Application implements Observer {
 			if (savedGame.exists()) {		// deletes saved game when game is over
 				savedGame.delete();
 			}
-			
-		} else {		// updates flag counter and minefield
+		} else {		// game is not over -- updates flag counter and minefield
 			flagLabel.setText("\tFlags Left: " + (model.getNumberofMines() - model.getFlagsPlaced()) + "/" + model.getNumberofMines());
 			if (model.getFlagsPlaced() >= .80 * model.getNumberofMines()) {	
 				flagLabel.setTextFill(Paint.valueOf("red"));		// flag counter turns red when at least 80% of the flags have been used
@@ -566,10 +569,8 @@ public class MinesweeperGUIView extends Application implements Observer {
 			updateGrid(false, model.getMinefield(), false);
 		}
 		
-		// update the timeLabel
-		// timeLabel != null checked only in case timer starts a few milliseconds before we
-		// init the timeLabel in start()
-		if(timeLabel != null) {
+		// updates timeLabel
+		if(timeLabel != null) {		// checked just in case the timer is started before timeLabel is initialized
 			int minutes = model.getTime() / 60;
 			int seconds = model.getTime() % 60;
 			String secondsString = ((int)(seconds/10))==0? "0"+seconds: ""+seconds;
