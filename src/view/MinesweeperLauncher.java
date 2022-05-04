@@ -55,9 +55,14 @@ public class MinesweeperLauncher {
 	}
 	
 	/**
-	 * 
+	 * Validations the command-line arguments provided by the player to customize
+	 * the minefield.
 	 * 
 	 * @param args command-line arguments provided by the player to customize the minefield.
+	 * 			   This array should contain three strings: <ol>
+	 * 					<li>Length of the minefield</li>
+	 * 					<li>Width of the minefield</li>
+	 * 					<li>Number of mines in the minefield</li>
 	 * 
 	 * @return <code>true</code> if the given arguments are valid integers that fall within
 	 * the limitations of the game and <code>false</code> if not. These limitations are as
