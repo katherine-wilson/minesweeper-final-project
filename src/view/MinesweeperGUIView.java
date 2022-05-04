@@ -506,7 +506,7 @@ public class MinesweeperGUIView extends Application implements Observer {
 					} else {													// if player lost, mines shake
 						shakeAnimation(button, SHAKE_DURATION);	
 					}
-				} else if (revealMine && space.isRevealed()) {
+				} else if (revealMine && !space.isRevealed()) {
 					button.setDisable(true);
 				}
 			}
