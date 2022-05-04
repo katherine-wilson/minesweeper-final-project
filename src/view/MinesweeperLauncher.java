@@ -17,11 +17,14 @@
  */
 package view;
 
+import java.io.File;
+
 import javafx.application.Application;
 
 public class MinesweeperLauncher {
 	
 	public static void main(String[] args) {
+		File savedGame = new File("saved_game.dat");
 		if (args.length == 3) {
 			try {
 				if (argIsValid(args)) {

@@ -373,6 +373,7 @@ public class MinesweeperGUIView extends Application implements Observer {
 		timeline.setCycleCount(Animation.INDEFINITE);
 		timeline.play();
 	}
+	
 
 	/**
 	 * This method overrides the update method in the observer. 
