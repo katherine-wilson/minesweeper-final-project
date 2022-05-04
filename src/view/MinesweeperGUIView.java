@@ -323,6 +323,7 @@ public class MinesweeperGUIView extends Application implements Observer {
 						button.setDisable(true);
 						button.setText("  ");
 					} else if (adjMine == 1) {
+						button.setStyle("-fx-background-color:#acafb1; ");						
 						button.setText("1");
 						button.setTextFill(Paint.valueOf("blue"));
 						button.setSelected(false);
@@ -385,7 +386,8 @@ public class MinesweeperGUIView extends Application implements Observer {
 		TranslateTransition wave = new TranslateTransition();
 		wave.setDuration(timeLimit);
 		wave.setNode(toWave);
-		wave.setByY(-5);
+		wave.setByY(-3);
+		wave.setToY(3);
 		wave.setCycleCount(12);
 		wave.setAutoReverse(true);
 		wave.play();
@@ -395,7 +397,8 @@ public class MinesweeperGUIView extends Application implements Observer {
 		TranslateTransition wave = new TranslateTransition();
 		wave.setDuration(timeLimit);
 		wave.setNode(toWave);
-		wave.setByX(-5);
+		wave.setByX(-3);
+		wave.setToX(3);
 		wave.setCycleCount(12);
 		wave.setAutoReverse(true);
 		wave.play();
