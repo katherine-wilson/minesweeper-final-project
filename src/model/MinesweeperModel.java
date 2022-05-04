@@ -1,7 +1,6 @@
 package model;
 
 import java.awt.Point;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;

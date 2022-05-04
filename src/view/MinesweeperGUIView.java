@@ -135,10 +135,16 @@ public class MinesweeperGUIView extends Application implements Observer {
 	 */
 	private boolean alertShown = false;
 
-	public static void main(String[] args) {
-		launch(args);
-	}
-
+	/**
+	 * Starts the GUI-based view of the Minesweeper game. Initialized everything
+	 * needed for the stage and shows it. Also initializes the controller and 
+	 * model needed to manage the gameplay state. If valid command-line arguments
+	 * were provided by the player in the launcher, then a minefield will be displayed
+	 * according to the measurements and number of mines that were specified.
+	 * 
+	 * @param primaryStage <code>Stage</code> that is displayed to the user over the
+	 * course of gameplay.
+	 */
 	@Override
 	public void start(Stage primaryStage) {
 		System.out.println("Start of stage");
