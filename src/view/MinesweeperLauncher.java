@@ -3,6 +3,9 @@
  * The program will launch the GUI view or text view based on the
  * command-line arguments. If this game is launched with no arguments,
  * then the GUI view will be loaded with 25 mines and a 16x16 minefield.
+ * Otherwise, this class expects to receive three positive integers that
+ * represent the length, width, and number of mines in the minefield, in 
+ * that order.
  * 
  * The GUI view also offers the ability to save/load the state of a Minesweeper game if 
  * the user quits before the end of the game. Every time the application is launched, the
@@ -17,12 +20,18 @@
  */
 package view;
 
-import java.io.File;
-
 import javafx.application.Application;
 
 public class MinesweeperLauncher {
 	
+	/**
+	 * Launches the Minesweeper game. The dimensions of the minefield and number of mines
+	 * will depend on the command-line arguments given.
+	 * 
+	 * @param args argument given by the player from the command line. These arguments should
+	 * be three non-negative, non-zero integers that represent the length, width, and number
+	 * of mines in the minefield. The arguments must be provided in that order.
+	 */
 	public static void main(String[] args) {
 		if (args.length == 3) {
 			try {
@@ -45,6 +54,20 @@ public class MinesweeperLauncher {
 		}
 	}
 	
+	/**
+	 * 
+	 * 
+	 * @param args command-line arguments provided by the player to customize the minefield.
+	 * 
+	 * @return <code>true</code> if the given arguments are valid integers that fall within
+	 * the limitations of the game and <code>false</code> if not. These limitations are as
+	 * follows:<br><ul>
+	 * 				<li>Length/width of the minefield must be greater than zero</li>
+	 * 				<li>length/width of the minefield may not exceed 30</li>
+	 * 				<li>The number of mines must be greater than zero</li>
+	 * 				<li>The number of mines may not exceed (length-1)*(width-1)</li>
+	 * </ul>
+	 */
 	private static boolean argIsValid(String[] args) {
 		try {
 			int length = Integer.parseInt(args[0]);
