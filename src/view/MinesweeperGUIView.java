@@ -69,6 +69,11 @@ public class MinesweeperGUIView extends Application implements Observer {
 	private static final Image GREAT_FLAG = new Image("/greatflag.png");
 	
 	/**
+	 * Length and width of flag image.
+	 */
+	private static final int FLAG_SIZE = 25;
+	
+	/**
 	 * Relative path to image used for mines.
 	 */
 	private static final Image MINE = new Image("/mine.png");
@@ -115,17 +120,27 @@ public class MinesweeperGUIView extends Application implements Observer {
 	/**
 	 * Length of mine field.
 	 */
-	private int FIELD_LENGTH;
+	private static int FIELD_LENGTH;
 	
 	/**
 	 * Width of mine field.
 	 */
-	private int FIELD_WIDTH;
+	private static int FIELD_WIDTH;
 	
 	/**
 	 * Size of spaces in the minefield.
 	 */
 	private static final int SPACE_SIZE = 25;
+	
+	/**
+	 * Duration of flag placement animation.
+	 */
+	private static final Duration PLACE_ANIM_DURATION = new Duration(200);
+	
+	/*
+	 * Duration of the "quick shake" animation.
+	 */
+	private static final Duration QUICK_SHAKE_DURATION = new Duration(50);
 	
 	/**
 	 * Object used throughout gameplay to show the user various alerts.
@@ -297,7 +312,10 @@ public class MinesweeperGUIView extends Application implements Observer {
 				else if (click == MouseButton.SECONDARY) {
 					// place flag
 					if (controller.toggleFlag(x, y)) {
-						placeAnimation(button, Duration.millis(200));
+						placeAnimation(button, PLACE_ANIM_DURATION);	// "bounces" flag when placed
+					} else {
+						removeFlag(button);								// removes flag image from button
+						button.setText("");
 					}
 				}
 			} catch (IllegalStepException e) {
@@ -306,10 +324,10 @@ public class MinesweeperGUIView extends Application implements Observer {
 			} catch (IllegalFlagPlacementException e) {
 				System.out.println(e.getMessage());
 				if (e.getMessage().equals("Out of flags!")) {
-					alert.setAlertType(AlertType.INFORMATION);
-					alert.setContentText(e.getMessage()); // alert the game is over
+					alert.setAlertType(AlertType.INFORMATION);			// shows alert if player attempts to place flag when they're out
+					alert.setContentText(e.getMessage());
 					alert.show();
-					quickShake(flagLabel, new Duration(50));
+					quickShake(flagLabel, QUICK_SHAKE_DURATION);
 				}
 				return;
 			}
@@ -350,8 +368,8 @@ public class MinesweeperGUIView extends Application implements Observer {
 	 * @param button button in which flag is removed from.
 	 */
 	private void removeFlag(ToggleButton button) {
-		button.setMaxWidth(25);
-		button.setPrefHeight(25);
+		button.setMaxWidth(FLAG_SIZE);
+		button.setPrefHeight(FLAG_SIZE);
 		button.setGraphic(null);
 		button.setSelected(false);
 	}
@@ -364,28 +382,24 @@ public class MinesweeperGUIView extends Application implements Observer {
 	 * @param spaceGrid  Space[][] representing the underlying mine map. 
 	 */
 	private void updateGrid(boolean revealMine, Space[][] spaceGrid, boolean playerWon) {
-		for (int i = 0; i< this.FIELD_LENGTH; i++) {
-			for (int j = 0; j  < this.FIELD_WIDTH; j++) {
+		for (int i = 0; i< FIELD_LENGTH; i++) {
+			for (int j = 0; j  < FIELD_WIDTH; j++) {
 				Space space = spaceGrid[i][j];
 				ToggleButton button = gridpaneMap[i][j];
-				if (space.hasFlag()) {										// if the space is flagged
+				if (space.hasFlag()) {										// if the space is flagged...
 					setImage("flag", button);
 					button.setText("");
 					button.setSelected(false);
-					if (revealMine && playerWon) {
-						button.setStyle("-fx-background-color: #84e8b4; -fx-padding: 2px;");	
-					} else if (revealMine && !playerWon) {
+					if (revealMine && !playerWon) {								// flags on mines shake when player loses
 						button.setDisable(true);
 						shakeAnimation(button, new Duration(30));
-					} else {
-						button.setDisable(false);
-					}
-					if (revealMine && playerWon && space.hasMine()) {
+					} else if (revealMine && playerWon && space.hasMine()) {	// flags on mines have green backgrounds and wave if player won
+						button.setStyle("-fx-background-color: #84e8b4; -fx-padding: 2px;");
 						waveAnimation(button, new Duration(500));
 					}
-				} else if (revealMine && !space.hasMine()) {
+				} else if (revealMine && !space.hasMine()) {				// prevents player from clicking spaces when the game is over
 					button.setDisable(true);
-				} else if (space.isRevealed() && !space.hasMine()) {		// if the space is not flagged and does not have mine
+				} else if (space.isRevealed() && !space.hasMine()) {		// if the space is not flagged and does not have mine...
 					int adjMine = space.adjacentMines();
 					button.getStyleClass().add("grey-button");
 					if (adjMine == 0) {
@@ -426,16 +440,13 @@ public class MinesweeperGUIView extends Application implements Observer {
 						button.setTextFill(Paint.valueOf("turquoise"));
 						button.setSelected(false);
 					}
-				} else if (space.hasMine() && revealMine) {
+				} else if (space.hasMine() && revealMine) {						// shows mines if the game is over
 					setImage("mine", button);
-					if (playerWon) {
+					if (playerWon) {											// if player won, mines wave
 						waveAnimation(button, new Duration(500));
-					} else {
-						shakeAnimation(button, new Duration(30));
+					} else {													// if player lost, mines shake
+						shakeAnimation(button, new Duration(30));	
 					}
-				} else {
-					removeFlag(button);
-					button.setText("");
 				}
 			}
 		}
