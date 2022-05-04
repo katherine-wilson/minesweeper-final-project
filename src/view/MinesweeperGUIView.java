@@ -354,10 +354,16 @@ public class MinesweeperGUIView extends Application implements Observer {
 					setImage("flag", button);
 					button.setText("");
 					button.setSelected(false);
-					button.setDisable(false);
+					if (revealMine) {
+						button.setDisable(true);
+					} else {
+						button.setDisable(false);
+					}
 					if (revealMine && playerWon && space.hasMine()) {
 						waveAnimation(button, new Duration(500));
 					}
+				} else if (revealMine && !space.hasMine()) {
+					button.setDisable(true);
 				} else if (space.isRevealed() && !space.hasMine()) {		// if the space is not flagged and does not have mine
 					int adjMine = space.adjacentMines();
 					button.getStyleClass().add("grey-button");
@@ -404,7 +410,7 @@ public class MinesweeperGUIView extends Application implements Observer {
 					if (playerWon) {
 						waveAnimation(button, new Duration(500));
 					} else {
-						shakeAnimation(button, new Duration(10));
+						shakeAnimation(button, new Duration(20));
 					}
 				} else {
 					removeFlag(button);
@@ -429,7 +435,7 @@ public class MinesweeperGUIView extends Application implements Observer {
 		wave.setNode(toWave);
 		wave.setByY(-3);
 		wave.setToY(3);
-		wave.setCycleCount(12);
+		wave.setCycleCount(1000);
 		wave.setAutoReverse(true);
 		wave.play();
 	}
@@ -447,7 +453,7 @@ public class MinesweeperGUIView extends Application implements Observer {
 		wave.setNode(toShake);
 		wave.setByX(-5);
 		wave.setByX(5);
-		wave.setCycleCount(12);
+		wave.setCycleCount(1000);
 		wave.setAutoReverse(true);
 		wave.play();
 	}
@@ -476,6 +482,7 @@ public class MinesweeperGUIView extends Application implements Observer {
 	 */
 	@Override
 	public void update(Observable o, Object saveGame) {
+		System.out.println("update");
 		MinesweeperModel model = (MinesweeperModel) o;
 		if (model.isGameOver()) {
 			timeline.pause();

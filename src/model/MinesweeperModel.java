@@ -225,15 +225,17 @@ public class MinesweeperModel extends Observable implements Serializable {
 	 * 		  chosen by the player to add/remove a flag
 	 */
 	public void toggleFlag(Point location) {
-		if (minefield[location.y][location.x].hasFlag()) {
-			minefield[location.y][location.x].removeFlag();
-			flagsPlaced--;
-		} else {
-			minefield[location.y][location.x].placeFlag();
-			flagsPlaced++;
+		if (!gameOver) {
+			if (minefield[location.y][location.x].hasFlag()) {
+				minefield[location.y][location.x].removeFlag();
+				flagsPlaced--;
+			} else {
+				minefield[location.y][location.x].placeFlag();
+				flagsPlaced++;
+			}
+			setChanged();
+			notifyObservers(false);
 		}
-		setChanged();
-		notifyObservers(false);
 	}
 
 	/**
