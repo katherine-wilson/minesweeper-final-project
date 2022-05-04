@@ -25,6 +25,9 @@ public class MinesweeperLauncher {
 	
 	public static void main(String[] args) {
 		File savedGame = new File("saved_game.dat");
+		if (savedGame.exists()) {
+			savedGame.delete();
+		}
 		if (args.length == 3) {
 			try {
 				if (argIsValid(args)) {
@@ -53,8 +56,7 @@ public class MinesweeperLauncher {
 			int count = Integer.parseInt(args[2]);
 			if (length <= 0 || width <= 0 || count <= 0) {
 				return false;
-			}
-			return count < (length-1)*(width-1);
+			}return count < (length-1)*(width-1);
 		} catch (Exception e) {
 			throw e;
 		}

@@ -33,11 +33,16 @@ import javafx.scene.control.ToggleButton;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.CycleMethod;
+import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.Paint;
+import javafx.scene.paint.Stop;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -97,6 +102,15 @@ public class MinesweeperGUIView extends Application implements Observer {
 	private Label timeLabel;
 
 	/**
+	 * Color of background (top).
+	 */
+	private static final Color BACKGROUND_COLOR_1 = Color.rgb(185, 197, 228);
+	/**
+	 * Color of background (bottom).
+	 */
+	private static final Color BACKGROUND_COLOR_2 = Color.rgb(255, 240, 245);
+	
+	/**
 	 * This field contains the dimension of the mine field.
 	 */
 	private int FIELD_LENGTH;
@@ -149,9 +163,9 @@ public class MinesweeperGUIView extends Application implements Observer {
 		vbox.getChildren().add(title);
 		vbox.getChildren().add(timeBox);
 		vbox.getChildren().add(board);
-
+		//vbox.setStyle("-fx-background-color: rgb(170, 177, 189);");
+		
 		Scene scene = new Scene(vbox, SCENE_WIDTH, SCENE_HEIGHT);
-
 		primaryStage.setScene(scene);
 		primaryStage.show();
 		
@@ -323,7 +337,7 @@ public class MinesweeperGUIView extends Application implements Observer {
 						button.setDisable(true);
 						button.setText("  ");
 					} else if (adjMine == 1) {
-						button.setStyle("-fx-background-color:#acafb1; ");						
+						//button.setStyle("-fx-background-color:#acafb1; ");						
 						button.setText("1");
 						button.setTextFill(Paint.valueOf("blue"));
 						button.setSelected(false);
