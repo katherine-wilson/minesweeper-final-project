@@ -455,9 +455,10 @@ public class MinesweeperGUIView extends Application implements Observer {
 						button.setStyle("-fx-background-color: #84e8b4; -fx-padding: 2px;");
 						waveAnimation(button, new Duration(500));
 					}
-				} else if (revealMine && !space.hasMine()) {				// prevents player from clicking spaces when the game is over
-					button.setDisable(true);
 				} else if (space.isRevealed() && !space.hasMine()) {		// if the space is not flagged and does not have mine...
+					if (revealMine) {
+						button.setDisable(true);							// prevents user from toggling buttons when game is over
+					}
 					int adjMine = space.adjacentMines();
 					button.getStyleClass().add("grey-button");
 					if (adjMine == 0) {

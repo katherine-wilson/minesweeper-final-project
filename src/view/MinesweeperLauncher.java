@@ -84,7 +84,7 @@ public class MinesweeperLauncher {
 			if (length <= 3 || length > 30 || width <= 3 || width > 30 || count <= 0) {
 				return false;
 			} 
-			return count < (length-1)*(width-1);
+			return count < (length*width) / 2;
 		} catch (Exception e) {
 			throw e;
 		}
