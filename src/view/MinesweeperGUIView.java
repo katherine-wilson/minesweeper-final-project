@@ -80,54 +80,49 @@ public class MinesweeperGUIView extends Application implements Observer {
 	 */
 	private MinesweeperModel model;
 	/**
-	 * This is the controller of the game, through which the gui change the
-	 * underlying data in the model
+	 * Minesweeper controller through which the GUI interacts with the
+	 * data in the underlying model.
 	 */
 	private MinesweeperController controller;
 	/**
-	 * This field contains the grid of ToggleButton representing the minfield's
+	 * Grid of <code>ToggleButton</code> objects representing the minefield's
 	 * interactive "boxes".
 	 */
 	private ToggleButton[][] gridpaneMap;
 	/**
-	 * This field is the GridPane representing the mine field.
+	 * <code>GridPane</code> that stores each space in the minefield.
 	 */
 	private GridPane gridpane;
+	
 	/**
-	 * This field is basically used to display the current time in seconds
+	 * Label that is used to display the current time in seconds.
 	 */
 	private Label timeLabel;
 	
 	/**
-	 * This field is basically used to display the current time in seconds
+	 * <code>Timeline</code> object that keeps track of elapsed time.
 	 */
 	private Timeline timeline;
 	
 	/**
-	 * This field is used to display the number of flags available.
+	 * Label that displays the number of flags available.
 	 */
 	private Label flagLabel;
 	
 	/**
-	 * Color of background (top).
-	 */
-	private static final Color BACKGROUND_COLOR_1 = Color.rgb(185, 197, 228);
-	/**
-	 * Color of background (bottom).
-	 */
-	private static final Color BACKGROUND_COLOR_2 = Color.rgb(255, 240, 245);
-	
-	/**
-	 * This field contains the dimension of the mine field.
+	 * Length of mine field.
 	 */
 	private int FIELD_LENGTH;
-	private int FIELD_WIDTH;
-	private static final int SPACE_SIZE = 25;
 	
 	/**
-	 * True while game is in progress.
+	 * Width of mine field.
 	 */
-	private boolean gameInProgress = true;
+	private int FIELD_WIDTH;
+	
+	/**
+	 * Size of spaces in the minefield.
+	 */
+	private static final int SPACE_SIZE = 25;
 	
 	/**
 	 * Object used throughout gameplay to show the user various alerts.
@@ -136,7 +131,7 @@ public class MinesweeperGUIView extends Application implements Observer {
 	
 	/**
 	 * True when the alert at the end of the game has already been shown. False
-	 * if not.
+	 * if not. This prevents end-of-game alerts from being shown more than once.
 	 */
 	private boolean alertShown = false;
 
@@ -281,9 +276,7 @@ public class MinesweeperGUIView extends Application implements Observer {
 			try {
 				// left click to reveal a space
 				if (click == MouseButton.PRIMARY) {
-					if (gameInProgress) {			// Block input
-						controller.takeStep(x, y);
-					}
+					controller.takeStep(x, y);
 				} // right click to put/remove flag/question mark
 				// TODO if we implement question: if it's a flag, turn into question
 				// if it's a question, turn into open space (unrevealed) 
@@ -533,34 +526,34 @@ public class MinesweeperGUIView extends Application implements Observer {
 	@Override
 	public void update(Observable o, Object saveGame) {
 		MinesweeperModel model = (MinesweeperModel) o;
-		if (model.isGameOver()) {
-			timeline.pause();
-			gameInProgress = false;
+		if (model.isGameOver()) {			// handles game over events
+			timeline.pause();					// pauses timer
 			if (model.getPlayerWon()) {
 				if (!alertShown) {
 					alert.setAlertType(AlertType.INFORMATION);
-					alert.setContentText("You win!"); // alert the game is over
+					alert.setContentText("You win!"); 							// alert the game has been won
 					alert.show();
 					alertShown = true;
 				}
-				updateGrid(true, model.getMinefield(), true);
+				updateGrid(true, model.getMinefield(), true);					// updates grid, mines are revealed, player won
 			} else {
 				if (!alertShown) {
 	 				alert.setAlertType(AlertType.INFORMATION);
-					alert.setContentText("You stepped on a mine. Try again."); // alert the game is over
+					alert.setContentText("You stepped on a mine. Try again."); // alert the game has been lost
 					alert.show();
 					alertShown = true;
-				}
-				updateGrid(true, model.getMinefield(), false);
+				}	
+				updateGrid(true, model.getMinefield(), false);					// updates grid, mines are revealed, player lost
 			}
 			File savedGame = new File(SAVE_NAME);
-			if (savedGame.exists()) {
+			if (savedGame.exists()) {		// deletes saved game when game is over
 				savedGame.delete();
 			}
-		} else {
+			
+		} else {		// updates flag counter and minefield
 			flagLabel.setText("\tFlags Left: " + (model.getNumberofMines() - model.getFlagsPlaced()) + "/" + model.getNumberofMines());
-			if (model.getFlagsPlaced() >= .80 * model.getNumberofMines()) {
-				flagLabel.setTextFill(Paint.valueOf("red"));
+			if (model.getFlagsPlaced() >= .80 * model.getNumberofMines()) {	
+				flagLabel.setTextFill(Paint.valueOf("red"));		// flag counter turns red when at least 80% of the flags have been used
 			} else {
 				flagLabel.setTextFill(Paint.valueOf("black"));
 			}
@@ -576,9 +569,6 @@ public class MinesweeperGUIView extends Application implements Observer {
 			String secondsString = ((int)(seconds/10))==0? "0"+seconds: ""+seconds;
 			timeLabel.setText(minutes+" : "+ secondsString);
 		}
-		// TODO: implement function in model to be called when the user exit the game:
-		// check if isGameover() -> if not, set arg to a boolean to decide to serialize 
-		// the model or not 	
 	}
 
 }
