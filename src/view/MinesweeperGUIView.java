@@ -166,6 +166,10 @@ public class MinesweeperGUIView extends Application implements Observer {
 		//vbox.setStyle("-fx-background-color: rgb(170, 177, 189);");
 		
 		Scene scene = new Scene(vbox, SCENE_WIDTH, SCENE_HEIGHT);
+		//Stop[] stop1 = new Stop[] { new Stop(0, BACKGROUND_COLOR_1), new Stop(1, BACKGROUND_COLOR_2)};
+		//LinearGradient lg1 = new LinearGradient(0, 0, 0, 1, true, CycleMethod.NO_CYCLE, stop1);
+		//scene.setFill(lg1);
+		
 		primaryStage.setScene(scene);
 		primaryStage.show();
 		
