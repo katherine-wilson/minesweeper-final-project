@@ -74,7 +74,7 @@ public class MinesweeperModel extends Observable implements Serializable {
 
 	/**
 	 * <code>HashSet</code> that stores the locations of each mine on the minefield using
-	 * <code>Point</code> objects.
+	 * <code>Point</code> objects. Only used during initialization.
 	 */
 	private HashSet<Point> mineLocations;
 
@@ -122,6 +122,10 @@ public class MinesweeperModel extends Observable implements Serializable {
 		if (model != null) {
 			this.safeSpacesRevealed = model.safeSpacesRevealed;
 			this.stepsTaken = model.stepsTaken;
+			if (stepsTaken == 0) {
+				initField();
+				placeMines();
+			}
 			this.flagsPlaced = model.flagsPlaced;
 			this.gameOver = model.gameOver;
 			this.minefield = model.minefield;
