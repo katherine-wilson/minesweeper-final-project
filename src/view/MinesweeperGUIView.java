@@ -49,7 +49,7 @@ import utilities.Space;
 public class MinesweeperGUIView extends Application implements Observer {
 	// ------------------------------------------------------[  FIELDS  ]------------------------------------------------------	
 	/**
-	 * Width of the game window.
+	 * Width of the game window. Check
 	 */
 	private static final int SCENE_WIDTH = 800;
 	
