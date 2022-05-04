@@ -28,6 +28,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ToggleButton;
+import javafx.scene.image.Image;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -223,7 +224,7 @@ public class MinesweeperGUIView extends Application implements Observer {
 			try {
 				// left click to reveal a space
 				if (click == MouseButton.PRIMARY) {
-					if (gameInProgress) {			// BLOCK INPUT
+					if (gameInProgress) {			// Block input
 						controller.takeStep(x, y);
 					}
 				} // right click to put/remove flag/question mark
@@ -257,7 +258,7 @@ public class MinesweeperGUIView extends Application implements Observer {
 				ToggleButton button = gridpaneMap[i][j];
 				if (space.hasFlag()) {										// if the space is flagged
 					button.setText("F");
-					//button.setGraphic(button);
+					//button.setGraphic();
 					button.setSelected(false);
 					button.setDisable(false);
 					updateImage(button, "flag");
@@ -347,6 +348,10 @@ public class MinesweeperGUIView extends Application implements Observer {
 		if (model.isGameOver()) {
 			gameInProgress = false;
 			updateGrid(true, model.getMinefield());
+			File savedGame = new File(SAVE_NAME);
+			if (savedGame.exists()) {
+				savedGame.delete();
+			}
 		} else {
 			updateGrid(false, model.getMinefield());
 		}
