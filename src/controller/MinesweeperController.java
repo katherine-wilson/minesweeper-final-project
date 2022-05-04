@@ -93,13 +93,13 @@ public class MinesweeperController {
 	 * <li>The player attempts to place a flag when they're out of flags</li>
 	 * </ul>
 	 */
-	public void toggleFlag(int x, int y) throws IllegalFlagPlacementException {
+	public boolean toggleFlag(int x, int y) throws IllegalFlagPlacementException {
 		if (model.getMinefield()[y][x].isRevealed()) {
 			throw new IllegalFlagPlacementException("Cannot place a flag on a revealed space.");
 		} else if (model.getFlagsPlaced() == model.getNumberofMines() && !model.getMinefield()[y][x].hasFlag()) {
 			throw new IllegalFlagPlacementException("Out of flags!");
 		} else {
-			model.toggleFlag(new Point(x, y));
+			return model.toggleFlag(new Point(x, y));
 		}
 	}
 	

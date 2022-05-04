@@ -34,13 +34,13 @@ public class MinesweeperLauncher {
 					Application.launch(MinesweeperGUIView.class, args);
 				}
 				else {
-					System.out.println("Please enter valid positive number for the lenght and width of "
-							+ "the mine field and the number of mine. For the valid number of mine, it should be less "
+					System.out.println("Please enter valid positive number for the length and width of "
+							+ "the mine field and the number of mines. The number of mines should be less "
 							+ "than (length-1)(width-1)");
 				}
 			} catch (Exception e) {
-				System.out.println("Please enter valid positive number for the lenght and width of "
-						+ "the mine field and the number of mine. For the valid number of mine, it should be less "
+				System.out.println("Please enter valid positive number for the length and width of "
+						+ "the mine field and the number of mines. The number of mines should be less "
 						+ "than (length-1)(width-1)");
 			}
 		} else {
@@ -54,9 +54,10 @@ public class MinesweeperLauncher {
 			int length = Integer.parseInt(args[0]);
 			int width = Integer.parseInt(args[1]);
 			int count = Integer.parseInt(args[2]);
-			if (length <= 0 || width <= 0 || count <= 0) {
+			if (length <= 0 || length > 30 || width <= 0 || width > 30 || count <= 0) {
 				return false;
-			}return count < (length-1)*(width-1);
+			} 
+			return count < (length-1)*(width-1);
 		} catch (Exception e) {
 			throw e;
 		}

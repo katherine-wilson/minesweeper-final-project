@@ -104,9 +104,9 @@ public class MinesweeperGUIView extends Application implements Observer {
 	private Timeline timeline;
 	
 	/**
-	 * This field is used to display the number of flag available
+	 * This field is used to display the number of flags available.
 	 */
-	private Label flagCount;
+	private Label flagLabel;
 	
 	/**
 	 * Color of background (top).
@@ -169,7 +169,10 @@ public class MinesweeperGUIView extends Application implements Observer {
 		timeLabel = new Label();
 		HBox infoBox = new HBox();
 		infoBox.getChildren().add(timeLabel);
-		timeLabel.setAlignment(Pos.CENTER);
+		timeLabel.setAlignment(Pos.CENTER_LEFT);
+		flagLabel = new Label();
+		flagLabel.setAlignment(Pos.CENTER_RIGHT);
+		infoBox.getChildren().add(flagLabel);
 		infoBox.setAlignment(Pos.CENTER);
 		
 		// HBox that contains the GridPane
@@ -184,6 +187,7 @@ public class MinesweeperGUIView extends Application implements Observer {
 		vbox.getChildren().add(title);
 		vbox.getChildren().add(infoBox);
 		vbox.getChildren().add(board);
+		vbox.setStyle("background-image: linear-gradient(red, yellow);");
 		//vbox.setStyle("-fx-background-color: rgb(170, 177, 189);");
 		
 		Scene scene = new Scene(vbox, SCENE_WIDTH, SCENE_HEIGHT);
@@ -286,13 +290,20 @@ public class MinesweeperGUIView extends Application implements Observer {
 				// TODO: implement the model also if we decide to do the question mark.
 				else if (click == MouseButton.SECONDARY) {
 					// place flag
-					controller.toggleFlag(x, y);
+					if (controller.toggleFlag(x, y)) {
+						placeAnimation(button, Duration.millis(200));
+					}
 				}
 			} catch (IllegalStepException e) {
 				System.out.println(e.getMessage());
 				return;
 			} catch (IllegalFlagPlacementException e) {
 				System.out.println(e.getMessage());
+				if (e.getMessage().equals("Out of flags!")) {
+					alert.setAlertType(AlertType.INFORMATION);
+					alert.setContentText(e.getMessage()); // alert the game is over
+					alert.show();
+				}
 				return;
 			}
 		});
@@ -354,8 +365,11 @@ public class MinesweeperGUIView extends Application implements Observer {
 					setImage("flag", button);
 					button.setText("");
 					button.setSelected(false);
-					if (revealMine) {
+					if (revealMine && playerWon) {
+						button.setStyle("-fx-background-color: #84e8b4; -fx-padding: 2px;");	
+					} else if (revealMine && !playerWon) {
 						button.setDisable(true);
+						shakeAnimation(button, new Duration(30));
 					} else {
 						button.setDisable(false);
 					}
@@ -410,7 +424,7 @@ public class MinesweeperGUIView extends Application implements Observer {
 					if (playerWon) {
 						waveAnimation(button, new Duration(500));
 					} else {
-						shakeAnimation(button, new Duration(20));
+						shakeAnimation(button, new Duration(30));
 					}
 				} else {
 					removeFlag(button);
@@ -472,6 +486,23 @@ public class MinesweeperGUIView extends Application implements Observer {
 		timeline.play();
 	}
 	
+	/**
+	 * Creates an animation when a flag is placed.
+	 * 
+	 * @param toMove a JavaFX Node.
+	 * 
+	 * @param time the duration of the animation.
+	 */
+	private void placeAnimation(Node toMove, Duration time) {
+		TranslateTransition move = new TranslateTransition();
+		move.setDuration(time);
+		move.setNode(toMove);
+		move.setByY(-5);
+		move.setCycleCount(2);
+		move.setAutoReverse(true);
+		move.play();
+	}
+	
 
 	/**
 	 * This method overrides the update method in the observer. 
@@ -482,7 +513,6 @@ public class MinesweeperGUIView extends Application implements Observer {
 	 */
 	@Override
 	public void update(Observable o, Object saveGame) {
-		System.out.println("update");
 		MinesweeperModel model = (MinesweeperModel) o;
 		if (model.isGameOver()) {
 			timeline.pause();
@@ -509,6 +539,7 @@ public class MinesweeperGUIView extends Application implements Observer {
 				savedGame.delete();
 			}
 		} else {
+			flagLabel.setText("\tFlags Left: " + (model.getNumberofMines() - model.getFlagsPlaced()) + "/" + model.getNumberofMines());
 			updateGrid(false, model.getMinefield(), false);
 		}
 		
