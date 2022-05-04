@@ -448,7 +448,7 @@ public class MinesweeperGUIView extends Application implements Observer {
 					setImage("flag", button);
 					button.setText("");
 					button.setSelected(false);
-					if (revealMine && !playerWon) {								// flags on mines shake when player loses
+					if (revealMine && !playerWon && space.hasMine()) {		// flags on mines shake when player loses
 						button.setDisable(true);
 						shakeAnimation(button, new Duration(30));
 					} else if (revealMine && playerWon && space.hasMine()) {	// flags on mines have green backgrounds and wave if player won
