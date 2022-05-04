@@ -268,15 +268,18 @@ public class MinesweeperGUIView extends Application implements Observer {
 		ImageView image = new ImageView();
 		if (img.equals("flag")) {
 			image = new ImageView(GREAT_FLAG);
-		} else if (img.equals("mine")) {
-			image = new ImageView(MINE);
-		}
-		if (image != null) {
 			image.setFitHeight(20);
 			image.setFitWidth(15);
+			button.setStyle("-fx-padding: 2px;");
+		} else if (img.equals("mine")) {
+			image = new ImageView(MINE);
+			image.setFitHeight(23);
+			image.setFitWidth(23);
+			button.setStyle("-fx-padding: 0px;");
+		}
+		if (image != null) {
 			image.setPreserveRatio(true);
 			button.setGraphic(image);
-			button.setStyle("-fx-padding: 2px;");
 		}
 		
 	}
