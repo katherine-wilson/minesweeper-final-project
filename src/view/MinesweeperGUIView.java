@@ -132,10 +132,22 @@ public class MinesweeperGUIView extends Application implements Observer {
 	 */
 	private static final Duration PLACE_ANIM_DURATION = new Duration(200);
 	
-	/*
+	/**
 	 * Duration of the "quick shake" animation.
 	 */
 	private static final Duration QUICK_SHAKE_DURATION = new Duration(50);
+	
+	/**
+	 * Duration of the "wave" animation that plays when the player 
+	 * wins the game.
+	 */
+	private static final Duration WAVE_DURATION = new Duration(500);
+	
+	/**
+	 * Duration of the "shake" animation that plays when the player
+	 * loses the game.
+	 */
+	private static final Duration SHAKE_DURATION = new Duration(30);
 	
 	/**
 	 * Object used throughout gameplay to show the user various alerts.
@@ -304,8 +316,8 @@ public class MinesweeperGUIView extends Application implements Observer {
 		}
 		model.addObserver(this);
 		controller = new MinesweeperController(model);
-		this.FIELD_LENGTH = model.getDimensions()[0];
-		this.FIELD_WIDTH = model.getDimensions()[1];
+		FIELD_LENGTH = model.getDimensions()[0];
+		FIELD_WIDTH = model.getDimensions()[1];
 	}
 
 	/**
@@ -353,15 +365,10 @@ public class MinesweeperGUIView extends Application implements Observer {
 			int x = GridPane.getColumnIndex(target);
 			
 			try {
-				// left click to reveal a space
-				if (click == MouseButton.PRIMARY) {
+				if (click == MouseButton.PRIMARY) {					// left click to reveal a space
 					controller.takeStep(x, y);
-				} // right click to put/remove flag/question mark
-				// TODO if we implement question: if it's a flag, turn into question
-				// if it's a question, turn into open space (unrevealed) 
-				// TODO: implement the model also if we decide to do the question mark.
-				else if (click == MouseButton.SECONDARY) {
-					// place flag
+				} else if (click == MouseButton.SECONDARY) {		// right click to put/remove flag
+					// toggle flag
 					if (controller.toggleFlag(x, y)) {
 						placeAnimation(button, PLACE_ANIM_DURATION);	// "bounces" flag when placed
 					} else {
@@ -494,9 +501,9 @@ public class MinesweeperGUIView extends Application implements Observer {
 				} else if (space.hasMine() && revealMine) {						// shows mines if the game is over
 					setImage("mine", button);
 					if (playerWon) {											// if player won, mines wave
-						waveAnimation(button, new Duration(500));
+						waveAnimation(button, WAVE_DURATION);
 					} else {													// if player lost, mines shake
-						shakeAnimation(button, new Duration(30));	
+						shakeAnimation(button, SHAKE_DURATION);	
 					}
 				}
 			}
@@ -560,20 +567,6 @@ public class MinesweeperGUIView extends Application implements Observer {
 	}
 	
 	/**
-	 * This method basically is used to update time in the background by 
-	 * prompting the controller to set a chain of events that update time every second.
-	 * 
-	 * @param controller the instance of the controller for the gameplay
-	 */
-	private void startTime() {
-		timeline = new Timeline(new KeyFrame(Duration.seconds(1), event -> {
-			controller.setTime(controller.getTime()+1);
-		}));
-		timeline.setCycleCount(Animation.INDEFINITE);
-		timeline.play();
-	}
-	
-	/**
 	 * Creates an animation when a flag is placed.
 	 * 
 	 * @param toMove a JavaFX Node.
@@ -588,6 +581,20 @@ public class MinesweeperGUIView extends Application implements Observer {
 		move.setCycleCount(2);
 		move.setAutoReverse(true);
 		move.play();
+	}
+	
+	/**
+	 * This method basically is used to update time in the background by 
+	 * prompting the controller to set a chain of events that update time every second.
+	 * 
+	 * @param controller the instance of the controller for the gameplay
+	 */
+	private void startTime() {
+		timeline = new Timeline(new KeyFrame(Duration.seconds(1), event -> {
+			controller.setTime(controller.getTime()+1);
+		}));
+		timeline.setCycleCount(Animation.INDEFINITE);
+		timeline.play();
 	}
 
 }
