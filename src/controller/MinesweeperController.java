@@ -24,7 +24,7 @@ import utilities.Space;
  *
  * @author Katherine Wilson
  */
-public class MinesweeperController {
+public class MinesweeperController extends Thread  {
 	// ------------------------------------------------------[  FIELDS  ]------------------------------------------------------
 	/**
 	 * Minesweeper model that this controller interacts with.
@@ -131,9 +131,24 @@ public class MinesweeperController {
 	
 	/* DUMMY TIME FUNCTIONS */
 	public int getTime() {
+		
 		return model.getTime();
 	}
+	public void addtotime()
+	{
+	Thread t1 = new Thread(new Runnable() {
+
+		@Override
+		public void run() {
+			// TODO Auto-generated method stub
+			setTime(getTime()+1);
+		}
+	});
+		t1.run();
+	
+	}
 	public void setTime(int time) {
+	
 		model.setTime(time);
 	}
 	

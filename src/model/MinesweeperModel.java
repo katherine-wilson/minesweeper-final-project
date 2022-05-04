@@ -50,7 +50,7 @@ public class MinesweeperModel extends Observable implements Serializable {
 	/**
 	 * Number of mines in the mine field.
 	 */
-	private int NUMBER_OF_MINES = 25; // XXX: changed with difficulty level 
+	private int NUMBER_OF_MINES = 5; // XXX: changed with difficulty level 
 	
 	/**
 	 * Number of flags that have been placed in the field so far by the player.
@@ -84,6 +84,7 @@ public class MinesweeperModel extends Observable implements Serializable {
 	 * Number of steps made by the player so far. This is used to determine if a mine should
 	 * be replaced, should a player step on a mine in their first turn.
 	 */
+	private int minesflaged;
 	private int stepsTaken;
 
 	/**
@@ -151,7 +152,7 @@ public class MinesweeperModel extends Observable implements Serializable {
 	private void defaultSetting() {
 	/*this.FIELD_WIDTH = 16;
 		this.FIELD_LENGTH = 16;*/
-		
+		minesflaged =0;
 		safeSpacesRevealed = 0;
 		stepsTaken = 0;
 		flagsPlaced = 0;
@@ -204,11 +205,14 @@ public class MinesweeperModel extends Observable implements Serializable {
 			if (!safeStep) {										// if player stepped on a mine...
 				if (stepsTaken != 0) {								
 					minefield[location.y][location.x].reveal();		// marks mine as revealed
-					gameOver = true;							// ends game
+					gameOver = true;// ends game
+					safeSpacesRevealed++;
 				}
 			} else {												// if the player's step was safe...
 				revealContiguousZeroes(location, new HashSet<Point>());
-				if (safeSpacesRevealed == (FIELD_WIDTH * FIELD_LENGTH - NUMBER_OF_MINES)) {
+			
+				if (safeSpacesRevealed == (FIELD_WIDTH * FIELD_LENGTH - NUMBER_OF_MINES))
+				{
 					System.out.println("Player won.");
 					gameOver = true; // ends game if this step reveals the remaining safe spaces on the board
 				}	
@@ -236,9 +240,14 @@ public class MinesweeperModel extends Observable implements Serializable {
 		if (minefield[location.y][location.x].hasFlag()) {
 			minefield[location.y][location.x].removeFlag();
 			flagsPlaced--;
+			if(minefield[location.y][location.x].hasMine())
+					{
+				safeSpacesRevealed++;
+					}
 		} else {
 			minefield[location.y][location.x].placeFlag();
-			flagsPlaced++;
+			safeSpacesRevealed--;
+			NUMBER_OF_MINES--;
 		}
 		setChanged();
 		notifyObservers(true);
@@ -362,7 +371,15 @@ public class MinesweeperModel extends Observable implements Serializable {
 	 * 	   <br><code>false</code> if the player has not revealed them all yet.
 	 */
 	public boolean getPlayerWon() {
-		return safeSpacesRevealed == (FIELD_WIDTH*FIELD_LENGTH - NUMBER_OF_MINES);
+		if(safeSpacesRevealed == (FIELD_WIDTH * FIELD_LENGTH))
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	
 	}
 	
 	/**
@@ -431,7 +448,7 @@ public class MinesweeperModel extends Observable implements Serializable {
 		if (!checkedLocations.contains(location) && location.x < FIELD_WIDTH && location.x >= 0 && location.y < FIELD_LENGTH && location.y >= 0) {
 			if (!minefield[location.y][location.x].hasMine() && !minefield[location.y][location.x].hasFlag() && !minefield[location.y][location.x].isRevealed()) {
 				minefield[location.y][location.x].reveal();
-				safeSpacesRevealed++;
+				//safeSpacesRevealed++;
 				checkedLocations.add(location);
 				if (minefield[location.y][location.x].adjacentMines() == 0) {
 					revealContiguousZeroes(new Point(location.x, location.y+1), checkedLocations); 		// N

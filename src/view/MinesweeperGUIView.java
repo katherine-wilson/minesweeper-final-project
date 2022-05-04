@@ -106,15 +106,15 @@ public class MinesweeperGUIView extends Application implements Observer {
 //	private ArrayList<ToggleButton> gridpaneMap = new ArrayList<ToggleButton>();
 //	private static final Image IMAGE = new Image("/face.png");
 
-	public static void main(String[] args) {
-		launch(args);
-	}
+	//public static void main(String[] args) {
+		//launch(args);
+	//}
 
 	@Override
 	public void start(Stage primaryStage) {
 		System.out.println("Start of stage");
 		// Start the timer
-		startTime();
+		
 		// Displaying the title "Mine Sweeper"
 		Label toptext = new Label("Mine Sweeper");
 		Font tittlefont = Font.font("Times New Roman", 30);
@@ -224,23 +224,24 @@ public class MinesweeperGUIView extends Application implements Observer {
 		} catch (FileNotFoundException e1) {
 		closed = false;
 		}
-		if (closed== true)  {
+		if (closed== true && savefile != null)  {/*
 		System.out.println("New game(Yes or no)");
 		Scanner input = new Scanner(System.in);
-		
-			if (input.hasNextLine()) {
+		*/savefile.delete();
+
+			/*if (input.hasNextLine()) {
 				 f = input.nextLine();
 				if(f =="yes")
 				{
 				//savedGame.delete();
-				savefile.delete();
-				}
+								}
 			}
+			*/
 		
 		}
 		
 		
-		if (savefile != null) {
+		if (savefile != null ) {
 			try {
 				
 				System.out.println("Save loaded.");
@@ -265,6 +266,7 @@ public class MinesweeperGUIView extends Application implements Observer {
 				int y = Integer.parseInt(coords[1]);
 				model.setboard(x, y);
 				//savefile.delete();
+				startTime();
 				String TEXT_FILE = "/saved_game.dat";
 				 savefile = new File(TEXT_FILE);
 				 
@@ -467,9 +469,11 @@ public class MinesweeperGUIView extends Application implements Observer {
 	 * @param controller the instance of the controller for the gameplay
 	 */
 	private void startTime() {
+		
 		Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(1), event -> {
-			controller.setTime(controller.getTime()+1);
+			controller.addtotime();
 		}));
+		
 		timeline.setCycleCount(Animation.INDEFINITE);
 		timeline.play();
 	}
@@ -499,12 +503,13 @@ public class MinesweeperGUIView extends Application implements Observer {
 		int check = l*w;
 		System.out.println(model.getFlagsPlaced());
 		check= check-model.getNumberofMines();
-		int other =model.getSpacesRevealed()-model.getNumberofMines()+model.getFlagsPlaced();
-		System.out.println(check +" " + other);
+		
+		int other =model.getSpacesRevealed();
+		System.out.println(check +" "+ other);
 		if(model.getPlayerWon())
 		{
 			headview.setImage(head);
-			//updateGrid(true, model.getMinefield());
+			updateGrid(false, model.getMinefield());
 		}
 		if (model.isGameOver()) {
 			System.out.println("GAME OVER");
