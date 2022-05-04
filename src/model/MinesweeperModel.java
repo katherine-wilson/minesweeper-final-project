@@ -116,7 +116,6 @@ public class MinesweeperModel extends Observable implements Serializable {
 	 * @throws ClassNotFoundException if a <code>MinesweeperModel</code> cannot be read from
 	 * the file.
 	 */
-	@SuppressWarnings("resource")
 	public MinesweeperModel(String filename) throws FileNotFoundException, IOException, ClassNotFoundException {
 		ObjectInputStream input = new ObjectInputStream(new FileInputStream(filename));
 		MinesweeperModel model = (MinesweeperModel) input.readObject();
@@ -138,6 +137,7 @@ public class MinesweeperModel extends Observable implements Serializable {
 		} else {
 			this.defaultSetting();
 		}
+		input.close();
 		this.setChanged();
 		this.notifyObservers(false);
 	}

@@ -1,11 +1,9 @@
 /**
- * NAME: MinesweeperGUIView.java
- * COURSE: CSC 335 - Spring 2022
- * DESCRIPTION: This file contains GUI component of the application for Minesweeper. It initializes the
- * 				interface of the game and allows the user to interact with it. It presents the 
- * 				mine field with a GridPane of ToggleButton
- * USAGE: to be used with the whole project including MinesweeperController.java, MinesweeperLauncher.java
- * 		  MinesweeperModel.java along with other utilities.
+ * This file contains GUI component of the application for Minesweeper. It initializes the
+ * interface of the game and allows the user to interact with it. It represents the minefield
+ * with a GridPane of ToggleButtons that the user can left or right click on to take steps or
+ * toggle flags respectively. There are several animations and alerts that can occur throughout
+ * the game depending on the user's actions. 
  * 
  * @author Eleanor Simon
  * @author Giang Huong Pham
@@ -32,16 +30,12 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.ButtonBar;
-import javafx.scene.control.ButtonType;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
@@ -53,6 +47,7 @@ import utilities.Space;
 
 @SuppressWarnings("deprecation")
 public class MinesweeperGUIView extends Application implements Observer {
+	// ------------------------------------------------------[  FIELDS  ]------------------------------------------------------	
 	/**
 	 * Width of the game window.
 	 */
@@ -222,6 +217,62 @@ public class MinesweeperGUIView extends Application implements Observer {
 			this.controller.saveGameState();
 		});
 		System.out.println("Stage showing now");
+	}
+	
+	/**
+	 * This method overrides the update method in the observer. Depending
+	 * on the progress made in the game, different elements of the GUI will
+	 * be updated to reflect the changes in game state as a result of the player's
+	 * actions.
+	 * 
+	 * @param o Observable object, in this case, the game model.
+	 * 
+	 * @param saveGame (expected to be boolean) tells whether or not to save the game 
+	 * 		  the game should be saved when game is not Over.
+	 */
+	@Override
+	public void update(Observable o, Object saveGame) {
+		MinesweeperModel model = (MinesweeperModel) o;
+		if (model.isGameOver()) {			// handles game over events
+			File savedGame = new File(SAVE_NAME);
+			if (savedGame.exists()) {		// deletes saved game when game is over
+				savedGame.delete();
+			}
+			timeline.pause();					// pauses timer
+			if (model.getPlayerWon()) {
+				if (!alertShown) {
+					alert.setAlertType(AlertType.INFORMATION);
+					alert.setContentText("You win!"); 							// alert the game has been won
+					alert.show();
+					alertShown = true;
+				}
+				updateGrid(true, model.getMinefield(), true);					// updates grid, mines are revealed, player won
+			} else {
+				if (!alertShown) {
+	 				alert.setAlertType(AlertType.INFORMATION);
+					alert.setContentText("You stepped on a mine. Try again."); // alert the game has been lost
+					alert.show();
+					alertShown = true;
+				}	
+				updateGrid(true, model.getMinefield(), false);					// updates grid, mines are revealed, player lost
+			}
+		} else {		// game is not over -- updates flag counter and minefield
+			flagLabel.setText("\tFlags Left: " + (model.getNumberofMines() - model.getFlagsPlaced()) + "/" + model.getNumberofMines());
+			if (model.getFlagsPlaced() >= .80 * model.getNumberofMines()) {	
+				flagLabel.setTextFill(Paint.valueOf("red"));		// flag counter turns red when at least 80% of the flags have been used
+			} else {
+				flagLabel.setTextFill(Paint.valueOf("black"));
+			}
+			updateGrid(false, model.getMinefield(), false);
+		}
+		
+		// updates timeLabel
+		if(timeLabel != null) {		// checked just in case the timer is started before timeLabel is initialized
+			int minutes = model.getTime() / 60;
+			int seconds = model.getTime() % 60;
+			String secondsString = ((int)(seconds/10))==0? "0"+seconds: ""+seconds;
+			timeLabel.setText(minutes+" : "+ secondsString);
+		}
 	}
 
 	// --------------------------------------------------[ PRIVATE METHODS]-------------------------------------------------- //
@@ -537,63 +588,6 @@ public class MinesweeperGUIView extends Application implements Observer {
 		move.setCycleCount(2);
 		move.setAutoReverse(true);
 		move.play();
-	}
-	
-
-	/**
-	 * This method overrides the update method in the observer. Depending
-	 * on the progress made in the game, different elements of the GUI will
-	 * be updated to reflect the changes in game state as a result of the player's
-	 * actions.
-	 * 
-	 * @param o Observable object, in this case, the game model.
-	 * 
-	 * @param saveGame (expected to be boolean) tells whether or not to save the game 
-	 * 		  the game should be saved when game is not Over.
-	 */
-	@Override
-	public void update(Observable o, Object saveGame) {
-		MinesweeperModel model = (MinesweeperModel) o;
-		if (model.isGameOver()) {			// handles game over events
-			timeline.pause();					// pauses timer
-			if (model.getPlayerWon()) {
-				if (!alertShown) {
-					alert.setAlertType(AlertType.INFORMATION);
-					alert.setContentText("You win!"); 							// alert the game has been won
-					alert.show();
-					alertShown = true;
-				}
-				updateGrid(true, model.getMinefield(), true);					// updates grid, mines are revealed, player won
-			} else {
-				if (!alertShown) {
-	 				alert.setAlertType(AlertType.INFORMATION);
-					alert.setContentText("You stepped on a mine. Try again."); // alert the game has been lost
-					alert.show();
-					alertShown = true;
-				}	
-				updateGrid(true, model.getMinefield(), false);					// updates grid, mines are revealed, player lost
-			}
-			File savedGame = new File(SAVE_NAME);
-			if (savedGame.exists()) {		// deletes saved game when game is over
-				savedGame.delete();
-			}
-		} else {		// game is not over -- updates flag counter and minefield
-			flagLabel.setText("\tFlags Left: " + (model.getNumberofMines() - model.getFlagsPlaced()) + "/" + model.getNumberofMines());
-			if (model.getFlagsPlaced() >= .80 * model.getNumberofMines()) {	
-				flagLabel.setTextFill(Paint.valueOf("red"));		// flag counter turns red when at least 80% of the flags have been used
-			} else {
-				flagLabel.setTextFill(Paint.valueOf("black"));
-			}
-			updateGrid(false, model.getMinefield(), false);
-		}
-		
-		// updates timeLabel
-		if(timeLabel != null) {		// checked just in case the timer is started before timeLabel is initialized
-			int minutes = model.getTime() / 60;
-			int seconds = model.getTime() % 60;
-			String secondsString = ((int)(seconds/10))==0? "0"+seconds: ""+seconds;
-			timeLabel.setText(minutes+" : "+ secondsString);
-		}
 	}
 
 }
