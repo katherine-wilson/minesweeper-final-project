@@ -138,7 +138,6 @@ public class MinesweeperGUIView extends Application implements Observer {
 
 		Scene scene = new Scene(vbox, SCENE_WIDTH, SCENE_HEIGHT);
 
-
 		primaryStage.setScene(scene);
 		primaryStage.show();
 		
