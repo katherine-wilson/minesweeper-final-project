@@ -136,16 +136,7 @@ public class MinesweeperController extends Thread  {
 	}
 	public void addtotime()
 	{
-	Thread t1 = new Thread(new Runnable() {
-
-		@Override
-		public void run() {
-			// TODO Auto-generated method stub
-			setTime(getTime()+1);
-		}
-	});
-		t1.run();
-	
+	setTime(getTime()+1);
 	}
 	public void setTime(int time) {
 	

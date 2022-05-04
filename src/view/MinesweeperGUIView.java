@@ -266,7 +266,17 @@ public class MinesweeperGUIView extends Application implements Observer {
 				int y = Integer.parseInt(coords[1]);
 				model.setboard(x, y);
 				//savefile.delete();
-				startTime();
+				
+				Thread t1 = new Thread(new Runnable() {
+
+					@Override
+					public void run() {
+						// TODO Auto-generated method stub
+						startTime();
+					}
+				});
+				t1.run();
+				
 				String TEXT_FILE = "/saved_game.dat";
 				 savefile = new File(TEXT_FILE);
 				 
