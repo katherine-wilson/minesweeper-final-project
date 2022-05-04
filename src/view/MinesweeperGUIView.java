@@ -29,6 +29,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -55,6 +56,16 @@ public class MinesweeperGUIView extends Application implements Observer {
 	 */
 	private static final int SCENE_HEIGHT = 600;
 
+	/**
+	 * Relative path to image used for flags.
+	 */
+	private static final Image GREAT_FLAG = new Image("/greatflag.png");
+	
+	/**
+	 * Relative path to image used for mines.
+	 */
+	private static final Image MINE = new Image("/mine.png");
+	
 	/**
 	 * Name of the save file.
 	 */
@@ -245,8 +256,41 @@ public class MinesweeperGUIView extends Application implements Observer {
 		});
 	}
 
+
 	/**
-	 * This method updates the gridpane of ToggleButton 
+	 * This method updates the given ToggleButton according to 
+	 * the passed in string: "flag" or "mine".
+	 * 
+	 * @param button ToggleButton to change the image of.
+	 * @param string name of image to put onto the button display.
+	 */
+	private void setImage(String img, ToggleButton button) {
+		ImageView image = new ImageView();
+		if (img.equals("flag")) {
+			image = new ImageView(GREAT_FLAG);
+		} else if (img.equals("mine")) {
+			image = new ImageView(MINE);
+		}
+		if (image != null) {
+			image.setFitHeight(20);
+			image.setFitWidth(15);
+			image.setPreserveRatio(true);
+			button.setGraphic(image);
+			button.setStyle("-fx-padding: 2px;");
+		}
+		
+	}
+	
+	
+	void removeFlag(ToggleButton button) {
+		button.setMaxWidth(25);
+		button.setPrefHeight(25);
+		button.setGraphic(null);
+		button.setSelected(false);
+	}
+	
+	/**
+	 * This method updates the GridPane of ToggleButton 
 	 * @param revealMine boolean to tell whether to show the mine on the map or not
 	 * @param spaceGrid  Space[][] representing the underlying mine map. 
 	 */
@@ -257,11 +301,11 @@ public class MinesweeperGUIView extends Application implements Observer {
 				Space space = spaceGrid[i][j];
 				ToggleButton button = gridpaneMap[i][j];
 				if (space.hasFlag()) {										// if the space is flagged
-					button.setText("F");
-					//button.setGraphic();
+					//button.setText("F");
+					setImage("flag", button);
+					button.setText("");
 					button.setSelected(false);
 					button.setDisable(false);
-					updateImage(button, "flag");
 				} else if (space.isRevealed() && !space.hasMine()) {		// if the space is not flagged and does not have mine
 					int adjMine = space.adjacentMines();
 					button.getStyleClass().add("grey-button");
@@ -303,9 +347,11 @@ public class MinesweeperGUIView extends Application implements Observer {
 						button.setSelected(false);
 					}
 				} else if (space.hasMine() && revealMine) {
-					button.setText("*");
-					button.setTextFill(Color.MEDIUMVIOLETRED);
+					//button.setText("*");
+					setImage("mine", button);
+					//button.setTextFill(Color.MEDIUMVIOLETRED);
 				} else {
+					removeFlag(button);
 					button.setText("");
 				}
 			}
@@ -326,17 +372,6 @@ public class MinesweeperGUIView extends Application implements Observer {
 	}
 
 	/**
-	 * This method updates the given ToggleButton according to 
-	 * the passed in string: "flag" or "mine" or "question"
-	 * @param button ToggleButton to change the image of 
-	 * @param string name of image to put onto the button display
-	 */
-	private void updateImage(ToggleButton button, String string) {
-		// TODO
-		
-	}
-
-	/**
 	 * This method overrides the update method in the observer. 
 	 * @param o Observable object, in this case, the game model
 	 * @param saveGame (expected to be boolean) tells whether or not to save the game 
@@ -346,6 +381,7 @@ public class MinesweeperGUIView extends Application implements Observer {
 	public void update(Observable o, Object saveGame) {
 		MinesweeperModel model = (MinesweeperModel) o;
 		if (model.isGameOver()) {
+			System.out.println("GAME OVER");
 			gameInProgress = false;
 			updateGrid(true, model.getMinefield());
 			File savedGame = new File(SAVE_NAME);
@@ -355,8 +391,6 @@ public class MinesweeperGUIView extends Application implements Observer {
 		} else {
 			updateGrid(false, model.getMinefield());
 		}
-		
-		boolean toSave = (boolean) saveGame;
 		
 		// update the timeLabel
 		// timeLabel != null checked only in case timer starts a few milliseconds before we
