@@ -100,7 +100,17 @@ public class MinesweeperGUIView extends Application implements Observer {
 	 * This field is basically used to display the current time in seconds
 	 */
 	private Label timeLabel;
-
+	
+	/**
+	 * This field is basically used to display the current time in seconds
+	 */
+	private Timeline timeline;
+	
+	/**
+	 * This field is used to display the number of flag available
+	 */
+	private Label flagCount;
+	
 	/**
 	 * Color of background (top).
 	 */
@@ -129,8 +139,10 @@ public class MinesweeperGUIView extends Application implements Observer {
 	@Override
 	public void start(Stage primaryStage) {
 		System.out.println("Start of stage");
+		
 		// Start the timer
 		startTime();
+		
 		// Displaying the title "Mine Sweeper"
 		Label toptext = new Label("Mine Sweeper");
 		Font tittlefont = Font.font("Times New Roman", 30);
@@ -147,10 +159,11 @@ public class MinesweeperGUIView extends Application implements Observer {
 		
 		// Label for the Timer Initialized here
 		timeLabel = new Label();
-		HBox timeBox = new HBox();
-		timeBox.getChildren().add(timeLabel);
+		HBox infoBox = new HBox();
+		infoBox.getChildren().add(timeLabel);
 		timeLabel.setAlignment(Pos.CENTER);
-		timeBox.setAlignment(Pos.CENTER);
+		infoBox.setAlignment(Pos.CENTER);
+		
 		// HBox that contains the GridPane
 		HBox board = new HBox();
 		gridpane = new GridPane();
@@ -161,7 +174,7 @@ public class MinesweeperGUIView extends Application implements Observer {
 		// adding 2 HBox into the VBox
 		VBox vbox = new VBox();
 		vbox.getChildren().add(title);
-		vbox.getChildren().add(timeBox);
+		vbox.getChildren().add(infoBox);
 		vbox.getChildren().add(board);
 		//vbox.setStyle("-fx-background-color: rgb(170, 177, 189);");
 		
@@ -428,7 +441,7 @@ public class MinesweeperGUIView extends Application implements Observer {
 	 * @param controller the instance of the controller for the gameplay
 	 */
 	private void startTime() {
-		Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(1), event -> {
+		timeline = new Timeline(new KeyFrame(Duration.seconds(1), event -> {
 			controller.setTime(controller.getTime()+1);
 		}));
 		timeline.setCycleCount(Animation.INDEFINITE);
@@ -446,6 +459,7 @@ public class MinesweeperGUIView extends Application implements Observer {
 	public void update(Observable o, Object saveGame) {
 		MinesweeperModel model = (MinesweeperModel) o;
 		if (model.isGameOver()) {
+			timeline.pause();
 			System.out.println("GAME OVER");
 			gameInProgress = false;
 			if (model.getPlayerWon()) {
