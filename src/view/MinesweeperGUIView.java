@@ -15,8 +15,10 @@
 package view;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Scanner;
@@ -54,7 +56,7 @@ public class MinesweeperGUIView extends Application implements Observer {
 	private boolean fordoublemine = false;
 	private static final int SCENE_WIDTH = 800;
 	private static final int SCENE_HEIGHT = 600;
-	private String f;
+	private boolean closed = true;
 	private  ImageView headview;
 	private File savefile;
 	 private static final Image mine = new Image("/mine.png");
@@ -160,7 +162,7 @@ public class MinesweeperGUIView extends Application implements Observer {
 											        	
 											        	 controller.saveGameState();
 											        	 gameInProgress = true;
-											        	 f="no";
+											        	 closed=false;
 											        	 start(primaryStage);
 											        	
 											         }
@@ -200,7 +202,7 @@ public class MinesweeperGUIView extends Application implements Observer {
 		primaryStage.setOnCloseRequest( ev -> {
 			
 			this.controller.saveGameState();
-			f="no";
+			closed=true;
 		});
 		System.out.println("Stage showing now");
 	}
@@ -214,26 +216,34 @@ public class MinesweeperGUIView extends Application implements Observer {
 	private void initGame() {
 		// Trying to load the saved_game when the application is launched
 	//	File check = new File("saved_game.dat");
-		if ( f =="no") {
+		String f ="";
+		File savedGame = new File("saved_game.dat");
+		InputStream targetStream;
+		try {
+			targetStream = new FileInputStream("saved_game.dat");
+		} catch (FileNotFoundException e1) {
+		closed = false;
+		}
+		if (closed== true)  {
 		System.out.println("New game(Yes or no)");
 		Scanner input = new Scanner(System.in);
-		{
+		
 			if (input.hasNextLine()) {
-				f = input.nextLine();
+				 f = input.nextLine();
 				if(f =="yes")
 				{
-					savefile.delete();
-				
+				//savedGame.delete();
+				savefile.delete();
 				}
 			}
+		
 		}
-		}
-		//File savedGame = new File("saved_game.dat");
+		
+		
 		if (savefile != null) {
 			try {
 				
 				System.out.println("Save loaded.");
-		
 				model = new MinesweeperModel("saved_game.dat");
 			} catch (FileNotFoundException e) {
 				System.out.println("Cannot find the saved game file.");
@@ -253,7 +263,8 @@ public class MinesweeperGUIView extends Application implements Observer {
 				String coords[] = in.nextLine().split(" ");
 				int x = Integer.parseInt(coords[0]);
 				int y = Integer.parseInt(coords[1]);
-				model.setboard(x, y);	
+				model.setboard(x, y);
+				//savefile.delete();
 				String TEXT_FILE = "/saved_game.dat";
 				 savefile = new File(TEXT_FILE);
 				 
