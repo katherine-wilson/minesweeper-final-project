@@ -135,6 +135,19 @@ public class MinesweeperModel extends Observable implements Serializable {
 		}
 	}
 	
+	public MinesweeperModel(int length, int width, int numberOfMines) {
+		this.FIELD_WIDTH = width;
+		this.FIELD_LENGTH = length;
+		this.NUMBER_OF_MINES = numberOfMines;
+		safeSpacesRevealed = 0;
+		stepsTaken = 0;
+		flagsPlaced = 0;
+		gameOver = false;
+		timeInSeconds = 0;
+		initField();
+		placeMines();
+	}
+	
 	/**
 	 * Creates a <code>MinesweeperModel</code> object and initializes it
 	 * to a default state by calling helper function to set all fields

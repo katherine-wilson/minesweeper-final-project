@@ -113,7 +113,9 @@ public class MinesweeperGUIView extends Application implements Observer {
 
 		// load the saved game if there is any, and
 		// set the dimension of the game
-		this.initGame();
+		this.initGame(Integer.parseInt(getParameters().getUnnamed().get(0)),
+				      Integer.parseInt(getParameters().getUnnamed().get(1)),
+				      Integer.parseInt(getParameters().getUnnamed().get(2)));
 		
 		// Label for the Timer Initialized here
 		timeLabel = new Label();
@@ -152,7 +154,7 @@ public class MinesweeperGUIView extends Application implements Observer {
 	 * This method initialize the game when the game is launched: it checks for
 	 * saved files of the previous uncompleted game
 	 */
-	private void initGame() {
+	private void initGame(int length, int width, int numberOfMines) {
 		// Trying to load the saved_game when the application is launched
 		File savedGame = new File(SAVE_NAME);
 		if (savedGame.exists()) {
@@ -170,7 +172,7 @@ public class MinesweeperGUIView extends Application implements Observer {
 				model = new MinesweeperModel();
 			}
 		} else {
-			model = new MinesweeperModel();
+			model = new MinesweeperModel(length, width, numberOfMines);
 		}
 		model.addObserver(this);
 		controller = new MinesweeperController(model);
@@ -256,6 +258,7 @@ public class MinesweeperGUIView extends Application implements Observer {
 				ToggleButton button = gridpaneMap[i][j];
 				if (space.hasFlag()) {										// if the space is flagged
 					button.setText("F");
+					//button.setGraphic(button);
 					button.setSelected(false);
 					button.setDisable(false);
 					updateImage(button, "flag");
