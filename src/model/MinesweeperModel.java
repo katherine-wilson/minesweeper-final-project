@@ -516,7 +516,7 @@ public class MinesweeperModel extends Observable implements Serializable {
 		Random rdm = new Random();
 		
 		for (Point p : adjacentLocations) {
-			if (p.y >= 0 && p.y < FIELD_LENGTH && p.x >= 0 && p.y < FIELD_WIDTH) {
+			if (p.y >= 0 && p.y < FIELD_LENGTH && p.x >= 0 && p.x < FIELD_WIDTH) {
 				if (minefield[p.y][p.x].hasMine()) {
 					mineLocations.remove(p);
 					minefield[p.y][p.x].removeMine();
