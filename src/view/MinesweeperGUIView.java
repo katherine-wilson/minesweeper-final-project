@@ -32,8 +32,11 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -188,10 +191,11 @@ public class MinesweeperGUIView extends Application implements Observer {
 		vbox.getChildren().add(title);
 		vbox.getChildren().add(infoBox);
 		vbox.getChildren().add(board);
-		vbox.setStyle("background-image: linear-gradient(red, yellow);");
+		//vbox.setStyle("background-image: linear-gradient(red, yellow);");
 		//vbox.setStyle("-fx-background-color: rgb(170, 177, 189);");
 		
 		Scene scene = new Scene(vbox, SCENE_WIDTH, SCENE_HEIGHT);
+		
 		//Stop[] stop1 = new Stop[] { new Stop(0, BACKGROUND_COLOR_1), new Stop(1, BACKGROUND_COLOR_2)};
 		//LinearGradient lg1 = new LinearGradient(0, 0, 0, 1, true, CycleMethod.NO_CYCLE, stop1);
 		//scene.setFill(lg1);
@@ -282,6 +286,7 @@ public class MinesweeperGUIView extends Application implements Observer {
 			try {
 				// left click to reveal a space
 				if (click == MouseButton.PRIMARY) {
+					System.out.println("(" + x + ", " + y + ")");
 					controller.takeStep(x, y);
 				} // right click to put/remove flag/question mark
 				// TODO if we implement question: if it's a flag, turn into question
@@ -342,7 +347,7 @@ public class MinesweeperGUIView extends Application implements Observer {
 	 * 
 	 * @param button button in which flag is removed from.
 	 */
-	void removeFlag(ToggleButton button) {
+	private void removeFlag(ToggleButton button) {
 		button.setMaxWidth(25);
 		button.setPrefHeight(25);
 		button.setGraphic(null);

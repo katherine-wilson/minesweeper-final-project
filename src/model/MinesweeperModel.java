@@ -1,6 +1,7 @@
 package model;
 
 import java.awt.Point;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -137,6 +138,8 @@ public class MinesweeperModel extends Observable implements Serializable {
 		} else {
 			this.defaultSetting();
 		}
+		this.setChanged();
+		this.notifyObservers(false);
 	}
 	
 	/**
@@ -157,6 +160,8 @@ public class MinesweeperModel extends Observable implements Serializable {
 		timeInSeconds = 0;
 		initField();
 		placeMines();
+		this.setChanged();
+		this.notifyObservers(false);
 	}
 	
 	/**
@@ -347,6 +352,10 @@ public class MinesweeperModel extends Observable implements Serializable {
 	public void saveGameData() {
 		if(this.isGameOver()) {
 			System.out.println("Game is over. No game state is being saved");
+			File savedGame = new File(SAVE_NAME);
+			if (savedGame.exists()) {		// deletes saved game when game is over
+				savedGame.delete();
+			}
 		} else {
 			try {
 				ObjectOutputStream output =  new ObjectOutputStream(new FileOutputStream(SAVE_NAME));
@@ -507,7 +516,7 @@ public class MinesweeperModel extends Observable implements Serializable {
 		Random rdm = new Random();
 		
 		for (Point p : adjacentLocations) {
-			if (p.y >= 0 && p.y < FIELD_LENGTH && p.x >= 0 && p.y <= FIELD_WIDTH) {
+			if (p.y >= 0 && p.y < FIELD_LENGTH && p.x >= 0 && p.y < FIELD_WIDTH) {
 				if (minefield[p.y][p.x].hasMine()) {
 					mineLocations.remove(p);
 					minefield[p.y][p.x].removeMine();
