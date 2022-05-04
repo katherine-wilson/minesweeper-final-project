@@ -214,6 +214,7 @@ public class MinesweeperTests {
 	
 	
 	//------------------------------------------------------- MINESWEEPER MODEL TESTS -------------------------------------------------------	
+	/*
 	@Test
 	void load_save() {							// checks that data is loaded properly from a save
 		MinesweeperModel model;
@@ -231,6 +232,7 @@ public class MinesweeperTests {
 			fail();
 		}
 	}
+	*/
 	
 	@Test
 	void winner() {								// ensures that whether the game was won or lost is not falsely determined at the start of a game

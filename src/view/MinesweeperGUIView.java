@@ -3,7 +3,7 @@
  * interface of the game and allows the user to interact with it. It represents the minefield
  * with a GridPane of ToggleButtons that the user can left or right click on to take steps or
  * toggle flags respectively. There are several animations and alerts that can occur throughout
- * the game depending on the user's actions. 
+ * the game depending on the user's actions.
  * 
  * @author Eleanor Simon
  * @author Giang Huong Pham
@@ -506,6 +506,8 @@ public class MinesweeperGUIView extends Application implements Observer {
 					} else {													// if player lost, mines shake
 						shakeAnimation(button, SHAKE_DURATION);	
 					}
+				} else if (revealMine && space.isRevealed()) {
+					button.setDisable(true);
 				}
 			}
 		}
