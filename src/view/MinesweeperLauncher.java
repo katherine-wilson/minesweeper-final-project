@@ -6,7 +6,7 @@
  * Otherwise, this class expects to receive three positive integers that
  * represent the length, width, and number of mines in the minefield, in 
  * that order. The minimum length and width of the minefield is 4 spaces
- * long. The number of mines that can be placed must be no more than half
+ * long. The number of mines that can be placed must be less than half
  * the number of spaces in the field.
  * 
  * The GUI view also offers the ability to save/load the state of a Minesweeper game if 
@@ -72,7 +72,7 @@ public class MinesweeperLauncher {
 	 * 				<li>Length/width of the minefield must be greater than three</li>
 	 * 				<li>length/width of the minefield may not exceed 30</li>
 	 * 				<li>The number of mines must be greater than zero</li>
-	 * 				<li>The number of mines may not exceed more than half the spaces in the minefield</li>
+	 * 				<li>The number of mines must be less than half the spaces in the minefield</li>
 	 * </ul>
 	 */
 	private static boolean argIsValid(String[] args) {
