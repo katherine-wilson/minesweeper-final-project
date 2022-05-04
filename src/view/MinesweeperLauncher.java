@@ -67,7 +67,7 @@ public class MinesweeperLauncher {
 	 * @return <code>true</code> if the given arguments are valid integers that fall within
 	 * the limitations of the game and <code>false</code> if not. These limitations are as
 	 * follows:<br><ul>
-	 * 				<li>Length/width of the minefield must be greater than zero</li>
+	 * 				<li>Length/width of the minefield must be greater than one</li>
 	 * 				<li>length/width of the minefield may not exceed 30</li>
 	 * 				<li>The number of mines must be greater than zero</li>
 	 * 				<li>The number of mines may not exceed (length-1)*(width-1)</li>
@@ -78,7 +78,7 @@ public class MinesweeperLauncher {
 			int length = Integer.parseInt(args[0]);
 			int width = Integer.parseInt(args[1]);
 			int count = Integer.parseInt(args[2]);
-			if (length <= 0 || length > 30 || width <= 0 || width > 30 || count <= 0) {
+			if (length <= 1 || length > 30 || width <= 1 || width > 30 || count <= 0) {
 				return false;
 			} 
 			return count < (length-1)*(width-1);
