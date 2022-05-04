@@ -94,13 +94,6 @@ public class MinesweeperGUIView extends Application implements Observer {
 	 */
 	private boolean gameInProgress = true;
 
-
-//	 model = new MinesweeperModel();
-//	 controller = new MinesweeperController(model);
-//	Space[][] grid;
-//	private ArrayList<ToggleButton> gridpaneMap = new ArrayList<ToggleButton>();
-//	private static final Image IMAGE = new Image("/face.png");
-
 	public static void main(String[] args) {
 		launch(args);
 	}
@@ -143,9 +136,6 @@ public class MinesweeperGUIView extends Application implements Observer {
 
 		Scene scene = new Scene(vbox, SCENE_WIDTH, SCENE_HEIGHT);
 
-//		scene.setOnKeyReleased(keyEvent -> {
-//			handleKey(keyEvent);
-//		});
 
 		primaryStage.setScene(scene);
 		primaryStage.show();

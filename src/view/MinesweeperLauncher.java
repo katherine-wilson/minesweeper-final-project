@@ -22,16 +22,8 @@ import javafx.application.Application;
 public class MinesweeperLauncher {
 	
 	public static void main(String[] args) {
-		if (args.length > 0) {
-			if (args[0].toLowerCase().equals("-text")) {
-				MinesweeperTextView textView = new MinesweeperTextView();
-				textView.start();
-			} else if (args[0].toLowerCase().equals("-gui")) {
+		if (args.length == 3) {
 				Application.launch(MinesweeperGUIView.class, args);
-			} else {
-				System.out.println("Invalid command. Please enter -text or -gui "
-								+ "or leave blank for gui mode.");
-			}
 		} else {
 			Application.launch(MinesweeperGUIView.class, args);
 		}
