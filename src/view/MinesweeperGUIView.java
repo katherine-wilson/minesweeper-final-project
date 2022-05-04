@@ -212,8 +212,9 @@ public class MinesweeperGUIView extends Application implements Observer {
 	// --------------------------------------------------[ PRIVATE METHODS]-------------------------------------------------- //
 
 	/**
-	 * This method initialize the game when the game is launched: it checks for
-	 * saved files of the previous uncompleted game
+	 * This method initializes the game on launch. It checks for
+	 * save files from previous uncompleted games and loads them
+	 * if they are found.
 	 */
 	private void initGame(int length, int width, int numberOfMines) {
 		// Trying to load the saved_game when the application is launched
@@ -237,20 +238,18 @@ public class MinesweeperGUIView extends Application implements Observer {
 		}
 		model.addObserver(this);
 		controller = new MinesweeperController(model);
-		// get dimension of the mine field and create
-		// a 2D array of ToggleButton with the same dimension
 		this.FIELD_LENGTH = model.getDimensions()[0];
 		this.FIELD_WIDTH = model.getDimensions()[1];
 	}
 
 	/**
-	 * This method initialize toggle buttons in the grid pane and add them to an
-	 * array list to keep track
+	 * This method initializes each toggle button in the <code>GridPane</code>
+	 * and adds them to an <code>ArrayList</code> for accessibility.
 	 * 
-	 * @param x    integer representing the width of the mine field
-	 * @param y    integer representing the length of the mine field
-	 * @param pane GridPane representing the mine field.
-	 * @return a 2D array of ToggleButtons displayed on the grid pane
+	 * @param x    integer representing the width of the mine field.
+	 * @param y    integer representing the length of the mine field.
+	 * @param pane <code>GridPane</code> representing the mine field.
+	 * @return a 2D array of ToggleButtons displayed in the <code>GridPane</code>.
 	 */
 	private ToggleButton[][] setlabel(int x, int y, GridPane pane) {
 		ToggleButton[][] ret = new ToggleButton[x][y];
@@ -269,10 +268,14 @@ public class MinesweeperGUIView extends Application implements Observer {
 
 	
 	/**
-	 * This method adds necessary event listener onto the ToggleButton
+	 * This method adds necessary event listeners onto the ToggleButton.
+	 * These event listeners detect left and right clicks. If a left click
+	 * is made, then a step is taken. If a right click is made, then a flag
+	 * is toggled. An alert will be shown if the player tries to place a flag
+	 * when they're out of flags.
 	 * 
-	 * @param button ToggleButton where event was caught
-	 * @param pane   GridPane representing the mine field. 
+	 * @param button <code>ToggleButton</code> where event is caught.
+	 * @param pane   <code>GridPane</code> representing the mine field. 
 	 */
 	private void setEventListener(ToggleButton button, GridPane pane) {
 		button.setOnMouseClicked(mouseEvent -> {
@@ -286,7 +289,6 @@ public class MinesweeperGUIView extends Application implements Observer {
 			try {
 				// left click to reveal a space
 				if (click == MouseButton.PRIMARY) {
-					System.out.println("(" + x + ", " + y + ")");
 					controller.takeStep(x, y);
 				} // right click to put/remove flag/question mark
 				// TODO if we implement question: if it's a flag, turn into question
