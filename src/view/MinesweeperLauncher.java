@@ -56,8 +56,7 @@ public class MinesweeperLauncher {
 			int count = Integer.parseInt(args[2]);
 			if (length <= 0 || width <= 0 || count <= 0) {
 				return false;
-			}
-			return count < (length-1)*(width-1);
+			}return count < (length-1)*(width-1);
 		} catch (Exception e) {
 			throw e;
 		}

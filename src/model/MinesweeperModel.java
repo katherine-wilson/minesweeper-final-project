@@ -535,5 +535,4 @@ public class MinesweeperModel extends Observable implements Serializable {
 		initField();
 		placeMines();
 	}
-	
 }

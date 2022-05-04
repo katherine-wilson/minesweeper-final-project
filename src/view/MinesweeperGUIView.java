@@ -97,7 +97,17 @@ public class MinesweeperGUIView extends Application implements Observer {
 	 * This field is basically used to display the current time in seconds
 	 */
 	private Label timeLabel;
-
+	
+	/**
+	 * This field is basically used to display the current time in seconds
+	 */
+	private Timeline timeline;
+	
+	/**
+	 * This field is used to display the number of flag available
+	 */
+	private Label flagCount;
+	
 	/**
 	 * Color of background (top).
 	 */
@@ -137,8 +147,10 @@ public class MinesweeperGUIView extends Application implements Observer {
 	@Override
 	public void start(Stage primaryStage) {
 		System.out.println("Start of stage");
+		
 		// Start the timer
 		startTime();
+		
 		// Displaying the title "Mine Sweeper"
 		Label toptext = new Label("Mine Sweeper");
 		Font tittlefont = Font.font("Times New Roman", 30);
@@ -155,10 +167,11 @@ public class MinesweeperGUIView extends Application implements Observer {
 		
 		// Label for the Timer Initialized here
 		timeLabel = new Label();
-		HBox timeBox = new HBox();
-		timeBox.getChildren().add(timeLabel);
+		HBox infoBox = new HBox();
+		infoBox.getChildren().add(timeLabel);
 		timeLabel.setAlignment(Pos.CENTER);
-		timeBox.setAlignment(Pos.CENTER);
+		infoBox.setAlignment(Pos.CENTER);
+		
 		// HBox that contains the GridPane
 		HBox board = new HBox();
 		gridpane = new GridPane();
@@ -169,7 +182,7 @@ public class MinesweeperGUIView extends Application implements Observer {
 		// adding 2 HBox into the VBox
 		VBox vbox = new VBox();
 		vbox.getChildren().add(title);
-		vbox.getChildren().add(timeBox);
+		vbox.getChildren().add(infoBox);
 		vbox.getChildren().add(board);
 		//vbox.setStyle("-fx-background-color: rgb(170, 177, 189);");
 		
@@ -254,6 +267,7 @@ public class MinesweeperGUIView extends Application implements Observer {
 	 */
 	private void setEventListener(ToggleButton button, GridPane pane) {
 		button.setOnMouseClicked(mouseEvent -> {
+			
 			MouseButton click = mouseEvent.getButton();
 
 			ToggleButton target = (ToggleButton) mouseEvent.getSource();
@@ -352,6 +366,7 @@ public class MinesweeperGUIView extends Application implements Observer {
 						button.setDisable(true);
 						button.setText("  ");
 					} else if (adjMine == 1) {
+						//button.setStyle("-fx-background-color:#acafb1; ");						
 						button.setText("1");
 						button.setTextFill(Paint.valueOf("blue"));
 						button.setSelected(false);
@@ -412,7 +427,8 @@ public class MinesweeperGUIView extends Application implements Observer {
 		TranslateTransition wave = new TranslateTransition();
 		wave.setDuration(timeLimit);
 		wave.setNode(toWave);
-		wave.setByY(-5);
+		wave.setByY(-3);
+		wave.setToY(3);
 		wave.setCycleCount(12);
 		wave.setAutoReverse(true);
 		wave.play();
@@ -425,10 +441,10 @@ public class MinesweeperGUIView extends Application implements Observer {
 	 * @param toShake JavaFX <code>Node</code> to shake.
 	 * @param timeLimit the duration of the animation.
 	 */
-	private void shakeAnimation(Node toShave, Duration timeLimit) {
+	private void shakeAnimation(Node toShake, Duration timeLimit) {
 		TranslateTransition wave = new TranslateTransition();
 		wave.setDuration(timeLimit);
-		wave.setNode(toShave);
+		wave.setNode(toShake);
 		wave.setByX(-5);
 		wave.setByX(5);
 		wave.setCycleCount(12);
@@ -443,7 +459,7 @@ public class MinesweeperGUIView extends Application implements Observer {
 	 * @param controller the instance of the controller for the gameplay
 	 */
 	private void startTime() {
-		Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(1), event -> {
+		timeline = new Timeline(new KeyFrame(Duration.seconds(1), event -> {
 			controller.setTime(controller.getTime()+1);
 		}));
 		timeline.setCycleCount(Animation.INDEFINITE);
@@ -462,6 +478,7 @@ public class MinesweeperGUIView extends Application implements Observer {
 	public void update(Observable o, Object saveGame) {
 		MinesweeperModel model = (MinesweeperModel) o;
 		if (model.isGameOver()) {
+			timeline.pause();
 			gameInProgress = false;
 			if (model.getPlayerWon()) {
 				if (!alertShown) {
@@ -474,7 +491,7 @@ public class MinesweeperGUIView extends Application implements Observer {
 			} else {
 				if (!alertShown) {
 	 				alert.setAlertType(AlertType.INFORMATION);
-					alert.setContentText("You lost!"); // alert the game is over
+					alert.setContentText("You stepped on a mine. Try again."); // alert the game is over
 					alert.show();
 					alertShown = true;
 				}
