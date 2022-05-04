@@ -135,6 +135,13 @@ public class MinesweeperModel extends Observable implements Serializable {
 		}
 	}
 	
+	/**
+	 * This constructor is called when the user input a specific 
+	 * board size and a valid number of mine
+	 * @param length integer representing how many rows the board has
+	 * @param width integer representing how may column the board has
+	 * @param numberOfMines integer representing the total number of mine on the board
+	 */
 	public MinesweeperModel(int length, int width, int numberOfMines) {
 		this.FIELD_WIDTH = width;
 		this.FIELD_LENGTH = length;
