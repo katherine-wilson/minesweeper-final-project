@@ -23,8 +23,10 @@ import controller.MinesweeperController;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.animation.TranslateTransition;
 import javafx.application.Application;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ToggleButton;
@@ -298,7 +300,7 @@ public class MinesweeperGUIView extends Application implements Observer {
 	 * @param revealMine boolean to tell whether to show the mine on the map or not
 	 * @param spaceGrid  Space[][] representing the underlying mine map. 
 	 */
-	private void updateGrid(boolean revealMine, Space[][] spaceGrid) {
+	private void updateGrid(boolean revealMine, Space[][] spaceGrid, boolean playerWon) {
 		// TODO: update with "question mark"
 		for (int i = 0; i< this.FIELD_LENGTH; i++) {
 			for (int j = 0; j  < this.FIELD_WIDTH; j++) {
@@ -310,6 +312,9 @@ public class MinesweeperGUIView extends Application implements Observer {
 					button.setText("");
 					button.setSelected(false);
 					button.setDisable(false);
+					if (revealMine && playerWon && space.hasMine()) {
+						waveAnimation(button, new Duration(500));
+					}
 				} else if (space.isRevealed() && !space.hasMine()) {		// if the space is not flagged and does not have mine
 					int adjMine = space.adjacentMines();
 					button.getStyleClass().add("grey-button");
@@ -353,6 +358,11 @@ public class MinesweeperGUIView extends Application implements Observer {
 				} else if (space.hasMine() && revealMine) {
 					//button.setText("*");
 					setImage("mine", button);
+					if (playerWon) {
+						waveAnimation(button, new Duration(500));
+					} else {
+						shakeAnimation(button, new Duration(10));
+					}
 					//button.setTextFill(Color.MEDIUMVIOLETRED);
 				} else {
 					removeFlag(button);
@@ -360,6 +370,35 @@ public class MinesweeperGUIView extends Application implements Observer {
 				}
 			}
 		}
+	}
+	
+	/**
+	 * Creates an animation on a node
+	 * Method waveAnimation takes a node and a time as parameters that is used to make
+	 * a wave-like animation out of sequential labels that are passed to it.
+	 * 
+	 * @param toWave a JavaFX Node.
+	 * 
+	 * @param timeLimit the duration of the animation.
+	 */
+	private void waveAnimation(Node toWave, Duration timeLimit) {
+		TranslateTransition wave = new TranslateTransition();
+		wave.setDuration(timeLimit);
+		wave.setNode(toWave);
+		wave.setByY(-5);
+		wave.setCycleCount(12);
+		wave.setAutoReverse(true);
+		wave.play();
+	}
+	
+	private void shakeAnimation(Node toWave, Duration timeLimit) {
+		TranslateTransition wave = new TranslateTransition();
+		wave.setDuration(timeLimit);
+		wave.setNode(toWave);
+		wave.setByX(-5);
+		wave.setCycleCount(12);
+		wave.setAutoReverse(true);
+		wave.play();
 	}
 	
 	/**
@@ -388,13 +427,17 @@ public class MinesweeperGUIView extends Application implements Observer {
 		if (model.isGameOver()) {
 			System.out.println("GAME OVER");
 			gameInProgress = false;
-			updateGrid(true, model.getMinefield());
+			if (model.getPlayerWon()) {
+				updateGrid(true, model.getMinefield(), true);
+			} else {
+				updateGrid(true, model.getMinefield(), false);
+			}
 			File savedGame = new File(SAVE_NAME);
 			if (savedGame.exists()) {
 				savedGame.delete();
 			}
 		} else {
-			updateGrid(false, model.getMinefield());
+			updateGrid(false, model.getMinefield(), false);
 		}
 		
 		// update the timeLabel
