@@ -136,7 +136,7 @@ public class MinesweeperModel extends Observable implements Serializable {
 	 * to the beginning value.
 	 */
 	public MinesweeperModel() {
-		this.defaultSetting();
+		//this.defaultSetting();
 		this.setChanged();
 		this.notifyObservers(false);
 	}
@@ -149,8 +149,9 @@ public class MinesweeperModel extends Observable implements Serializable {
 	 * minefield and place mines within it.
 	 */
 	private void defaultSetting() {
-		this.FIELD_WIDTH = 16;
-		this.FIELD_LENGTH = 16;
+	/*this.FIELD_WIDTH = 16;
+		this.FIELD_LENGTH = 16;*/
+		
 		safeSpacesRevealed = 0;
 		stepsTaken = 0;
 		flagsPlaced = 0;
@@ -179,12 +180,18 @@ public class MinesweeperModel extends Observable implements Serializable {
 	 */
 	public void setboard(int width, int length)
 	{
+		 
+			 
+             
+		 
 		//int[] data = new int[1];
-		FIELD_WIDTH=width;
+		this.FIELD_WIDTH=width;
 		//data[0] = FIELD_WIDTH;
-		FIELD_LENGTH=length;
+		this.FIELD_LENGTH=length;
 		//data[1] =FIELD_LENGTH;
 		//return data;
+		defaultSetting();
+		 
 	}
 	public boolean takeStep(Point location) { 
 		if (!gameOver) {		// only updates game state if the game is still in progress

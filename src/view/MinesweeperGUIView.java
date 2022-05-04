@@ -160,7 +160,7 @@ public class MinesweeperGUIView extends Application implements Observer {
 											        	
 											        	 controller.saveGameState();
 											        	 gameInProgress = true;
-											        	 f="yes";
+											        	 f="no";
 											        	 start(primaryStage);
 											        	
 											         }
@@ -214,7 +214,7 @@ public class MinesweeperGUIView extends Application implements Observer {
 	private void initGame() {
 		// Trying to load the saved_game when the application is launched
 	//	File check = new File("saved_game.dat");
-		if (f =="no") {
+		if ( f =="no") {
 		System.out.println("New game(Yes or no)");
 		Scanner input = new Scanner(System.in);
 		{
