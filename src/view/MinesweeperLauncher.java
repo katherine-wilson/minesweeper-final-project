@@ -24,10 +24,6 @@ import javafx.application.Application;
 public class MinesweeperLauncher {
 	
 	public static void main(String[] args) {
-		File savedGame = new File("saved_game.dat");
-		if (savedGame.exists()) {
-			savedGame.delete();
-		}
 		if (args.length == 3) {
 			try {
 				if (argIsValid(args)) {

@@ -303,6 +303,7 @@ public class MinesweeperGUIView extends Application implements Observer {
 					alert.setAlertType(AlertType.INFORMATION);
 					alert.setContentText(e.getMessage()); // alert the game is over
 					alert.show();
+					quickShake(flagLabel, new Duration(50));
 				}
 				return;
 			}
@@ -435,9 +436,9 @@ public class MinesweeperGUIView extends Application implements Observer {
 	}
 	
 	/**
-	 * Creates an animation on a node
-	 * Method waveAnimation takes a node and a time as parameters that is used to make
-	 * a wave-like animation out of sequential labels that are passed to it.
+	 * Creates a waving animation on a node. Takes a node and a time as
+	 * parameters that are used to add wave-like movements to the given
+	 * node.
 	 * 
 	 * @param toWake JavaFX <code>Node</code> to wave.
 	 * 
@@ -455,9 +456,9 @@ public class MinesweeperGUIView extends Application implements Observer {
 	}
 	
 	/**
-	 * Creates an animation on a node. This quickly shakes the nodes horizontally
-	 * for 12 cycles.
-	 * 
+	 * Creates a longer shaking animation on a node. This shakes the node
+	 * horizontally for 1000 cycles.
+	 *
 	 * @param toShake JavaFX <code>Node</code> to shake.
 	 * @param timeLimit the duration of the animation.
 	 */
@@ -468,6 +469,24 @@ public class MinesweeperGUIView extends Application implements Observer {
 		wave.setByX(-5);
 		wave.setByX(5);
 		wave.setCycleCount(1000);
+		wave.setAutoReverse(true);
+		wave.play();
+	}
+	
+	/**
+	 * Creates a quick shaking animation on a node. This quickly shakes
+	 * the node horizontally for 12 cycles.
+	 * 
+	 * @param toShake JavaFX <code>Node</code> to shake.
+	 * @param timeLimit the duration of the animation.
+	 */
+	private void quickShake(Node toShake, Duration timeLimit) {
+		TranslateTransition wave = new TranslateTransition();
+		wave.setDuration(timeLimit);
+		wave.setNode(toShake);
+		wave.setByX(-5);
+		wave.setByX(5);
+		wave.setCycleCount(12);
 		wave.setAutoReverse(true);
 		wave.play();
 	}
@@ -540,6 +559,11 @@ public class MinesweeperGUIView extends Application implements Observer {
 			}
 		} else {
 			flagLabel.setText("\tFlags Left: " + (model.getNumberofMines() - model.getFlagsPlaced()) + "/" + model.getNumberofMines());
+			if (model.getFlagsPlaced() >= .80 * model.getNumberofMines()) {
+				flagLabel.setTextFill(Paint.valueOf("red"));
+			} else {
+				flagLabel.setTextFill(Paint.valueOf("black"));
+			}
 			updateGrid(false, model.getMinefield(), false);
 		}
 		
