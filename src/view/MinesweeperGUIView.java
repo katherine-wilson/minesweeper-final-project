@@ -226,6 +226,7 @@ public class MinesweeperGUIView extends Application implements Observer {
 	 */
 	private void setEventListener(ToggleButton button, GridPane pane) {
 		button.setOnMouseClicked(mouseEvent -> {
+			
 			MouseButton click = mouseEvent.getButton();
 
 			ToggleButton target = (ToggleButton) mouseEvent.getSource();
