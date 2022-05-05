@@ -22,6 +22,7 @@ import utilities.IllegalStepException;
  * @see <code><a href="../utilities/Space.html">Space</a></code>
  *
  * @author Katherine Wilson
+ * @author Giang Huong Pham
  */
 public class MinesweeperController {
 	// ------------------------------------------------------[  FIELDS  ]------------------------------------------------------
@@ -29,8 +30,7 @@ public class MinesweeperController {
 	 * Minesweeper model that this controller interacts with.
 	 * This model will receive input from the view that is
 	 * passed to this controller and provide gameplay data
-	 * for functions that return it to the view, such as
-	 * {@link #getMinefield()}.
+	 * for functions that return it to the view, such as getMineFields()
 	 */
 	private MinesweeperModel model;
 	
@@ -42,7 +42,7 @@ public class MinesweeperController {
 	 * parameter is stored by this object and will act as the specific instance that this controller
 	 * interacts with.
 	 * 
-	 * @param board model instance associated with this controller instance.
+	 * @param model MinesweeperModel instance associated with this controller instance.
 	 */
 	public MinesweeperController(MinesweeperModel model) {
 		this.model = model;
@@ -86,6 +86,9 @@ public class MinesweeperController {
 	 * @param x The x-coordinate of the player's new flag in the minefield.
 	 * 
 	 * @param y The y-coordinate of the player's new flag in the minefield.
+	 * 
+	 * @return <code>true</code> when a flag is added and <code>false</code>
+	 * 		   when a flag is removed.
 	 * 
 	 * @throws IllegalFlagPlacementException when an invalid location is given
 	 * for flag placement. This occurs when: <ul>

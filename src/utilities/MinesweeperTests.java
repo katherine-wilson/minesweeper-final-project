@@ -30,6 +30,7 @@ import model.MinesweeperModel;
  * 		<li>IllegalStepException.java</li></ul>
  * 
  * @author Katherine Wilson
+ * @author Giang Huong Pham
  */
 public class MinesweeperTests {
 	//------------------------------------------------------- MINESWEEPER CONTROLLER TESTS -------------------------------------------------------	

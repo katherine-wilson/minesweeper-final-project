@@ -75,7 +75,6 @@ public class Space implements Serializable{
 	 * Increments the value that keeps track of the number of mines that are 
 	 * adjacent to this <code>Space</code>.
 	 * 
-	 * @see {@link #adjacentMines}
 	 */
 	public void addAdjacentMine() {
 		adjacentMines++;
@@ -146,7 +145,6 @@ public class Space implements Serializable{
 	 * 
 	 * @return the number of mines surrounding this <code>Space</code>.
 	 * 
-	 * @see {@link #adjacentMines}
 	 */
 	public int adjacentMines() {
 		return adjacentMines;

@@ -12,7 +12,6 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Observable;
 import java.util.Random;
-
 import utilities.Space;
 
 /**
@@ -332,7 +331,7 @@ public class MinesweeperModel extends Observable implements Serializable {
 	/**
 	 * Updates the current time.
 	 * 
-	 * @param number of seconds.
+	 * @param time Integer representing number of seconds input
 	 */
 	public void setTime(int time) {
 		if(!this.gameOver) {
@@ -501,6 +500,7 @@ public class MinesweeperModel extends Observable implements Serializable {
 	 * {@link #minefield} grid. If the field happens to be placed in the location
 	 * of another mine, it will be replaced until it occupies an empty location that
 	 * is not adjacent to step.
+	 * @param	location a Point that contains information of the index to put the mine at
 	 */
 	private void replaceMine(Point location) {
 		HashSet<Point> adjacentLocations = new HashSet<Point>();

@@ -1,3 +1,7 @@
+package view;
+
+import javafx.application.Application;
+
 /**
  * This class serves as the main class for the Minesweeper game. 
  * The program will launch the GUI view or text view based on the
@@ -20,10 +24,6 @@
  * @author Eleanor Simon
  * @author Tanmay Agrawal 
  */
-package view;
-
-import javafx.application.Application;
-
 public class MinesweeperLauncher {
 	
 	/**
@@ -43,16 +43,21 @@ public class MinesweeperLauncher {
 				else {
 					System.out.println("Please enter valid positive number for the length and width of "
 							+ "the mine field and the number of mines. The number of mines should be less "
-							+ "than (length-1)(width-1)");
+							+ "than (length*width)/2");
 				}
 			} catch (Exception e) {
 				System.out.println("Please enter valid positive number for the length and width of "
 						+ "the mine field and the number of mines. The number of mines should be less "
-						+ "than (length-1)(width-1)");
+						+ "than (length*width)/2");
 			}
-		} else {
+		} else if (args.length == 0) {
 			String[] arg = {"16", "16", "25"};
 			Application.launch(MinesweeperGUIView.class, arg);
+		} else {
+			System.out.println("Please leave the arguments blank for a default setting"
+					+ " or enter valid positive number for the length and width of "
+					+ "the mine field and the number of mines. The number of mines should be less "
+					+ "than (length*width)/2");
 		}
 	}
 	
@@ -65,10 +70,11 @@ public class MinesweeperLauncher {
 	 * 					<li>Length of the minefield</li>
 	 * 					<li>Width of the minefield</li>
 	 * 					<li>Number of mines in the minefield</li>
+	 * 				</ol>
 	 * 
 	 * @return <code>true</code> if the given arguments are valid integers that fall within
 	 * the limitations of the game and <code>false</code> if not. These limitations are as
-	 * follows:<br><ul>
+	 * follows:<ul>
 	 * 				<li>Length/width of the minefield must be greater than three</li>
 	 * 				<li>length/width of the minefield may not exceed 30</li>
 	 * 				<li>The number of mines must be greater than zero</li>

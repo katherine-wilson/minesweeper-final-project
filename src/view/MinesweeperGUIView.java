@@ -1,15 +1,3 @@
-/**
- * This file contains GUI component of the application for Minesweeper. It initializes the
- * interface of the game and allows the user to interact with it. It represents the minefield
- * with a GridPane of ToggleButtons that the user can left or right click on to take steps or
- * toggle flags respectively. There are several animations and alerts that can occur throughout
- * the game depending on the user's actions.
- * 
- * @author Eleanor Simon
- * @author Giang Huong Pham
- * @author Tanmay Agrawal
- * @author Katherine Wilson
- */
 package view;
 
 import java.io.File;
@@ -36,7 +24,11 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.CycleMethod;
+import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.Paint;
+import javafx.scene.paint.Stop;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -45,6 +37,18 @@ import utilities.IllegalFlagPlacementException;
 import utilities.IllegalStepException;
 import utilities.Space;
 
+/**
+ * This file contains GUI component of the application for Minesweeper. It initializes the
+ * interface of the game and allows the user to interact with it. It represents the minefield
+ * with a GridPane of ToggleButtons that the user can left or right click on to take steps or
+ * toggle flags respectively. There are several animations and alerts that can occur throughout
+ * the game depending on the user's actions.
+ * 
+ * @author Eleanor Simon
+ * @author Giang Huong Pham
+ * @author Tanmay Agrawal
+ * @author Katherine Wilson
+ */
 @SuppressWarnings("deprecation")
 public class MinesweeperGUIView extends Application implements Observer {
 	// ------------------------------------------------------[  FIELDS  ]------------------------------------------------------	
@@ -83,7 +87,7 @@ public class MinesweeperGUIView extends Application implements Observer {
 	 */
 	private MinesweeperModel model;
 	/**
-	 * Minesweeper controller through which the GUI interacts with the
+	 * MinesweeperController through which the GUI interacts with the
 	 * data in the underlying model.
 	 */
 	private MinesweeperController controller;
@@ -93,7 +97,7 @@ public class MinesweeperGUIView extends Application implements Observer {
 	 */
 	private ToggleButton[][] gridpaneMap;
 	/**
-	 * <code>GridPane</code> that stores each space in the minefield.
+	 * <code>GridPane</code> that stores each space in the mine field.
 	 */
 	private GridPane gridpane;
 	
@@ -123,7 +127,7 @@ public class MinesweeperGUIView extends Application implements Observer {
 	private static int FIELD_WIDTH;
 	
 	/**
-	 * Size of spaces in the minefield.
+	 * Size of spaces in the mine field.
 	 */
 	private static final int SPACE_SIZE = 25;
 	
@@ -148,9 +152,18 @@ public class MinesweeperGUIView extends Application implements Observer {
 	 * loses the game.
 	 */
 	private static final Duration SHAKE_DURATION = new Duration(30);
+
+	/**
+	 * Color of the background gradient at the top
+	 */
+	private static final Color BACKGROUND_COLOR_1 = Color.valueOf("#ED7B84");
+	/**
+	 * Color of the background gradient at the bottom
+	 */
+	private static final Color BACKGROUND_COLOR_2 = Color.valueOf("#9055FF");
 	
 	/**
-	 * Object used throughout gameplay to show the user various alerts.
+	 * Object used throughout game play to show the user various alerts.
 	 */
 	private Alert alert = new Alert(AlertType.NONE);
 	
@@ -159,6 +172,7 @@ public class MinesweeperGUIView extends Application implements Observer {
 	 * if not. This prevents end-of-game alerts from being shown more than once.
 	 */
 	private boolean alertShown = false;
+	
 
 	/**
 	 * Starts the GUI-based view of the Minesweeper game. Initialized everything
@@ -185,13 +199,13 @@ public class MinesweeperGUIView extends Application implements Observer {
 		title.getChildren().add(toptext);
 		title.setAlignment(Pos.TOP_CENTER);
 
-		// load the saved game if there is any, and
-		// set the dimension of the game
+		// load the saved game if there is any, or
+		// set the dimension of the new game with the user input if there is no saved game
 		this.initGame(Integer.parseInt(getParameters().getUnnamed().get(0)),
 				      Integer.parseInt(getParameters().getUnnamed().get(1)),
 				      Integer.parseInt(getParameters().getUnnamed().get(2)));
 		
-		// Label for the Timer Initialized here
+		// Label for the Timer 
 		timeLabel = new Label();
 		HBox infoBox = new HBox();
 		infoBox.getChildren().add(timeLabel);
@@ -213,21 +227,22 @@ public class MinesweeperGUIView extends Application implements Observer {
 		vbox.getChildren().add(title);
 		vbox.getChildren().add(infoBox);
 		vbox.getChildren().add(board);
-		//vbox.setStyle("background-image: linear-gradient(red, yellow);");
-		//vbox.setStyle("-fx-background-color: rgb(170, 177, 189);");
+		vbox.setStyle("-fx-background-color: transparent;");
 		
 		Scene scene = new Scene(vbox, SCENE_WIDTH, SCENE_HEIGHT);
-		
-		//Stop[] stop1 = new Stop[] { new Stop(0, BACKGROUND_COLOR_1), new Stop(1, BACKGROUND_COLOR_2)};
-		//LinearGradient lg1 = new LinearGradient(0, 0, 0, 1, true, CycleMethod.NO_CYCLE, stop1);
-		//scene.setFill(lg1);
+		// set the scene background to be gradient
+		Stop[] stop1 = new Stop[] { new Stop(0, BACKGROUND_COLOR_1), new Stop(1, BACKGROUND_COLOR_2)};
+		LinearGradient lg1 = new LinearGradient(0, 0, 0, 1, true, CycleMethod.NO_CYCLE, stop1);
+		scene.setFill(lg1);
 		
 		primaryStage.setScene(scene);
 		primaryStage.show();
 		
+		
 		primaryStage.setOnCloseRequest( ev -> {
 			this.controller.saveGameState();
 		});
+		
 		System.out.println("Stage showing now");
 	}
 	
@@ -293,6 +308,10 @@ public class MinesweeperGUIView extends Application implements Observer {
 	 * This method initializes the game on launch. It checks for
 	 * save files from previous uncompleted games and loads them
 	 * if they are found.
+	 * 
+	 * @param length integer representing the length of the board
+	 * @param width integer representing the width of the board
+	 * @param numberOfMines integer representing the number of the mines hidden on the board
 	 */
 	private void initGame(int length, int width, int numberOfMines) {
 		// Trying to load the saved_game when the application is launched
@@ -397,8 +416,8 @@ public class MinesweeperGUIView extends Application implements Observer {
 	 * This method updates the given ToggleButton according to 
 	 * the passed in string: "flag" or "mine".
 	 * 
-	 * @param button ToggleButton to change the image of.
-	 * @param string name of image to put onto the button display.
+	 * @param img a String representing the prefix of the name of the image to be used
+	 * @param button the ToggleButton that will contain the image
 	 */
 	private void setImage(String img, ToggleButton button) {
 		ImageView image = new ImageView();
@@ -438,6 +457,8 @@ public class MinesweeperGUIView extends Application implements Observer {
 	 * @param revealMine boolean to tell whether to show the mine on the map or not.
 	 * 
 	 * @param spaceGrid  Space[][] representing the underlying mine map. 
+	 * 
+	 * @param playerWon true if the player found all the mine, false otherwise
 	 */
 	private void updateGrid(boolean revealMine, Space[][] spaceGrid, boolean playerWon) {
 		for (int i = 0; i< FIELD_LENGTH; i++) {
@@ -465,8 +486,7 @@ public class MinesweeperGUIView extends Application implements Observer {
 						button.setSelected(true);
 						button.setDisable(true);
 						button.setText("  ");
-					} else if (adjMine == 1) {
-						//button.setStyle("-fx-background-color:#acafb1; ");						
+					} else if (adjMine == 1) {				
 						button.setText("1");
 						button.setTextFill(Paint.valueOf("blue"));
 						button.setSelected(false);
@@ -518,7 +538,7 @@ public class MinesweeperGUIView extends Application implements Observer {
 	 * parameters that are used to add wave-like movements to the given
 	 * node.
 	 * 
-	 * @param toWake JavaFX <code>Node</code> to wave.
+	 * @param toWave JavaFX <code>Node</code> to wave.
 	 * 
 	 * @param timeLimit the duration of the animation.
 	 */
@@ -544,8 +564,8 @@ public class MinesweeperGUIView extends Application implements Observer {
 		TranslateTransition wave = new TranslateTransition();
 		wave.setDuration(timeLimit);
 		wave.setNode(toShake);
-		wave.setByX(-5);
-		wave.setByX(5);
+		wave.setByX(3);
+		wave.setToX(3);
 		wave.setCycleCount(1000);
 		wave.setAutoReverse(true);
 		wave.play();
@@ -562,8 +582,8 @@ public class MinesweeperGUIView extends Application implements Observer {
 		TranslateTransition wave = new TranslateTransition();
 		wave.setDuration(timeLimit);
 		wave.setNode(toShake);
-		wave.setByX(-5);
-		wave.setByX(5);
+		wave.setByX(3);
+		wave.setToX(3);
 		wave.setCycleCount(12);
 		wave.setAutoReverse(true);
 		wave.play();
@@ -589,8 +609,6 @@ public class MinesweeperGUIView extends Application implements Observer {
 	/**
 	 * This method basically is used to update time in the background by 
 	 * prompting the controller to set a chain of events that update time every second.
-	 * 
-	 * @param controller the instance of the controller for the gameplay
 	 */
 	private void startTime() {
 		timeline = new Timeline(new KeyFrame(Duration.seconds(1), event -> {
