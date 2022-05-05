@@ -481,6 +481,8 @@ public class MinesweeperGUIView extends Application implements Observer {
 					} else if (revealMine && playerWon && space.hasMine()) {	// flags on mines have green backgrounds and wave if player won
 						button.setStyle("-fx-background-color: #84e8b4; -fx-padding: 2px;");
 						waveAnimation(button, new Duration(500));
+					} else if (revealMine && !space.hasMine()) {
+						button.setDisable(true);
 					}
 				} else if (space.isRevealed() && !space.hasMine()) {		// if the space is not flagged and does not have mine...
 					if (revealMine) {
