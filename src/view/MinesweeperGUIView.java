@@ -30,6 +30,7 @@ import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.Paint;
 import javafx.scene.paint.Stop;
 import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import model.MinesweeperModel;
@@ -156,11 +157,11 @@ public class MinesweeperGUIView extends Application implements Observer {
 	/**
 	 * Color of the background gradient at the top
 	 */
-	private static final Color BACKGROUND_COLOR_1 = Color.valueOf("#ED7B84");
+	private static final Color BACKGROUND_COLOR_1 = Color.valueOf("#faacb3");
 	/**
 	 * Color of the background gradient at the bottom
 	 */
-	private static final Color BACKGROUND_COLOR_2 = Color.valueOf("#9055FF");
+	private static final Color BACKGROUND_COLOR_2 = Color.valueOf("#9178bf");
 	
 	/**
 	 * Object used throughout game play to show the user various alerts.
@@ -192,9 +193,11 @@ public class MinesweeperGUIView extends Application implements Observer {
 		startTime();
 		
 		// Displaying the title "Mine Sweeper"
-		Label toptext = new Label("Mine Sweeper");
-		Font tittlefont = Font.font("Times New Roman", 30);
-		toptext.setFont(tittlefont);
+		Label toptext = new Label("Minesweeper");
+		toptext.setFont(Font.font("Century Gothic", FontWeight.EXTRA_BOLD, 35));
+		toptext.setTextFill(Color.WHITE);
+		//Font tittlefont = Font.font("Times New Roman", 30);
+		//toptext.setFont(tittlefont);
 		HBox title = new HBox();
 		title.getChildren().add(toptext);
 		title.setAlignment(Pos.TOP_CENTER);
@@ -285,10 +288,11 @@ public class MinesweeperGUIView extends Application implements Observer {
 			}
 		} else {		// game is not over -- updates flag counter and minefield
 			flagLabel.setText("\tFlags Left: " + (model.getNumberofMines() - model.getFlagsPlaced()) + "/" + model.getNumberofMines());
+			flagLabel.setFont(Font.font("Bodoni MT Condensed Bold", FontWeight.BOLD, 15));
 			if (model.getFlagsPlaced() >= .80 * model.getNumberofMines()) {	
 				flagLabel.setTextFill(Paint.valueOf("red"));		// flag counter turns red when at least 80% of the flags have been used
 			} else {
-				flagLabel.setTextFill(Paint.valueOf("black"));
+				flagLabel.setTextFill(Paint.valueOf("white"));
 			}
 			updateGrid(false, model.getMinefield(), false);
 		}
@@ -299,6 +303,8 @@ public class MinesweeperGUIView extends Application implements Observer {
 			int seconds = model.getTime() % 60;
 			String secondsString = ((int)(seconds/10))==0? "0"+seconds: ""+seconds;
 			timeLabel.setText(minutes+" : "+ secondsString);
+			timeLabel.setFont(Font.font("Bodoni MT Condensed Bold", FontWeight.BOLD, 15));
+			timeLabel.setTextFill(Paint.valueOf("white"));
 		}
 	}
 
