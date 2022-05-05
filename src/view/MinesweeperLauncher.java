@@ -41,21 +41,21 @@ public class MinesweeperLauncher {
 					Application.launch(MinesweeperGUIView.class, args);
 				}
 				else {
-					System.out.println("Please enter valid positive number for the length and width of "
-							+ "the mine field and the number of mines. The number of mines should be less "
-							+ "than (length*width)/2");
+					System.err.println("Please enter valid positive number for the length and width of "
+							+ "the mine field and the number of mines.\nThe number of mines should be less "
+							+ "than (length*width) / 2.");
 				}
 			} catch (Exception e) {
-				System.out.println("Please enter valid positive number for the length and width of "
+				System.err.println("Please enter valid positive number for the length and width of "
 						+ "the mine field and the number of mines. The number of mines should be less "
-						+ "than (length*width)/2");
+						+ "than (length*width) / 2.");
 			}
 		} else if (args.length == 0) {
 			String[] arg = {"16", "16", "25"};
 			Application.launch(MinesweeperGUIView.class, arg);
 		} else {
-			System.out.println("Please leave the arguments blank for a default setting"
-					+ " or enter valid positive number for the length and width of "
+			System.err.println("Please leave the arguments blank for a default setting"
+					+ " or enter 3 valid positive numbers for the length and width of "
 					+ "the mine field and the number of mines. The number of mines should be less "
 					+ "than (length*width)/2");
 		}
