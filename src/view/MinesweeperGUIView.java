@@ -396,7 +396,7 @@ public class MinesweeperGUIView extends Application implements Observer {
 					// toggle flag
 					if (controller.toggleFlag(x, y)) {
 						placeAnimation(button, PLACE_ANIM_DURATION);	// "bounces" flag when placed
-					} else {
+					} else if (!alertShown) {
 						removeFlag(button);								// removes flag image from button
 						button.setText("");
 					}
