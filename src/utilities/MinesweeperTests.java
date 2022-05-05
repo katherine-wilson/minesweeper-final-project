@@ -17,7 +17,7 @@ import model.MinesweeperModel;
  * JUnit Testing class that includes test cases for the testable components of the 
  * Minesweeper controller, model, utility classes.<br><br> 
  * 
- * >95% Branch, Path, and Statement Coverage for:<ul>
+ * >94% Branch, Path, and Statement Coverage for:<ul>
  * 		<li><code>MinesweeperModel</code></li>
  * 		<li><code>MinesweeperController</code></li>
  * 		<li><code>IllegalStepException</code></li>
@@ -175,7 +175,7 @@ public class MinesweeperTests {
 				row++;
 			}
 			try {
-				controller.toggleFlag(col, row);
+				assertEquals(true, controller.toggleFlag(col, row));
 				assertEquals(true, model.getMinefield()[row][col].hasFlag());
 				assertEquals(i+1, model.getFlagsPlaced());
 			} catch (IllegalFlagPlacementException e) {
@@ -186,7 +186,7 @@ public class MinesweeperTests {
 		assertEquals(model.getNumberofMines(), model.getFlagsPlaced());
 		try {
 			assertEquals(true, model.getMinefield()[0][0].hasFlag());
-			controller.toggleFlag(0, 0);
+			assertEquals(false, controller.toggleFlag(0, 0));
 			assertEquals(model.getNumberofMines()-1, model.getFlagsPlaced());
 		} catch (IllegalFlagPlacementException e) {
 			fail();
@@ -215,16 +215,18 @@ public class MinesweeperTests {
 	
 	
 	//------------------------------------------------------- MINESWEEPER MODEL TESTS -------------------------------------------------------	
-	/*
+	
 	@Test
 	void load_save() {							// checks that data is loaded properly from a save
 		MinesweeperModel model;
 		try {
 			model = new MinesweeperModel("./src/utilities/saved_game.dat");
 			MinesweeperController controller = new MinesweeperController(model);
-			assertEquals(30, model.getTime());
+			assertEquals(27, model.getTime());
 			assertEquals(2, model.getFlagsPlaced());
-			assertEquals(3, model.getTurns());
+			assertEquals(1, model.getTurns());
+			assertEquals(10, model.getDimensions()[0]);
+			assertEquals(15, model.getDimensions()[1]);
 		} catch (FileNotFoundException e) {
 			fail();
 		} catch (ClassNotFoundException e) {
@@ -233,7 +235,7 @@ public class MinesweeperTests {
 			fail();
 		}
 	}
-	*/
+	
 	
 	@Test
 	void winner() {								// ensures that whether the game was won or lost is not falsely determined at the start of a game
@@ -247,6 +249,12 @@ public class MinesweeperTests {
 		assertEquals(false, model.getPlayerWon());
 		assertEquals(false, model.isGameOver());
 		model.gameExit();
+	}
+	
+	@Test
+	void custom_model() {
+		MinesweeperModel model = new MinesweeperModel(5, 5, 12);
+		assertEquals(0, model.getTurns());
 	}
 	
 	
